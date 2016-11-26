@@ -1,18 +1,3 @@
-CREATE TABLE pms.developers
-(
-    id serial NOT NULL,
-    first_name character varying(50) NOT NULL,
-    last_name character varying(50),
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE pms.skills
-(
-    id serial NOT NULL,
-    skill_name character varying(50) NOT NULL,
-    PRIMARY KEY (id)
-);
-
 CREATE TABLE pms.companies
 (
     id serial NOT NULL,
@@ -30,7 +15,7 @@ CREATE TABLE pms.customers
 CREATE TABLE pms.projects
 (
     id serial NOT NULL,
-	company_id integer NOT NULL,
+	  company_id integer NOT NULL,
     customer_id integer NOT NULL,
     project_name character varying(50) NOT NULL,
     PRIMARY KEY (id),
@@ -43,6 +28,27 @@ CREATE TABLE pms.projects
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
+
+CREATE TABLE pms.developers
+(
+    id serial NOT NULL,
+    first_name character varying(50) NOT NULL,
+    last_name character varying(50),
+    company_id integer NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (company_id)
+        REFERENCES pms.companies (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE pms.skills
+(
+    id serial NOT NULL,
+    skill_name character varying(50) NOT NULL,
+    PRIMARY KEY (id)
+);
+
 
 CREATE TABLE pms.developers_skills
 (
@@ -62,9 +68,9 @@ CREATE TABLE pms.developers_skills
 CREATE TABLE pms.projects_developers
 (
     project_id integer NOT NULL,
-	developer_id integer NOT NULL,
+	  developer_id integer NOT NULL,
     PRIMARY KEY (project_id, developer_id),
-	FOREIGN KEY (project_id)
+	  FOREIGN KEY (project_id)
         REFERENCES pms.projects (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,

@@ -1,22 +1,4 @@
-INSERT INTO pms.developers 
-		(id,first_name,last_name) 
-	VALUES 
-		(1,'Mykhailo','Kosinskyi'), 
-		(2,'Vladyslav','Len'''), 
-		(3,'Yurii','Malikov'), 
-		(4,'Mykhailo','Senchuk'), 
-		(5,'Oleg','Volkov');
-
-INSERT INTO pms.skills 
-		(id,skill_name) 
-	VALUES 
-		(1,'Java'), 
-		(2,'SQL'), 
-		(3,'Spring'), 
-		(4,'Junit'), 
-		(5,'Maven');
-
-INSERT INTO pms.companies 
+INSERT INTO pms.companies
 		(id,company_name) 
 	VALUES 
 		(1,'Ciklum'), 
@@ -41,6 +23,24 @@ INSERT INTO pms.projects
 		(4,5,3,'CMS Software'), 
 		(5,2,1,'Website Architecture');
 
+INSERT INTO pms.developers
+(id,first_name,last_name,company_id)
+VALUES
+	(1,'Mykhailo','Kosinskyi',1),
+	(2,'Vladyslav','Len''',2),
+	(3,'Yurii','Malikov',2),
+	(4,'Mykhailo','Senchuk',1),
+	(5,'Oleg','Volkov',5);
+
+INSERT INTO pms.skills
+(id,skill_name)
+VALUES
+	(1,'Java'),
+	(2,'SQL'),
+	(3,'Spring'),
+	(4,'Junit'),
+	(5,'Maven');
+
 INSERT INTO pms.developers_skills 
 		(developer_id,skill_id) 
 	VALUES 
@@ -64,17 +64,9 @@ INSERT INTO pms.projects_developers
 		(project_id,developer_id) 
 	VALUES 
 		(1,1), 
-		(1,3), 
-		(1,5), 
+		(1,4),
 		(2,2), 
-		(2,5), 
-		(3,4), 
-		(3,5), 
-		(4,1), 
-		(4,2), 
+		(2,3),
+		(3,5),
 		(4,5), 
-		(5,1), 
-		(5,2), 
-		(5,3), 
-		(5,4), 
-		(5,5);
+		(5,3);
