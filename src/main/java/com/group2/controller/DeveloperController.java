@@ -2,6 +2,7 @@ package com.group2.controller;
 
 import com.group2.dao.DeveloperDAO;
 import com.group2.model.Developer;
+import com.group2.model.Skill;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,8 @@ public class DeveloperController {
     private PlatformTransactionManager txManager;
 
     private DeveloperDAO developerDAO;
+
+    public void addSkillToDeveloper(Skill skill, Developer developer){}
 
     public void add(Developer developer){}
 

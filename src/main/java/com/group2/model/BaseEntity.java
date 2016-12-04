@@ -18,4 +18,8 @@ public class BaseEntity{
     public Integer getId() {
         return id;
     }
+
+    public boolean isNew() {
+        return (getId() == null);
+    }
 }

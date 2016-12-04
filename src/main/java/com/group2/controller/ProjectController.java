@@ -1,6 +1,7 @@
 package com.group2.controller;
 
 import com.group2.dao.ProjectDAO;
+import com.group2.model.Developer;
 import com.group2.model.Project;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -11,6 +12,8 @@ public class ProjectController {
     private PlatformTransactionManager txManager;
 
     private ProjectDAO projectDAO;
+
+    public void addDeveloperToProject(Developer developer, Project project){}
 
     public void add(Project project){}
 

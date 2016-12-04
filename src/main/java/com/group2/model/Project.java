@@ -1,10 +1,22 @@
 package com.group2.model;
 
+import java.util.Set;
+
 public class Project extends BaseEntity {
 
     Company company;
 
     Customer customer;
+
+    Set<Developer> developers;
+
+    public Set<Developer> getDevelopers() {
+        return developers;
+    }
+
+    public void setDevelopers(Set<Developer> developers) {
+        this.developers = developers;
+    }
 
     public Company getCompany() {
         return company;
