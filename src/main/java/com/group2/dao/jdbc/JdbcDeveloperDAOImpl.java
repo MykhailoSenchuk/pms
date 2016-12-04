@@ -5,6 +5,7 @@ import com.group2.model.Developer;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -19,32 +20,32 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public Developer save(Developer object) {
+    public Developer save(Developer object) throws SQLException {
         return null;
     }
 
     @Override
-    public boolean saveAll(List<Developer> list) {
+    public boolean saveAll(List<Developer> list) throws SQLException {
         return false;
     }
 
     @Override
-    public Developer load(int id) {
+    public Developer load(int id) throws SQLException {
         return null;
     }
 
     @Override
-    public List<Developer> findAll() {
+    public List<Developer> findAll() throws SQLException {
         return null;
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(int id) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean deleteAll() {
+    public boolean deleteAll() throws SQLException {
         return false;
     }
 

@@ -4,6 +4,7 @@ import com.group2.dao.CustomerDAO;
 import com.group2.model.Customer;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 
 public class JdbcCustomerDAOImpl implements CustomerDAO {
@@ -11,32 +12,32 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
     private DataSource dataSource;
 
     @Override
-    public Customer save(Customer object) {
+    public Customer save(Customer object) throws SQLException {
         return null;
     }
 
     @Override
-    public boolean saveAll(List<Customer> list) {
+    public boolean saveAll(List<Customer> list) throws SQLException {
         return false;
     }
 
     @Override
-    public Customer load(int id) {
+    public Customer load(int id) throws SQLException {
         return null;
     }
 
     @Override
-    public List<Customer> findAll() {
+    public List<Customer> findAll() throws SQLException {
         return null;
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(int id) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean deleteAll() {
+    public boolean deleteAll() throws SQLException {
         return false;
     }
 

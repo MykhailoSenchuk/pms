@@ -4,6 +4,7 @@ import com.group2.dao.CompanyDAO;
 import com.group2.model.Company;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
@@ -11,32 +12,32 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
     private DataSource dataSource;
 
     @Override
-    public Company save(Company object) {
+    public Company save(Company object) throws SQLException {
         return null;
     }
 
     @Override
-    public boolean saveAll(List<Company> list) {
+    public boolean saveAll(List<Company> list) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(int id) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean deleteAll() {
+    public boolean deleteAll() throws SQLException {
         return false;
     }
 
     @Override
-    public Company load(int id) {
+    public Company load(int id) throws SQLException {
         return null;
     }
 
     @Override
-    public List<Company> findAll() {
+    public List<Company> findAll() throws SQLException {
         return null;
     }
 
