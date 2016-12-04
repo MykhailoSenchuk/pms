@@ -10,6 +10,18 @@ public class Project extends NamedEntity {
 
     Set<Developer> developers;
 
+    public Project(String name, Company company, Customer customer, Set<Developer> developers) {
+        super(name);
+        this.company = company;
+        this.customer = customer;
+        this.developers = developers;
+    }
+
+    public Project(Integer id, String name, Company company, Customer customer, Set<Developer> developers) {
+        this(name, company, customer, developers);
+        this.id = id;
+    }
+
     public Set<Developer> getDevelopers() {
         return developers;
     }

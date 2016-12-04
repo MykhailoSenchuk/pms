@@ -1,10 +1,7 @@
 package com.group2;
 
 import com.group2.controller.*;
-import com.group2.model.Company;
-import com.group2.model.Customer;
-import com.group2.model.Developer;
-import com.group2.model.Skill;
+import com.group2.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -113,7 +110,7 @@ public class Main {
                     System.out.print("Creating new row in table \n" + tableName +
                             "Please enter name of new entity: ");
                     String name = br.readLine();
-                    switch (subMenuChoice) {
+                    switch (choice) {
                         case "1": // adding new company
                         {
                             companyController.add(new Company(name));
@@ -130,12 +127,13 @@ public class Main {
                             String lastName = br.readLine();
                             System.out.print("Please enter company id of new developer: ");
                             Integer companyId = Integer.valueOf(br.readLine());
-                            System.out.println("Please add skills to new developer. Type name of skills. Press \'Enter\' after each skill name. Press twice \'Enter\' to end intut.");
+                            System.out.println("Please add skills to new developer. Type name of skills. Press \'Enter\' after each skill name. Press twice \'Enter\' to end input.");
 
                             Set<Skill> skills = new HashSet<>();
                             String skillName = br.readLine();
                             while (!"".equals(skillName)){
                                 skills.add(skillController.add(new Skill(skillName)));
+                                skillName = br.readLine();
                             }
 
                             developerController.add(new Developer(name, lastName, companyController.get(companyId), skills));
@@ -143,7 +141,23 @@ public class Main {
                         }
                         case "4": //  adding new project
                         {
-//                            companyController.add(new Company(name));
+
+                            System.out.print("Please enter company id of new project: ");
+                            Integer companyId = Integer.valueOf(br.readLine());
+                            System.out.print("Please enter customer id of new project: ");
+                            Integer customerId = Integer.valueOf(br.readLine());
+
+                            System.out.println("Please developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press twice \'Enter\' to end input.");
+
+                            Set<Developer> developers = new HashSet<>();
+                            String stringDeveloperId = br.readLine();
+                            while (!"".equals(stringDeveloperId)){
+                                developers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
+                                stringDeveloperId = br.readLine();
+                            }
+
+                            projectController.add(new Project(name, companyController.get(companyId), customerController.get(customerId), developers));
+//
                             break;
                         }
                         case "5": //  adding new skill
@@ -156,39 +170,168 @@ public class Main {
                     System.out.println("New entity was successfully added in table" + tableName + ".");
                     continue;
                 }
-                case "2": //
+                case "2": // reading by id
                 {
                     System.out.print("Reading by id from table " + tableName + "\n" +
                             "Please enter id: ");
-                    String id = br.readLine();
-                    Company company = companyController.get(Integer.valueOf(id));
-                    System.out.println("New entity was successfully added into table " + tableName + ":\n" + company);
-                    continue;
-                }
-                case "3": //
-                {
-                    System.out.print("All entities in table " + tableName + ":\n");
-                    companyController.getAll().forEach(System.out::println);
-                    continue;
-                }
-                case "4": //
-                {
-                    System.out.print("Updating by id entity in table " + tableName + "..\n" +
-                            "Please enter id: ");
-                    String id = br.readLine();
-                    Company company = companyController.get(Integer.valueOf(id));
-                    System.out.print("Entity from table " + tableName + " with id=" + id + ":\n"
-                            + company +
-                            "\nPlase enter new name of entity from table " + tableName + " or press enter to not change name of entity: ");
-                    String name = br.readLine();
-                    if (!("".equals(name) || company.getName().equals(name))) {
-                        companyController.update(new Company(company.getId(), name));
-                        System.out.println("Entity in table " + tableName + " was successfully updated:\n" + company);
-                        continue;
+                    Integer id = Integer.valueOf(br.readLine());
+
+                    switch (choice) {
+                        case "1": // reading company by id
+                        {
+                            System.out.println("Successful reading of company:\n" + companyController.get(id));
+                            break;
+                        }
+                        case "2": // reading customer by id
+                        {
+                            System.out.println("Successful reading of customer:\n" + customerController.get(id));
+                            break;
+                        }
+                        case "3": // reading developer by id
+                        {
+                            System.out.println("Successful reading of developer:\n" + developerController.get(id));
+                            break;
+                        }
+                        case "4": //  reading project by id
+                        {
+
+                            System.out.println("Successful reading of project:\n" + projectController.get(id));
+//
+                            break;
+                        }
+                        case "5": //  reading skill by id
+                        {
+                            System.out.println("Successful reading of skill:\n" + skillController.get(id));
+                            break;
+                        }
+                        default:{
+                            System.out.println("There is no entity with id=" + id + " in table " + tableName);
+                        }
                     }
-                    System.out.println("Entity from table " + tableName + " was not updated because because no new parameters added:\n" + company);
+                    continue;
                 }
-                case "5": //
+                case "3": //reading all
+                {
+                    switch (choice) {
+                        case "1": // reading all companies
+                        {
+                            companyController.getAll().forEach(System.out::println);
+                            break;
+                        }
+                        case "2": // reading all customers
+                        {
+                            customerController.getAll().forEach(System.out::println);
+                            break;
+                        }
+                        case "3": // reading all developers
+                        {
+                            developerController.getAll().forEach(System.out::println);
+                            break;
+                        }
+                        case "4": //  reading all projects
+                        {
+                            projectController.getAll().forEach(System.out::println);
+                            break;
+                        }
+                        case "5": //  reading all skills
+                        {
+                            skillController.getAll().forEach(System.out::println);
+                            break;
+                        }
+                    }
+                    continue;
+                }
+                case "4": // updating by id
+                {
+                    System.out.print("Updating by id in table " + tableName + "\n" +
+                            "Please enter id: ");
+                    Integer id = Integer.valueOf(br.readLine());
+
+                    System.out.print("Starting of data input for entity update." +
+                            " ! Notion: Press twice \'Enter\' if you don\'t want to change this param (to keep this param as it is now).");
+                    switch (choice) {
+                        case "1": // updating company
+                        {
+                            Company company = companyController.get(id);
+                            System.out.println("Company for update:\n" + company);
+                            System.out.print("Enter new name of company :");
+                            String newName = br.readLine();
+                            companyController.update(new Company(id, newName));
+                            break;
+                        }
+                        case "2": // updating customer
+                        {
+                            Customer customer = customerController.get(id);
+                            System.out.println("Customer for update:\n" + customer);
+                            System.out.print("Enter new name of customer:");
+                            String newName = br.readLine();
+                            customerController.update(new Customer(id, newName));
+                            break;
+                        }
+                        case "3": // updating developer
+                        {
+                            Developer developer = developerController.get(id);
+                            System.out.println("Developer for update:\n" + developer);
+                            System.out.print("Enter new name of developer:");
+                            String newName = br.readLine();
+                            System.out.print("Please enter new last name of updated developer: ");
+                            String newLastName = br.readLine();
+                            System.out.print("Please enter new company id of updated developer: ");
+                            Integer newCompanyId = Integer.valueOf(br.readLine());
+
+                            System.out.println("Please type all skills of updated developer. Type name of skills. Press \'Enter\' after each skill name. Press twice \'Enter\' to end input.");
+
+                            Set<Skill> newSkills = new HashSet<>();
+                            String skillName = br.readLine();
+                            while (!"".equals(skillName)){
+                                newSkills.add(skillController.add(new Skill(skillName)));
+                                skillName = br.readLine();
+                            }
+
+                            developerController.update(new Developer(id, newName, newLastName, companyController.get(newCompanyId), newSkills));
+                            break;
+                        }
+                        case "4": //  updating project
+                        {
+
+                            Project project = projectController.get(id);
+                            System.out.println("Project for update:\n" + project);
+                            System.out.print("Enter new name of project:");
+                            String newName = br.readLine();
+
+                            System.out.print("Please enter new company id of updated project: ");
+                            Integer newCompanyId = Integer.valueOf(br.readLine());
+                            System.out.print("Please enter new customer id of updated project: ");
+                            Integer newCustomerId = Integer.valueOf(br.readLine());
+
+                            System.out.println("Please developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press twice \'Enter\' to end input.");
+
+                            Set<Developer> newDevelopers = new HashSet<>();
+                            String stringDeveloperId = br.readLine();
+                            while (!"".equals(stringDeveloperId)){
+                                newDevelopers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
+                                stringDeveloperId = br.readLine();
+                            }
+
+                            projectController.update(new Project(id, newName, companyController.get(newCompanyId), customerController.get(newCustomerId), newDevelopers));
+//
+                            break;
+                        }
+                        case "5": //  updating skill
+                        {
+                            Skill skill = skillController.get(id);
+                            System.out.println("Skill for update:\n" + skill);
+                            System.out.print("Enter new name of skill:");
+                            String newName = br.readLine();
+                            skillController.update(new Skill(id, newName));
+                            break;
+                        }
+                    }
+
+                    System.out.println("Entity was successfully updated in table" + tableName + ".");
+                    continue;
+                }
+                case "5": // deleting by id
                 {
                     System.out.print("Deleting by id from table " + tableName + "\n" +
                             "Please enter id: ");
@@ -198,14 +341,40 @@ public class Main {
                             "\nPress \'y\\Y\' to confirm or \'n\\N\' to cancel deleting.");
                     choice = br.readLine();
                     if (!("5".equals(choice) || "".equals(choice) || choice.equalsIgnoreCase("y"))) {
-                        companyController.delete(id);
+                        switch (choice) {
+                            case "1": // deleting company by id
+                            {
+                                companyController.delete(id);
+                                break;
+                            }
+                            case "2": // deleting customer by id
+                            {
+                                customerController.delete(id);
+                                break;
+                            }
+                            case "3": // deleting developer by id
+                            {
+                                developerController.delete(id);
+                                break;
+                            }
+                            case "4": //  deleting project by id
+                            {
+                                projectController.delete(id);
+                                break;
+                            }
+                            case "5": //  deleting skill by id
+                            {
+                                skillController.delete(id);
+                                break;
+                            }
+                        }
                         System.out.println("Entity from table " + tableName + " with id=" + id + "was successfully deleted:\n");
 
                     }
                     System.out.println("Deleting was canceled.");
                     continue;
                 }
-                case "6": //
+                case "6": // deleting all
                 {
 
                     System.out.print("Deleting all entities  from table " + tableName + "\n");
@@ -213,12 +382,39 @@ public class Main {
                             "Press \'y\\Y\' to confirm or \'n\\N\' to cancel deleting.");
                     choice = br.readLine();
                     if (!("6".equals(choice) || "".equals(choice) || choice.equalsIgnoreCase("y"))) {
-                        companyController.deleteAll();
+                        switch (choice) {
+                            case "1": // deleting all companies
+                            {
+                                companyController.deleteAll();
+                                break;
+                            }
+                            case "2": // deleting all customers
+                            {
+                                customerController.deleteAll();
+                                break;
+                            }
+                            case "3": // deleting all developers
+                            {
+                                developerController.deleteAll();
+                                break;
+                            }
+                            case "4": //  deleting all projects
+                            {
+                                projectController.deleteAll();
+                                break;
+                            }
+                            case "5": //  deleting all skills
+                            {
+                                skillController.deleteAll();
+                                break;
+                            }
+                        }
                         System.out.println("All entities from table " + tableName + " were successfully deleted:\n");
                     }
                     System.out.println("Deleting was canceled.");
                     continue;
                 }
+
                 case "0": //
                 {
                     continue;
