@@ -15,7 +15,8 @@ public class ProjectController {
 
     public void addDeveloperToProject(Developer developer, Project project){}
 
-    public void add(Project project){}
+    //if table already have company with same name, than just return entity form table, don't create new one
+    public Project add(Project project){return null;}
 
     public Project get(int id){return null;}
 

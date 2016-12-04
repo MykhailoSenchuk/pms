@@ -12,7 +12,8 @@ public class CompanyController {
 
     private CompanyDAO companyDAO;
 
-    public void add(Company company){}
+    //if table already have company with same name, than just return entity form table, don't create new one
+    public Company add(Company company){return null;}
 
     public Company get(int id){return null;}
 

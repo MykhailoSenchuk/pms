@@ -2,7 +2,7 @@ package com.group2.model;
 
 import java.util.Set;
 
-public class Project extends BaseEntity {
+public class Project extends NamedEntity {
 
     Company company;
 

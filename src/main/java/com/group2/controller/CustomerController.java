@@ -12,13 +12,14 @@ public class CustomerController {
 
     private CustomerDAO customerDAO;
 
-    public void add(Customer customer){}
+    //if table already have company with same name, than just return entity form table, don't create new one
+    public Customer add(Customer customer){return null;}
 
     public Customer get(int id){return null;}
 
     public List<Customer> getAll(){return null;}
 
-    public void update(Customer company){}
+    public void update(Customer customer){}
 
     public void delete(int id){}
 

@@ -1,15 +1,21 @@
 package com.group2.model;
 
 
-public class NamedEntity extends BaseEntity {
+public class NamedEntity {
+
+    protected Integer id;
 
     protected String name;
 
-    public NamedEntity() {
+    protected NamedEntity() {
+    }
+
+    protected NamedEntity(String name) {
+        this.name = name;
     }
 
     protected NamedEntity(Integer id, String name) {
-        super(id);
+        this.id = id;
         this.name = name;
     }
 
@@ -21,8 +27,18 @@ public class NamedEntity extends BaseEntity {
         return this.name;
     }
 
-    @Override
     public String toString() {
         return name;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+    public boolean isNew() {
+        return (getId() == null);
     }
 }

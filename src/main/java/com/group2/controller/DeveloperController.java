@@ -16,7 +16,8 @@ public class DeveloperController {
 
     public void addSkillToDeveloper(Skill skill, Developer developer){}
 
-    public void add(Developer developer){}
+    //if table already have company with same name, than just return entity form table, don't create new one
+    public Developer add(Developer developer){return null;}
 
     @Transactional
     public Developer get(int id){

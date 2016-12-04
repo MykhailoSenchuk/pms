@@ -1,10 +1,8 @@
 package com.group2.dao;
 
-import com.group2.model.BaseEntity;
-
 import java.util.List;
 
-interface AbstractDAO<T extends BaseEntity> {
+interface AbstractDAO<T> {
     T save(T object);
 
     boolean saveAll(List<T> list);

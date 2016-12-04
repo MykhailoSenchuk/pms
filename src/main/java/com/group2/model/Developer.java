@@ -10,6 +10,18 @@ public class Developer extends NamedEntity{
 
     private Set<Skill> skills;
 
+    public Developer(String name, String lastName, Company company, Set<Skill> skills) {
+        super(name);
+        this.lastName = lastName;
+        this.company = company;
+        this.skills = skills;
+    }
+
+    public Developer(Integer id, String name, String lastName, Company company, Set<Skill> skills) {
+        this(name, lastName, company, skills);
+        this.id = id;
+    }
+
     public String getLastName() {
         return lastName;
     }
