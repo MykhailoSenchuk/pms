@@ -8,4 +8,11 @@ public class Company extends NamedEntity {
     public Company(Integer id, String name) {
         super(id, name);
     }
+
+    @Override
+    public String toString() {
+        return "" +
+                "id ='" + getId() + '\'' +
+                ", Company Name ='" + getName() + '\'';
+    }
 }

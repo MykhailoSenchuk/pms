@@ -339,8 +339,8 @@ public class Main {
                     System.out.println("Do you really want to delete entity:\n"
                             + companyController.get(id) +
                             "\nPress \'y\\Y\' to confirm or \'n\\N\' to cancel deleting.");
-                    choice = br.readLine();
-                    if (!("5".equals(choice) || "".equals(choice) || choice.equalsIgnoreCase("y"))) {
+                    String deleteChoice = br.readLine();
+                    if (deleteChoice.equalsIgnoreCase("y")) {
                         switch (choice) {
                             case "1": // deleting company by id
                             {
