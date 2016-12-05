@@ -8,13 +8,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private CompanyController companyController;
     private CustomerController customerController;
     private DeveloperController developerController;
@@ -33,51 +34,44 @@ public class Main {
 
         while (!choice.equalsIgnoreCase("0")) {
             System.out.println(
-                    "\n---------Menu---------\n\n" +
-                            "\nPlease make your choice:\n" +
+                    "\n---------Main-menu---------\n" +
                             "1. CRUD operations with companies.\n" +
                             "2. CRUD operations with customers.\n" +
                             "3. CRUD operations with developers.\n" +
                             "4. CRUD operations with projects.\n" +
                             "5. CRUD operations with skills.\n" +
-                            "6. Add skill to developer.\n" +
+                            "6. Add skills to developer.\n" +
                             "7. Add developer to project.\n" +
-                            "0. Quit\n");
+                            "0. Quit\n\n" +
+                            "Please make your choice: ");
             choice = br.readLine();
 
             switch (choice) {
                 case "1": // table companies
-                {
-                    subMenuCrudOperationsFor(choice);
-
-
-                    break;
-                }
                 case "2": // table customers
-                {
-                    break;
-                }
                 case "3": // table developers
-                {
-                    break;
-                }
                 case "4": //table projects
-                {
-                    break;
+                case "5": { //table skills
+                    getIntoSubMenu(choice);
                 }
-                case "5": //table skills
+                case "6": //add skills to developer
                 {
-                    break;
-                }
-                case "6": //add skill to developer
-                {
+                    System.out.println("Start of adding skill to existing developer..");
+                    Developer developer = developerController.get(getIdFromConsole());
+                    System.out.println("Developer for adding skills:\n" + developer);
+                    System.out.println("Now you need to input all skills of developer.");
+                    Set<Skill> updatedSkills = developer.getSkills();
+                    updatedSkills.addAll(getSkillsFromConsole());
+                    developerController.update(
+                            new Developer(developer.getId(), developer.getName(), developer.getLastName(),
+                                    developer.getCompany(), updatedSkills));
                     break;
                 }
                 case "7": //add developer to project
                 {
                     break;
                 }
-                case "exit": //exit
+                case "0": //exit
                 {
                     System.out.println("Good Bye!");
                     System.exit(0);
@@ -88,7 +82,7 @@ public class Main {
         }
     }
 
-    private void subMenuCrudOperationsFor(String choice) throws Exception {
+    private void getIntoSubMenu(String choice) throws Exception {
         String tableName = table(choice);
         System.out.println("CRUD operations for table " + tableName);
         while (!choice.equalsIgnoreCase("0")) {
@@ -127,16 +121,8 @@ public class Main {
                             String lastName = br.readLine();
                             System.out.print("Please enter company id of new developer: ");
                             Integer companyId = Integer.valueOf(br.readLine());
-                            System.out.println("Please add skills to new developer. Type name of skills. Press \'Enter\' after each skill name. Press twice \'Enter\' to end input.");
-
-                            Set<Skill> skills = new HashSet<>();
-                            String skillName = br.readLine();
-                            while (!"".equals(skillName)){
-                                skills.add(skillController.add(new Skill(skillName)));
-                                skillName = br.readLine();
-                            }
-
-                            developerController.add(new Developer(name, lastName, companyController.get(companyId), skills));
+                            developerController.add(
+                                    new Developer(name, lastName, companyController.get(companyId), getSkillsFromConsole()));
                             break;
                         }
                         case "4": //  adding new project
@@ -151,7 +137,7 @@ public class Main {
 
                             Set<Developer> developers = new HashSet<>();
                             String stringDeveloperId = br.readLine();
-                            while (!"".equals(stringDeveloperId)){
+                            while (!"".equals(stringDeveloperId)) {
                                 developers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
                                 stringDeveloperId = br.readLine();
                             }
@@ -204,7 +190,7 @@ public class Main {
                             System.out.println("Successful reading of skill:\n" + skillController.get(id));
                             break;
                         }
-                        default:{
+                        default: {
                             System.out.println("There is no entity with id=" + id + " in table " + tableName);
                         }
                     }
@@ -243,9 +229,8 @@ public class Main {
                 }
                 case "4": // updating by id
                 {
-                    System.out.print("Updating by id in table " + tableName + "\n" +
-                            "Please enter id: ");
-                    Integer id = Integer.valueOf(br.readLine());
+                    System.out.print("Updating by id in table " + tableName);
+                    Integer id = getIdFromConsole();
 
                     System.out.print("Starting of data input for entity update." +
                             " ! Notion: Press twice \'Enter\' if you don\'t want to change this param (to keep this param as it is now).");
@@ -278,17 +263,8 @@ public class Main {
                             String newLastName = br.readLine();
                             System.out.print("Please enter new company id of updated developer: ");
                             Integer newCompanyId = Integer.valueOf(br.readLine());
-
-                            System.out.println("Please type all skills of updated developer. Type name of skills. Press \'Enter\' after each skill name. Press twice \'Enter\' to end input.");
-
-                            Set<Skill> newSkills = new HashSet<>();
-                            String skillName = br.readLine();
-                            while (!"".equals(skillName)){
-                                newSkills.add(skillController.add(new Skill(skillName)));
-                                skillName = br.readLine();
-                            }
-
-                            developerController.update(new Developer(id, newName, newLastName, companyController.get(newCompanyId), newSkills));
+                            System.out.println("Now you need to input all skills of updated developer.");
+                            developerController.update(new Developer(id, newName, newLastName, companyController.get(newCompanyId), getSkillsFromConsole()));
                             break;
                         }
                         case "4": //  updating project
@@ -308,7 +284,7 @@ public class Main {
 
                             Set<Developer> newDevelopers = new HashSet<>();
                             String stringDeveloperId = br.readLine();
-                            while (!"".equals(stringDeveloperId)){
+                            while (!"".equals(stringDeveloperId)) {
                                 newDevelopers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
                                 stringDeveloperId = br.readLine();
                             }
@@ -428,6 +404,22 @@ public class Main {
             }
 
         }
+    }
+
+    private Integer getIdFromConsole() throws IOException {
+        System.out.println("Please enter id: ");
+        return Integer.valueOf(br.readLine());
+    }
+
+    private Set<Skill> getSkillsFromConsole() throws IOException {
+        System.out.println("Type name of skill of developer, press \'Enter\' after each skill name. To stop input press \'Enter\' twice.");
+        Set<Skill> skills = new HashSet<>();
+        String skillName = br.readLine();
+        while (!"".equals(skillName)) {
+            skills.add(skillController.add(new Skill(skillName)));
+            skillName = br.readLine();
+        }
+        return skills;
     }
 
     private String table(String choice) {
