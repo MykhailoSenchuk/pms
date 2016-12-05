@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Main {
@@ -65,14 +66,23 @@ public class Main {
                     developerController.update(
                             new Developer(developer.getId(), developer.getName(), developer.getLastName(),
                                     developer.getCompany(), updatedSkills));
+                    System.out.println("End of adding skill to existing developer.");
                     break;
                 }
                 case "7": //add developer to project
                 {
+                    System.out.println("Start of adding developer to existing project.." +
+                            "\nPlease input id of developer you want to add to project.");
+                    Integer developerId = getIdFromConsole();
+                    System.out.println("Please input id of project where you want to add the developer.");
+                    Integer projectId = getIdFromConsole();
+                    projectController.addDeveloperToProject(developerController.get(developerId), projectController.get(projectId));
+                    System.out.println("End of adding developer to existing project.");
                     break;
                 }
                 case "0": //exit
                 {
+                    br.close();
                     System.out.println("Good Bye!");
                     System.exit(0);
                 }
@@ -84,25 +94,24 @@ public class Main {
 
     private void getIntoSubMenu(String choice) throws Exception {
         String tableName = table(choice);
-        System.out.println("CRUD operations for table " + tableName);
-        while (!choice.equalsIgnoreCase("0")) {
+        String subMenuChoice = "";
+        while (!"0".equalsIgnoreCase(subMenuChoice)) {
             System.out.println(
-                    "\n---------Menu---------\n\n" +
-                            "\nPlease choose your CRUD operation with \n" + tableName +
-                            "1. Create (add 1 new entity in table.\n" +
+                    "\n---------Menu for " + tableName + "---------\n" +
+                            "1. Create (add 1 new entity).\n" +
                             "2. Read by id.\n" +
                             "3. Read all.\n" +
-                            "4. Update by id(update 1 row in table).\n" +
+                            "4. Update by id (update 1 entity).\n" +
                             "5. Delete by id.\n" +
                             "6. Delete all.\n" +
                             "0. Back to main menu.\n");
-            String subMenuChoice = br.readLine();
+            subMenuChoice = br.readLine();
 
             switch (subMenuChoice) {
                 case "1": // adding new entity
                 {
-                    System.out.print("Creating new row in table \n" + tableName +
-                            "Please enter name of new entity: ");
+                    System.out.print("Start of creating new row in table \n" + tableName +
+                            "..\nPlease enter name of new entity: ");
                     String name = br.readLine();
                     switch (choice) {
                         case "1": // adding new company
@@ -119,31 +128,20 @@ public class Main {
                         {
                             System.out.print("Please enter last name of new developer: ");
                             String lastName = br.readLine();
-                            System.out.print("Please enter company id of new developer: ");
-                            Integer companyId = Integer.valueOf(br.readLine());
+                            System.out.print("Please set company for new developer. ");
+                            Integer companyId = getIdFromConsole();
                             developerController.add(
                                     new Developer(name, lastName, companyController.get(companyId), getSkillsFromConsole()));
                             break;
                         }
                         case "4": //  adding new project
                         {
-
-                            System.out.print("Please enter company id of new project: ");
-                            Integer companyId = Integer.valueOf(br.readLine());
-                            System.out.print("Please enter customer id of new project: ");
-                            Integer customerId = Integer.valueOf(br.readLine());
-
-                            System.out.println("Please developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press twice \'Enter\' to end input.");
-
-                            Set<Developer> developers = new HashSet<>();
-                            String stringDeveloperId = br.readLine();
-                            while (!"".equals(stringDeveloperId)) {
-                                developers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
-                                stringDeveloperId = br.readLine();
-                            }
-
-                            projectController.add(new Project(name, companyController.get(companyId), customerController.get(customerId), developers));
-//
+                            System.out.print("Please set company of new project. ");
+                            Integer companyId = getIdFromConsole();
+                            System.out.print("Please set customer of new project: ");
+                            Integer customerId = getIdFromConsole();
+                            projectController.add(new Project(name, companyController.get(companyId),
+                                    customerController.get(customerId), getDevelopersFromConsole()));
                             break;
                         }
                         case "5": //  adding new skill
@@ -154,44 +152,39 @@ public class Main {
                     }
 
                     System.out.println("New entity was successfully added in table" + tableName + ".");
+                    System.out.print("End of creating new row in table \n" + tableName + '.');
                     continue;
                 }
                 case "2": // reading by id
                 {
-                    System.out.print("Reading by id from table " + tableName + "\n" +
-                            "Please enter id: ");
-                    Integer id = Integer.valueOf(br.readLine());
+                    System.out.print("Start of reading by id from table \n" + tableName + "..");
+                    Integer id = getIdFromConsole();
 
                     switch (choice) {
                         case "1": // reading company by id
                         {
-                            System.out.println("Successful reading of company:\n" + companyController.get(id));
+                            printCompanyById(id, companyController);
                             break;
                         }
                         case "2": // reading customer by id
                         {
-                            System.out.println("Successful reading of customer:\n" + customerController.get(id));
+                            printCompanyById(id, customerController);
                             break;
                         }
                         case "3": // reading developer by id
                         {
-                            System.out.println("Successful reading of developer:\n" + developerController.get(id));
+                            printCompanyById(id, developerController);
                             break;
                         }
                         case "4": //  reading project by id
                         {
-
-                            System.out.println("Successful reading of project:\n" + projectController.get(id));
-//
+                            printCompanyById(id, projectController);
                             break;
                         }
                         case "5": //  reading skill by id
                         {
-                            System.out.println("Successful reading of skill:\n" + skillController.get(id));
+                            printCompanyById(id, skillController);
                             break;
-                        }
-                        default: {
-                            System.out.println("There is no entity with id=" + id + " in table " + tableName);
                         }
                     }
                     continue;
@@ -201,27 +194,27 @@ public class Main {
                     switch (choice) {
                         case "1": // reading all companies
                         {
-                            companyController.getAll().forEach(System.out::println);
+                            readAllRowsFromTable(companyController);
                             break;
                         }
                         case "2": // reading all customers
                         {
-                            customerController.getAll().forEach(System.out::println);
+                            readAllRowsFromTable(customerController);
                             break;
                         }
                         case "3": // reading all developers
                         {
-                            developerController.getAll().forEach(System.out::println);
+                            readAllRowsFromTable(developerController);
                             break;
                         }
                         case "4": //  reading all projects
                         {
-                            projectController.getAll().forEach(System.out::println);
+                            readAllRowsFromTable(projectController);
                             break;
                         }
                         case "5": //  reading all skills
                         {
-                            skillController.getAll().forEach(System.out::println);
+                            readAllRowsFromTable(skillController);
                             break;
                         }
                     }
@@ -406,8 +399,33 @@ public class Main {
         }
     }
 
+    private <T> void readAllRowsFromTable(AbstractController<T> controller) {
+        List<T> entities = controller.getAll();
+        if (entities != null){
+            entities.forEach(System.out::println);
+        } else {
+            System.out.println("Sorry. There is no entity in table.");
+        }
+    }
+
+    private <T> void printCompanyById(Integer id, AbstractController<T> controller) {
+        T entity = controller.get(id);
+        System.out.println(entity != null ? "Successful reading of entity by id: " + entity : "Sorry, bad id.");
+    }
+
+    private Set<Developer> getDevelopersFromConsole() throws IOException {
+        System.out.println("Please add developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press \'Enter\' twice to end input.");
+        Set<Developer> developers = new HashSet<>();
+        String stringDeveloperId = br.readLine();
+        while (!"".equals(stringDeveloperId)) {
+            developers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
+            stringDeveloperId = br.readLine();
+        }
+        return developers;
+    }
+
     private Integer getIdFromConsole() throws IOException {
-        System.out.println("Please enter id: ");
+        System.out.println("Enter id: ");
         return Integer.valueOf(br.readLine());
     }
 
