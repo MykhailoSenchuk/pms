@@ -34,8 +34,8 @@ public class Main {
         String choice = "";
 
         while (!choice.equalsIgnoreCase("0")) {
-            System.out.println(
-                    "\n---------Main-menu---------\n" +
+            System.out.print(
+                    "\n---------Main menu---------\n" +
                             "1. CRUD operations with companies.\n" +
                             "2. CRUD operations with customers.\n" +
                             "3. CRUD operations with developers.\n" +
@@ -54,18 +54,28 @@ public class Main {
                 case "4": //table projects
                 case "5": { //table skills
                     getIntoSubMenu(choice);
+                    break;
                 }
                 case "6": //add skills to developer
                 {
-                    System.out.println("Start of adding skill to existing developer..");
+                    System.out.print("Start of adding skill to existing developer..\nPlease input developer information. ");
                     Developer developer = developerController.get(getIdFromConsole());
-                    System.out.println("Developer for adding skills:\n" + developer);
-                    System.out.println("Now you need to input all skills of developer.");
-                    Set<Skill> updatedSkills = developer.getSkills();
-                    updatedSkills.addAll(getSkillsFromConsole());
-                    developerController.update(
-                            new Developer(developer.getId(), developer.getName(), developer.getLastName(),
-                                    developer.getCompany(), updatedSkills));
+                    if (developer != null) {
+                        System.out.println("Developer for adding skills:\n" + developer);
+                        System.out.println("Now you need to input all skills of developer.");
+                        Set<Skill> updatedSkills = getSkillsFromConsole();
+                        if (updatedSkills != null) {
+                            updatedSkills.addAll(developer.getSkills());
+                        } else {
+                            updatedSkills = developer.getSkills();
+                        }
+                        developerController.update(
+                                new Developer(developer.getId(), developer.getName(), developer.getLastName(),
+                                        developer.getCompany(), updatedSkills));
+                        System.out.print("Successful operation. ");
+                    } else {
+                        System.out.print("Sorry, bad id. ");
+                    }
                     System.out.println("End of adding skill to existing developer.");
                     break;
                 }
@@ -76,7 +86,14 @@ public class Main {
                     Integer developerId = getIdFromConsole();
                     System.out.println("Please input id of project where you want to add the developer.");
                     Integer projectId = getIdFromConsole();
-                    projectController.addDeveloperToProject(developerController.get(developerId), projectController.get(projectId));
+                    Developer developer = developerController.get(developerId);
+                    Project project = projectController.get(projectId);
+                    if (project != null && developer != null) {
+                        projectController.addDeveloperToProject(developer, project);
+                        System.out.print("Successful operation. ");
+                    } else {
+                        System.out.print("Sorry, bad id. ");
+                    }
                     System.out.println("End of adding developer to existing project.");
                     break;
                 }
@@ -187,10 +204,12 @@ public class Main {
                             break;
                         }
                     }
+                    System.out.print("End of reading by id from table \n" + tableName + ".");
                     continue;
                 }
                 case "3": //reading all
                 {
+                    System.out.print("Start of reading all entities from table \n" + tableName + "..");
                     switch (choice) {
                         case "1": // reading all companies
                         {
@@ -218,11 +237,12 @@ public class Main {
                             break;
                         }
                     }
+                    System.out.print("End of reading all entities from table \n" + tableName + ".");
                     continue;
                 }
                 case "4": // updating by id
                 {
-                    System.out.print("Updating by id in table " + tableName);
+                    System.out.print("Start of updating by id in table \n" + tableName + "..");
                     Integer id = getIdFromConsole();
 
                     System.out.print("Starting of data input for entity update." +
@@ -283,7 +303,6 @@ public class Main {
                             }
 
                             projectController.update(new Project(id, newName, companyController.get(newCompanyId), customerController.get(newCustomerId), newDevelopers));
-//
                             break;
                         }
                         case "5": //  updating skill
@@ -296,20 +315,16 @@ public class Main {
                             break;
                         }
                     }
+                    System.out.print("End of updating by id in table \n" + tableName + ".");
 
-                    System.out.println("Entity was successfully updated in table" + tableName + ".");
                     continue;
                 }
                 case "5": // deleting by id
                 {
-                    System.out.print("Deleting by id from table " + tableName + "\n" +
-                            "Please enter id: ");
-                    Integer id = Integer.valueOf(br.readLine());
-                    System.out.println("Do you really want to delete entity:\n"
-                            + companyController.get(id) +
-                            "\nPress \'y\\Y\' to confirm or \'n\\N\' to cancel deleting.");
-                    choice = br.readLine();
-                    if (!("5".equals(choice) || "".equals(choice) || choice.equalsIgnoreCase("y"))) {
+                    System.out.println("Start of deleting by id in table \n" + tableName + "..");
+                    Integer id = getIdFromConsole();
+                    String hardChoice = getAnswerForDeletingConfirmation();
+                    if (!("5".equals(hardChoice) || "".equals(hardChoice) || hardChoice.equalsIgnoreCase("y"))) {
                         switch (choice) {
                             case "1": // deleting company by id
                             {
@@ -339,18 +354,17 @@ public class Main {
                         }
                         System.out.println("Entity from table " + tableName + " with id=" + id + "was successfully deleted:\n");
 
+                    } else {
+                        System.out.println("Deleting was canceled.");
                     }
-                    System.out.println("Deleting was canceled.");
+                    System.out.println("End of deleting by id in table \n" + tableName + ".");
                     continue;
                 }
                 case "6": // deleting all
                 {
-
-                    System.out.print("Deleting all entities  from table " + tableName + "\n");
-                    System.out.println("Do you really want to delete all entities from table " + tableName + "?\n" +
-                            "Press \'y\\Y\' to confirm or \'n\\N\' to cancel deleting.");
-                    choice = br.readLine();
-                    if (!("6".equals(choice) || "".equals(choice) || choice.equalsIgnoreCase("y"))) {
+                    System.out.println("Start of deleting all rows in table \n" + tableName + "..");
+                    String hardChoice = getAnswerForDeletingConfirmation();
+                    if (!("6".equals(hardChoice) || "".equals(hardChoice) || hardChoice.equalsIgnoreCase("y"))) {
                         switch (choice) {
                             case "1": // deleting all companies
                             {
@@ -379,8 +393,10 @@ public class Main {
                             }
                         }
                         System.out.println("All entities from table " + tableName + " were successfully deleted:\n");
+                    } else {
+                        System.out.println("Deleting was canceled.");
                     }
-                    System.out.println("Deleting was canceled.");
+                    System.out.println("End of deleting all rows in table \n" + tableName + ".");
                     continue;
                 }
 
@@ -388,20 +404,20 @@ public class Main {
                 {
                     continue;
                 }
-                case "exit": //
-                {
-                    System.exit(0);
-                }
                 default:
-                    System.out.print("\nPlease, choose 1-5 or 0 : ");
+                    System.out.print("\nPlease, choose 0-5 : ");
             }
-
         }
+    }
+
+    private String getAnswerForDeletingConfirmation() throws IOException {
+        System.out.println("Press \'y\\Y\' to confirm or \'n\\N\' to cancel deleting.");
+        return br.readLine();
     }
 
     private <T> void readAllRowsFromTable(AbstractController<T> controller) {
         List<T> entities = controller.getAll();
-        if (entities != null){
+        if (entities != null) {
             entities.forEach(System.out::println);
         } else {
             System.out.println("Sorry. There is no entity in table.");
@@ -425,7 +441,7 @@ public class Main {
     }
 
     private Integer getIdFromConsole() throws IOException {
-        System.out.println("Enter id: ");
+        System.out.print("Enter id: ");
         return Integer.valueOf(br.readLine());
     }
 
