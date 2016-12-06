@@ -58,7 +58,7 @@ public class Main {
                 }
                 case "6": //add skills to developer
                 {
-                    System.out.print("Start of adding skill to existing developer..\nPlease input developer information. ");
+                    System.out.print("Start of adding skills to existing developer..\nPlease input developer information. ");
                     Developer developer = developerController.get(getIdFromConsole());
                     if (developer != null) {
                         System.out.println("Developer for adding skills:\n" + developer);
@@ -72,9 +72,9 @@ public class Main {
                         developerController.update(
                                 new Developer(developer.getId(), developer.getName(), developer.getLastName(),
                                         developer.getCompany(), updatedSkills));
-                        System.out.print("Successful operation. ");
+                        System.out.println("Successful operation. ");
                     } else {
-                        System.out.print("Sorry, bad id. ");
+                        System.out.println("Sorry, there is no developer with such id.");
                     }
                     System.out.println("End of adding skill to existing developer.");
                     break;
@@ -104,7 +104,7 @@ public class Main {
                     System.exit(0);
                 }
                 default:
-                    System.out.print("\nPlease, choose 1-7 or \'exit\' : ");
+                    System.out.print("\nPlease, choose 0-7 : ");
             }
         }
     }
@@ -127,7 +127,7 @@ public class Main {
             switch (subMenuChoice) {
                 case "1": // adding new entity
                 {
-                    System.out.print("Start of creating new row in table \n" + tableName +
+                    System.out.print("Start of creating new row in table " + tableName +
                             "..\nPlease enter name of new entity: ");
                     String name = br.readLine();
                     switch (choice) {
@@ -169,12 +169,12 @@ public class Main {
                     }
 
                     System.out.println("New entity was successfully added in table" + tableName + ".");
-                    System.out.print("End of creating new row in table \n" + tableName + '.');
+                    System.out.println("End of creating new row in table " + tableName + '.');
                     continue;
                 }
                 case "2": // reading by id
                 {
-                    System.out.print("Start of reading by id from table \n" + tableName + "..");
+                    System.out.println("Start of reading by id from table " + tableName + "..");
                     Integer id = getIdFromConsole();
 
                     switch (choice) {
@@ -204,12 +204,12 @@ public class Main {
                             break;
                         }
                     }
-                    System.out.print("End of reading by id from table \n" + tableName + ".");
+                    System.out.println("End of reading by id from table " + tableName + ".");
                     continue;
                 }
                 case "3": //reading all
                 {
-                    System.out.print("Start of reading all entities from table \n" + tableName + "..");
+                    System.out.println("Start of reading all entities from table " + tableName + "..");
                     switch (choice) {
                         case "1": // reading all companies
                         {
@@ -237,12 +237,12 @@ public class Main {
                             break;
                         }
                     }
-                    System.out.print("End of reading all entities from table \n" + tableName + ".");
+                    System.out.println("End of reading all entities from table " + tableName + ".");
                     continue;
                 }
                 case "4": // updating by id
                 {
-                    System.out.print("Start of updating by id in table \n" + tableName + "..");
+                    System.out.println("Start of updating by id in table " + tableName + "..");
                     Integer id = getIdFromConsole();
 
                     System.out.print("Starting of data input for entity update." +
@@ -250,78 +250,73 @@ public class Main {
                     switch (choice) {
                         case "1": // updating company
                         {
-                            Company company = companyController.get(id);
-                            System.out.println("Company for update:\n" + company);
-                            System.out.print("Enter new name of company :");
-                            String newName = br.readLine();
-                            companyController.update(new Company(id, newName));
+                            updateAndPrintEntityRetrievedByIdInputedFromConsole(id, companyController);
                             break;
                         }
                         case "2": // updating customer
                         {
-                            Customer customer = customerController.get(id);
-                            System.out.println("Customer for update:\n" + customer);
-                            System.out.print("Enter new name of customer:");
-                            String newName = br.readLine();
-                            customerController.update(new Customer(id, newName));
+                            updateAndPrintEntityRetrievedByIdInputedFromConsole(id, customerController);
                             break;
                         }
                         case "3": // updating developer
                         {
                             Developer developer = developerController.get(id);
-                            System.out.println("Developer for update:\n" + developer);
-                            System.out.print("Enter new name of developer:");
-                            String newName = br.readLine();
-                            System.out.print("Please enter new last name of updated developer: ");
-                            String newLastName = br.readLine();
-                            System.out.print("Please enter new company id of updated developer: ");
-                            Integer newCompanyId = Integer.valueOf(br.readLine());
-                            System.out.println("Now you need to input all skills of updated developer.");
-                            developerController.update(new Developer(id, newName, newLastName, companyController.get(newCompanyId), getSkillsFromConsole()));
+                            if (developer != null) {
+                                System.out.println("Developer for update:\n" + developer);
+                                System.out.print("Enter new name of developer:");
+                                String newName = br.readLine();
+                                System.out.print("Please enter new last name of updated developer: ");
+                                String newLastName = br.readLine();
+                                System.out.print("Please enter new company id of updated developer: ");
+                                Integer newCompanyId = Integer.valueOf(br.readLine());
+                                System.out.println("Now you need to input all skills of updated developer.");
+                                developerController.update(new Developer(id, newName, newLastName, companyController.get(newCompanyId), getSkillsFromConsole()));
+                            }else {
+                                System.out.println("Sorry. Bad id.");
+                            }
                             break;
                         }
                         case "4": //  updating project
                         {
-
                             Project project = projectController.get(id);
-                            System.out.println("Project for update:\n" + project);
-                            System.out.print("Enter new name of project:");
-                            String newName = br.readLine();
+                            if (project!=null) {
+                                System.out.println("Project for update:\n" + project);
+                                System.out.print("Enter new name of project:");
+                                String newName = br.readLine();
 
-                            System.out.print("Please enter new company id of updated project: ");
-                            Integer newCompanyId = Integer.valueOf(br.readLine());
-                            System.out.print("Please enter new customer id of updated project: ");
-                            Integer newCustomerId = Integer.valueOf(br.readLine());
+                                System.out.print("Please enter new company id of updated project: ");
+                                Integer newCompanyId = Integer.valueOf(br.readLine());
+                                System.out.print("Please enter new customer id of updated project: ");
+                                Integer newCustomerId = Integer.valueOf(br.readLine());
 
-                            System.out.println("Please developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press twice \'Enter\' to end input.");
+                                System.out.println("Please developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press twice \'Enter\' to end input.");
 
-                            Set<Developer> newDevelopers = new HashSet<>();
-                            String stringDeveloperId = br.readLine();
-                            while (!"".equals(stringDeveloperId)) {
-                                newDevelopers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
-                                stringDeveloperId = br.readLine();
+                                Set<Developer> newDevelopers = new HashSet<>();
+                                String stringDeveloperId = br.readLine();
+                                while (!"".equals(stringDeveloperId)) {
+                                    newDevelopers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
+                                    stringDeveloperId = br.readLine();
+                                }
+
+                                projectController.update(new Project(id, newName, companyController.get(newCompanyId), customerController.get(newCustomerId), newDevelopers));
+                            }else {
+                                System.out.println("Sorry. Bad id.");
                             }
-
-                            projectController.update(new Project(id, newName, companyController.get(newCompanyId), customerController.get(newCustomerId), newDevelopers));
                             break;
                         }
                         case "5": //  updating skill
                         {
-                            Skill skill = skillController.get(id);
-                            System.out.println("Skill for update:\n" + skill);
-                            System.out.print("Enter new name of skill:");
-                            String newName = br.readLine();
-                            skillController.update(new Skill(id, newName));
+                            updateAndPrintEntityRetrievedByIdInputedFromConsole(id, skillController);
                             break;
                         }
                     }
-                    System.out.print("End of updating by id in table \n" + tableName + ".");
+                    System.out.println("End of updating by id in table " + tableName + ".");
 
                     continue;
                 }
                 case "5": // deleting by id
                 {
-                    System.out.println("Start of deleting by id in table \n" + tableName + "..");
+                    System.out.println("Start of deleting by id in table " + tableName + "..");
                     Integer id = getIdFromConsole();
                     String hardChoice = getAnswerForDeletingConfirmation();
                     if (!("5".equals(hardChoice) || "".equals(hardChoice) || hardChoice.equalsIgnoreCase("y"))) {
@@ -357,12 +352,12 @@ public class Main {
                     } else {
                         System.out.println("Deleting was canceled.");
                     }
-                    System.out.println("End of deleting by id in table \n" + tableName + ".");
+                    System.out.println("End of deleting by id in table " + tableName + ".");
                     continue;
                 }
                 case "6": // deleting all
                 {
-                    System.out.println("Start of deleting all rows in table \n" + tableName + "..");
+                    System.out.println("Start of deleting all rows in table " + tableName + "..");
                     String hardChoice = getAnswerForDeletingConfirmation();
                     if (!("6".equals(hardChoice) || "".equals(hardChoice) || hardChoice.equalsIgnoreCase("y"))) {
                         switch (choice) {
@@ -396,7 +391,7 @@ public class Main {
                     } else {
                         System.out.println("Deleting was canceled.");
                     }
-                    System.out.println("End of deleting all rows in table \n" + tableName + ".");
+                    System.out.println("End of deleting all rows in table " + tableName + ".");
                     continue;
                 }
 
@@ -407,6 +402,19 @@ public class Main {
                 default:
                     System.out.print("\nPlease, choose 0-5 : ");
             }
+        }
+    }
+
+    private <T extends NamedEntity> void  updateAndPrintEntityRetrievedByIdInputedFromConsole(Integer id, AbstractController<T> controller) throws IOException {
+        T t = controller.get(id);
+        if (t != null) {
+            System.out.println("Entity for update:\n" + t);
+            System.out.print("Enter new name:");
+            String newName = br.readLine();
+            t.setName(newName);
+            controller.update(t);
+        } else {
+            System.out.println("Sorry. Bad id.");
         }
     }
 
