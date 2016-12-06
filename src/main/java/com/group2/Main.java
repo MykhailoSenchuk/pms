@@ -323,7 +323,7 @@ public class Main {
                         switch (choice) {
                             case "1": // deleting company by id
                             {
-                                companyController.delete(id);
+                                deleteEntityById(tableName, id, companyController);
                                 break;
                             }
                             case "2": // deleting customer by id
@@ -347,8 +347,6 @@ public class Main {
                                 break;
                             }
                         }
-                        System.out.println("Entity from table " + tableName + " with id=" + id + "was successfully deleted:\n");
-
                     } else {
                         System.out.println("Deleting was canceled.");
                     }
@@ -402,6 +400,17 @@ public class Main {
                 default:
                     System.out.print("\nPlease, choose 0-5 : ");
             }
+        }
+    }
+
+//  that is temporary method, we can do that work in one query to database
+    private <T> void deleteEntityById(String tableName, Integer id, AbstractController<T> controller) {
+        T t = controller.get(id);
+        if (t != null) {
+            controller.delete(id);
+            System.out.println("Entity from table " + tableName + " with id=" + id + "was successfully deleted:\n");
+        } else {
+            System.out.println("Sorry. Bad id.");
         }
     }
 
