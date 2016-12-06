@@ -8,7 +8,7 @@
 
     <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 
-    <bean id="main" class="com.group2.Main">
+    <bean id="main" class="ua.goit.javaee.group2.Main">
         <property name="companyController" ref="companyController"/>
         <property name="customerController" ref="customerController"/>
         <property name="developerController" ref="developerController"/>
@@ -17,47 +17,47 @@
     </bean>
 
     
-    <bean id="companyDAO" class="com.group2.dao.jdbc.JdbcCompanyDAOImpl">
+    <bean id="companyDAO" class="ua.goit.javaee.group2.dao.jdbc.JdbcCompanyDAOImpl">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="customerDAO" class="com.group2.dao.jdbc.JdbcCustomerDAOImpl">
+    <bean id="customerDAO" class="ua.goit.javaee.group2.dao.jdbc.JdbcCustomerDAOImpl">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="developerDAO" class="com.group2.dao.jdbc.JdbcDeveloperDAOImpl">
+    <bean id="developerDAO" class="ua.goit.javaee.group2.dao.jdbc.JdbcDeveloperDAOImpl">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="projectDAO" class="com.group2.dao.jdbc.JdbcProjectDAOImpl">
+    <bean id="projectDAO" class="ua.goit.javaee.group2.dao.jdbc.JdbcProjectDAOImpl">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="skillDAO" class="com.group2.dao.jdbc.JdbcSkillDAOImpl">
+    <bean id="skillDAO" class="ua.goit.javaee.group2.dao.jdbc.JdbcSkillDAOImpl">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean id="companyController" class="com.group2.controller.CompanyController" >
+    <bean id="companyController" class="ua.goit.javaee.group2.controller.CompanyController" >
         <property name="txManager" ref="txManager"/>
         <property name="companyDAO" ref="companyDAO"/>
     </bean>
 
-    <bean id="customerController" class="com.group2.controller.CustomerController" >
+    <bean id="customerController" class="ua.goit.javaee.group2.controller.CustomerController" >
         <property name="txManager" ref="txManager"/>
         <property name="customerDAO" ref="customerDAO"/>
     </bean>
 
-    <bean id="developerController" class="com.group2.controller.DeveloperController" >
+    <bean id="developerController" class="ua.goit.javaee.group2.controller.DeveloperController" >
         <property name="txManager" ref="txManager"/>
         <property name="developerDAO" ref="developerDAO"/>
     </bean>
 
-    <bean id="projectController" class="com.group2.controller.ProjectController" >
+    <bean id="projectController" class="ua.goit.javaee.group2.controller.ProjectController" >
         <property name="txManager" ref="txManager"/>
         <property name="projectDAO" ref="projectDAO"/>
     </bean>
 
-    <bean id="skillController" class="com.group2.controller.SkillController" >
+    <bean id="skillController" class="ua.goit.javaee.group2.controller.SkillController" >
         <property name="txManager" ref="txManager"/>
         <property name="skillDAO" ref="skillDAO"/>
     </bean>
