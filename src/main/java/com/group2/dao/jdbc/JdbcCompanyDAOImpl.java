@@ -2,14 +2,17 @@ package com.group2.dao.jdbc;
 
 import com.group2.dao.CompanyDAO;
 import com.group2.model.Company;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
-    private static final String INSERT_ROW = "INSERT INTO pms.companies VALUES (6,?)";
+    private static final String INSERT_ROW = "INSERT INTO pms.companies VALUES (DEFAULT,?)";
     private static final String DELETE_ROW = "DELETE FROM pms.companies WHERE id = ?";
     private static final String DELETE_ALL = "DELETE FROM jpms.companies";
     private static final String UPDATE_ROW = "UPDATE pms.companies SET company_name = ? WHERE id =?";
@@ -17,15 +20,20 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
     private static final String GET_BY_NAME = "SELECT * FROM pms.companies WHERE company_name =?";
     private static final String GET_ALL = "SELECT * FROM pms.companies";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDAO.class);
+
     private DataSource dataSource;
 
     @Override
-    public Company save(Company object) throws SQLException {
+    public Company save(Company object) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW)) {
                 ps.setString( 1, object.getName() );
                 ps.execute();
             }
+        }catch (SQLException e){
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
         }
         return object;
     }
@@ -35,51 +43,39 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      *
      * @param list of Company objects
      * @return status of operation
-     * @throws SQLException
+     * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public boolean saveAll(List<Company> list) throws SQLException {
+    public boolean saveAll(List<Company> list){
         try (Connection connection = getConnection()) {
-            try{
-                // disable autocommit
-                connection.setAutoCommit(false);
-
-                for (Company object : list) {
-                    try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW)) {
-
-                        ps.setString( 1, object.getName() );
-
-                        //break method if the object is  not saved, provided that no commit will be made
-                        if(ps.executeUpdate() == 0){
-                            return false;
-                        }
+            //insert each object into BD
+            for (Company object : list) {
+                try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW)) {
+                    ps.setString(1, object.getName());
+                    //break method if the object is  not saved, provided that no commit will be made
+                    if (ps.executeUpdate() == 0) {
+                        return false;
                     }
                 }
-
-                //make commit
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                throw e;
-            } catch (Exception e) {
-                connection.rollback();
-                throw new RuntimeException(e.getMessage(), e);
             }
-
+            return true;
         }
-        return true;
+        catch (SQLException e) {
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
+        }
     }
 
      /**
      * Deletes companies row by id
-     * TODO delete cascade
      *
      * @param id
      * @return true if a row was delete, false if no row was deleted
-     * @throws SQLException
+     * @throws RuntimeException on SQLException and the Logger message
      */
+
     @Override
-    public boolean deleteById(int id) throws SQLException {
+    public boolean deleteById(int id) {
         boolean removed = false;
 
         try (Connection connection = getConnection()) {
@@ -88,22 +84,30 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 removed = ps.executeUpdate() > 0;
             }
         }
+        catch (SQLException e){
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
+        }
+
         return removed;
     }
 
     /**
      * Delete all rows from companies table
-     * TODO delete cascade
      *
      * @return true if no exception was thrown
-     * @throws SQLException
+     * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public boolean deleteAll() throws SQLException {
+    public boolean deleteAll(){
         try( Connection connection = getConnection() ){
             try( Statement st = connection.createStatement()){
                 st.executeQuery(DELETE_ALL);
             }
+        }
+        catch (SQLException e){
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
         }
         return true;
     }
@@ -113,10 +117,10 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      *
      * @param id
      * @return company object, null if entry wasn't found
-     * @throws SQLException
+     * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public Company load(int id) throws SQLException {
+    public Company load(int id){
         try( Connection connection = getConnection() ){
             try( PreparedStatement ps = connection.prepareStatement(GET_BY_ID)){
                 ps.setInt(1, id);
@@ -129,6 +133,10 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 }
             }
         }
+        catch (SQLException e){
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
+        }
     }
     /**
      * Get company object by name
@@ -137,7 +145,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @return company object, null if entry wasn't found
      * @throws SQLException
      */
-    public Company load(String name) throws SQLException{
+    public Company load(String name){
         try( Connection connection = getConnection() ){
             try( PreparedStatement ps = connection.prepareStatement(GET_BY_NAME)){
                 ps.setString(1, name);
@@ -151,10 +159,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 }
             }
         }
+        catch (SQLException e){
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public List<Company> findAll() throws SQLException {
+    public List<Company> findAll(){
 
         try( Connection connection = getConnection() ){
             try( Statement st = connection.createStatement()){
@@ -171,16 +183,24 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 }
             }
         }
+        catch (SQLException e){
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public boolean update(Company company) throws SQLException {
+    public boolean update(Company company){
         try( Connection connection = getConnection()){
             try( PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)){
                 ps.setString(1, company.getName());
                 ps.setInt(2, company.getId());
                 return ps.executeUpdate() > 0 ;
             }
+        }
+        catch (SQLException e){
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
         }
     }
 

@@ -4,17 +4,17 @@ import java.sql.SQLException;
 import java.util.List;
 
 interface AbstractDAO<T> {
-    T save(T object) throws SQLException;
+    T save(T object);
 
-    boolean saveAll(List<T> list) throws SQLException;
+    boolean saveAll(List<T> list);
 
-    T load(int id) throws SQLException;
+    T load(int id);
 
-    List<T> findAll() throws SQLException;
+    List<T> findAll();
 
-    boolean deleteById(int id) throws SQLException;
+    boolean deleteById(int id);
 
-    boolean deleteAll() throws SQLException;
+    boolean deleteAll();
 
 
 }
