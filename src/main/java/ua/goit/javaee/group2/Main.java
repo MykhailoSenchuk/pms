@@ -20,7 +20,6 @@ import ua.goit.javaee.group2.model.Skill;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -415,7 +414,7 @@ public class Main {
     }
 
 //  that is temporary method, we can do that work in one query to database
-    private <T> void deleteEntityById(String tableName, Integer id, AbstractController<T> controller) throws SQLException {
+    private <T> void deleteEntityById(String tableName, Integer id, AbstractController<T> controller) {
         T t = controller.get(id);
         if (t != null) {
             controller.delete(id);
@@ -425,7 +424,7 @@ public class Main {
         }
     }
 
-    private <T extends NamedEntity> void  updateAndPrintEntityRetrievedByIdInputedFromConsole(Integer id, AbstractController<T> controller) throws IOException, SQLException {
+    private <T extends NamedEntity> void  updateAndPrintEntityRetrievedByIdInputedFromConsole(Integer id, AbstractController<T> controller) throws IOException {
         T t = controller.get(id);
         if (t != null) {
             System.out.println("Entity for update:\n" + t);
@@ -443,7 +442,7 @@ public class Main {
         return br.readLine();
     }
 
-    private <T> void readAllRowsFromTable(AbstractController<T> controller) throws SQLException {
+    private <T> void readAllRowsFromTable(AbstractController<T> controller) {
         List<T> entities = controller.getAll();
         if (entities != null) {
             entities.forEach(System.out::println);
@@ -452,7 +451,7 @@ public class Main {
         }
     }
 
-    private <T> void printCompanyById(Integer id, AbstractController<T> controller) throws SQLException {
+    private <T> void printCompanyById(Integer id, AbstractController<T> controller) {
         T entity = controller.get(id);
         System.out.println(entity != null ? "Successful reading of entity by id: " + entity : "Sorry, bad id.");
     }
