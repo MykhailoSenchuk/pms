@@ -17,7 +17,7 @@ public class CompanyController extends AbstractController<Company>{
     //if table already have company with same name, than just return entity form table, don't create new one
     @Transactional
     @Override
-    public Company add(Company company){
+    public Company add(Company company) throws SQLException{
 
         if(company == null)
             return null;
@@ -39,6 +39,10 @@ public class CompanyController extends AbstractController<Company>{
     public Company get(int id)throws SQLException{
         return companyDAO.load(id);
     }
+    @Transactional
+    public boolean checkById (int id) throws SQLException{
+        return get(id) != null;
+    }
 
     @Transactional
     @Override
@@ -48,7 +52,7 @@ public class CompanyController extends AbstractController<Company>{
 
     @Transactional
     @Override
-    public void update(Company company){
+    public void update(Company company) throws SQLException{
         if(company == null){
             return;
         }
@@ -57,13 +61,13 @@ public class CompanyController extends AbstractController<Company>{
 
     @Transactional
     @Override
-    public void delete(int id){
+    public void delete(int id) throws SQLException{
         companyDAO.deleteById(id);
     }
 
     @Transactional
     @Override
-    public void deleteAll(){
+    public void deleteAll() throws SQLException{
         companyDAO.deleteAll();
     }
 

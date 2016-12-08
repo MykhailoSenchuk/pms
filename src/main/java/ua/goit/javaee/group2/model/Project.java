@@ -4,10 +4,9 @@ import java.util.Set;
 
 public class Project extends NamedEntity {
 
-    Company company;
-
-    Customer customer;
-
+    private Company company;
+    private Customer customer;
+    private float cost;
     Set<Developer> developers;
 
     public Project(String name, Company company, Customer customer, Set<Developer> developers) {
@@ -20,6 +19,45 @@ public class Project extends NamedEntity {
     public Project(Integer id, String name, Company company, Customer customer, Set<Developer> developers) {
         this(name, company, customer, developers);
         this.id = id;
+    }
+
+    public Project() {
+    }
+
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "ID=" + getId() +
+                ", company=" + company.getName() +
+                ", customer=" + customer.getName() +
+                ", project_name='" + getName() + '\'' +
+                ", company_id=" + company.getId() +
+                ", customer_id=" + customer.getId() +
+                ", cost=" + cost +
+                '}';
+    }
+
+
+
+    public void setProject_name(String project_name) {
+        this.setName(project_name);
+    }
+
+    public long getCompany_id() {
+        return this.company.getId();
+    }
+
+    public long getCustomer_id() {
+        return this.company.getId();
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public void setCost(float cost) {
+        this.cost = cost;
     }
 
     public Set<Developer> getDevelopers() {

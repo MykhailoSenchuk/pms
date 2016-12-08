@@ -28,18 +28,20 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
     private DataSource dataSource;
 
     @Override
-    public Company save(Company object){
+    public Company save(Company object) throws SQLException{
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW)) {
                 ps.setString(1, object.getName());
                 ps.execute();
+                //add id
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            LOGGER.error("Can't save Company: " + e.getMessage(), e);
+            throw e;
         }
         return object;
     }
+
 
     /**
      * Saves list of companies to DB. Commit only if all objects will be saved.
@@ -49,12 +51,13 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public boolean saveAll(List<Company> list) {
+    public boolean saveAll(List<Company> list) throws SQLException {
         try (Connection connection = getConnection()) {
             //insert each object into BD
             for (Company object : list) {
                 try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW)) {
                     ps.setString(1, object.getName());
+
                     //break method if the object is  not saved, provided that no commit will be made
                     if (ps.executeUpdate() == 0) {
                         return false;
@@ -63,8 +66,8 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
             return true;
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            LOGGER.error("Can't save the list: "+e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -77,7 +80,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      */
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(int id) throws SQLException {
         boolean removed = false;
 
         try (Connection connection = getConnection()) {
@@ -86,8 +89,8 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 removed = ps.executeUpdate() > 0;
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            LOGGER.error("Can't delete company: "+ e.getMessage(), e);
+            throw e;
         }
 
         return removed;
@@ -100,14 +103,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public boolean deleteAll() {
+    public boolean deleteAll() throws SQLException {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeQuery(DELETE_ALL);
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            LOGGER.error("Can't delete all companies: "+ e.getMessage(), e);
+            throw e;
         }
         return true;
     }
@@ -120,7 +123,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public Company load(int id) {
+    public Company load(int id) throws SQLException{
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
                 ps.setInt(1, id);
@@ -133,8 +136,8 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            LOGGER.error("Company wasn't loaded: "+ e.getMessage(), e);
+            throw e;
         }
     }
 

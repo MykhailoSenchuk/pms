@@ -5,6 +5,7 @@ import ua.goit.javaee.group2.dao.CustomerDAO;
 import ua.goit.javaee.group2.model.Customer;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class CustomerController extends AbstractController<Customer> {
@@ -16,7 +17,7 @@ public class CustomerController extends AbstractController<Customer> {
     //if table already have company with same name, than just return entity form table, don't create new one
     @Transactional
     @Override
-    public Customer add(Customer customer){
+    public Customer add(Customer customer) throws SQLException{
         if(customer == null)
             return null;
 
@@ -33,32 +34,37 @@ public class CustomerController extends AbstractController<Customer> {
     }
 
     @Transactional
+    public boolean checkById (int id) throws SQLException {
+        return get(id) != null;
+    }
+
+    @Transactional
     @Override
-    public Customer get(int id){
+    public Customer get(int id) throws SQLException{
         return customerDAO.load(id);
     }
 
     @Transactional
     @Override
-    public List<Customer> getAll(){
+    public List<Customer> getAll() throws SQLException{
         return customerDAO.findAll();
     }
 
     @Transactional
     @Override
-    public void update(Customer customer){
+    public void update(Customer customer) throws SQLException{
         customerDAO.update(customer);
     }
 
     @Transactional
     @Override
-    public void delete(int id){
+    public void delete(int id) throws SQLException{
         customerDAO.deleteById(id);
     }
 
     @Transactional
     @Override
-    public void deleteAll(){
+    public void deleteAll() throws SQLException{
         customerDAO.deleteAll();
     }
 
