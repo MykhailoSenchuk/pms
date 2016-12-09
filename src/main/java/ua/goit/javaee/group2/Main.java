@@ -107,6 +107,24 @@ public class Main {
                     System.out.println("End of adding developer to existing project.");
                     break;
                 }
+                case "8": //add developer to company
+                {
+                    System.out.println("Start of adding existing developer to existing company.." +
+                            "\nPlease input id of developer you want to add to project.");
+                    Integer developerId = getIdFromConsole();
+                    System.out.println("Please input id of company where you want to add the developer.");
+                    Integer companyId = getIdFromConsole();
+                    Developer developer = developerController.get(developerId);
+                    Company company = companyController.get(companyId);
+                    if (company != null && developer != null) {
+                        projectController.addDeveloperToProject(developer, project);
+                        System.out.print("Successful operation. ");
+                    } else {
+                        System.out.print("Sorry, bad id. ");
+                    }
+                    System.out.println("End of adding developer to existing project.");
+                    break;
+                }
                 case "0": //exit
                 {
                     br.close();
