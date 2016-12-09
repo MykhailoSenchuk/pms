@@ -1,20 +1,19 @@
 package ua.goit.javaee.group2.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 
 interface AbstractDAO<T> {
-    T save(T object) throws SQLException;
+    T save(T object);
 
-    boolean saveAll(List<T> list) throws SQLException;
+    void saveAll(List<T> list);
 
-    T load(int id) throws SQLException;
+    T load(int id);
 
-    List<T> findAll() throws SQLException;
+    List<T> findAll();
 
-    boolean deleteById(int id) throws SQLException;
+    void deleteById(int id);
 
-    boolean deleteAll() throws SQLException;
+    void deleteAll();
 
 
 }

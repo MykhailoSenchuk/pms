@@ -17,13 +17,11 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public boolean deleteAll() throws SQLException {
-        return false;
+    public void deleteAll() throws SQLException {
     }
 
     @Override
-    public boolean saveAll(List<Project> list) throws SQLException {
-        return false;
+    public void saveAll(List<Project> list) throws SQLException {
     }
 
     @Override
@@ -32,8 +30,8 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public boolean deleteById(int id) throws SQLException {
-        return false;
+    public void deleteById(int id) throws SQLException {
+
     }
 
     @Override

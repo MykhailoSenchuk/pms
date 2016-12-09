@@ -13,18 +13,8 @@ public class ProjectController  extends AbstractController<Project> {
 
     private ProjectDAO projectDAO;
 
-    public void addDeveloperToProject(Developer developer, Project project){
+    public void addDeveloperToProject(Developer developer, Project project){}
 
-//        тут нужно реализовать добавление девелоперов в проекты
-
-//
-//
-
-
-
-
-    }
-    //if table already have company with same name, than just return entity form table, don't create new one
     @Override
     public Project add(Project project){return null;}
 

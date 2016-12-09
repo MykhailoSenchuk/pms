@@ -79,9 +79,7 @@ public class Main {
                         } else {
                             updatedSkills = developer.getSkills();
                         }
-                        developerController.update(
-                                new Developer(developer.getId(), developer.getName(), developer.getLastName(),
-                                        developer.getCompany(), updatedSkills));
+                        developerController.addSkillsToDeveloper(updatedSkills, developer);
                         System.out.println("Successful operation. ");
                     } else {
                         System.out.println("Sorry, there is no developer with such id.");

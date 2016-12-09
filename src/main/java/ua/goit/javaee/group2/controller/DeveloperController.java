@@ -15,32 +15,39 @@ public class DeveloperController extends AbstractController<Developer> {
 
     private DeveloperDAO developerDAO;
 
-    public void addSkillsToDeveloper(Set<Skill> skills, Developer developer){}
-
-    //if table already have company with same name, than just return entity form table, don't create new one
-    @Override
-    public Developer add(Developer developer){return null;}
-
     @Transactional
+    public void addSkillsToDeveloper(Set<Skill> skills, Developer developer){
+        developer.setSkills(skills);
+        developerDAO.save(developer);
+    }
+
     @Override
+    @Transactional
+    public Developer add(Developer developer){return developerDAO.save(developer);}
+
+    @Override
+    @Transactional
     public Developer get(int id){
-        return null;
+        return developerDAO.load(id);
     }
 
+    @Override
     @Transactional
-    @Override
     public List<Developer> getAll(){
-        return null;
+        return developerDAO.findAll();
     }
 
     @Override
-    public void update(Developer developer){}
+    @Transactional
+    public void update(Developer developer){developerDAO.save(developer);}
 
     @Override
-    public void delete(int id){}
+    @Transactional
+    public void delete(int id){developerDAO.deleteById(id);}
 
     @Override
-    public void deleteAll(){}
+    @Transactional
+    public void deleteAll(){developerDAO.deleteAll();}
 
     public void setDeveloperDAO(DeveloperDAO developerDAO) {
         this.developerDAO = developerDAO;

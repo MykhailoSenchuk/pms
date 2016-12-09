@@ -1,5 +1,6 @@
 package ua.goit.javaee.group2.controller;
 
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.javaee.group2.dao.SkillDAO;
 import ua.goit.javaee.group2.model.Skill;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -12,24 +13,29 @@ public class SkillController extends AbstractController<Skill> {
 
     private SkillDAO skillDAO;
 
-    //if table already have company with same name, than just return entity form table, don't create new one
     @Override
-    public Skill add(Skill skill){return null;}
+    @Transactional
+    public Skill add(Skill skill){return skillDAO.save(skill);}
 
     @Override
-    public Skill get(int id){return null;}
+    @Transactional
+    public Skill get(int id){return skillDAO.load(id);}
 
     @Override
-    public List<Skill> getAll(){return null;}
+    @Transactional
+    public List<Skill> getAll(){return skillDAO.findAll();}
 
     @Override
-    public void update(Skill skill){}
+    @Transactional
+    public void update(Skill skill){skillDAO.save(skill);}
 
     @Override
-    public void delete(int id){}
+    @Transactional
+    public void delete(int id){skillDAO.deleteById(id);}
 
     @Override
-    public void deleteAll(){}
+    @Transactional
+    public void deleteAll(){skillDAO.deleteAll();}
 
     public void setTxManager(PlatformTransactionManager txManager) {
         this.txManager = txManager;
