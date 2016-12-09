@@ -117,7 +117,7 @@ public class Main {
                     Developer developer = developerController.get(developerId);
                     Company company = companyController.get(companyId);
                     if (company != null && developer != null) {
-                        projectController.addDeveloperToProject(developer, project);
+                        companyController.addDeveloperToCompany(developer, company);
                         System.out.print("Successful operation. ");
                     } else {
                         System.out.print("Sorry, bad id. ");
