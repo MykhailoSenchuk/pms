@@ -36,15 +36,17 @@ public class ProjectController  extends AbstractController<Project> {
     }
 
     public List<Project> getAll() throws SQLException {
-        TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
-        try{
+        //TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
+        //try{
             List<Project> result = projectDAO.findAll();
-            txManager.commit(status);
+        //    txManager.commit(status);
             return result;
-        }catch (Exception e){
-            txManager.rollback(status);
-            throw new RuntimeException();
-        }
+        //}catch (NullPointerException e){
+        //    System.out.println("Null pointer");
+        //    txManager.rollback(status);
+        //    throw new RuntimeException();
+        //}
+
     }
 
     @Override

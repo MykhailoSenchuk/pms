@@ -44,4 +44,14 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
+
+    @Override
+    public boolean update(Customer company) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public Customer load(String name) throws SQLException {
+        return null;
+    }
 }

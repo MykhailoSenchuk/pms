@@ -425,7 +425,7 @@ public class Main {
         }
     }
 
-    private <T extends NamedEntity> void  updateAndPrintEntityRetrievedByIdInputedFromConsole(Integer id, AbstractController<T> controller) throws IOException, SQLException {
+    private <T extends NamedEntity> void  updateAndPrintEntityRetrievedByIdInputedFromConsole(Integer id, AbstractController<T> controller) throws IOException,SQLException {
         T t = controller.get(id);
         if (t != null) {
             System.out.println("Entity for update:\n" + t);
@@ -443,7 +443,7 @@ public class Main {
         return br.readLine();
     }
 
-    private <T> void readAllRowsFromTable(AbstractController<T> controller) throws SQLException {
+    private <T> void readAllRowsFromTable(AbstractController<T> controller) throws SQLException{
         List<T> entities = controller.getAll();
         if (entities != null) {
             entities.forEach(System.out::println);

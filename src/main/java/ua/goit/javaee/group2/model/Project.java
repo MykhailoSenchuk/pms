@@ -4,17 +4,15 @@ import java.util.Set;
 
 public class Project extends NamedEntity {
 
-    Company company;
     String companyStr;
-
-    Customer customer;
     String customerStr;
-
     private String project_name;
     private long company_id;
     private long customer_id;
-    private float cost;
 
+    private Company company;
+    private Customer customer;
+    private float cost;
     Set<Developer> developers;
 
     public Project(String name, Company company, Customer customer, Set<Developer> developers) {
@@ -33,6 +31,19 @@ public class Project extends NamedEntity {
     }
 
 
+    /*@Override
+    public String toString() {
+        return "Project{" +
+                "ID=" + getId() +
+                ", company=" + company.getName() +
+                ", customer=" + customer.getName() +
+                ", project_name='" + getName() + '\'' +
+                ", company_id=" + company.getId() +
+                ", customer_id=" + customer.getId() +
+                ", cost=" + cost +
+                '}';
+    }*/
+
     @Override
     public String toString() {
         return "Project{" +
@@ -45,6 +56,7 @@ public class Project extends NamedEntity {
                 ", cost=" + cost +
                 '}';
     }
+
 
     public String getCompanyStr() {
         return companyStr;
@@ -66,24 +78,28 @@ public class Project extends NamedEntity {
         return project_name;
     }
 
+    public void setCompany_id(long company_id) {
+        this.company_id = company_id;
+    }
+
+    public void setCustomer_id(long customer_id) {
+        this.customer_id = customer_id;
+    }
+
+    /*public void setProject_name(String project_name) {
+        this.setName(project_name);
+    }*/
+
     public void setProject_name(String project_name) {
         this.project_name = project_name;
     }
 
     public long getCompany_id() {
-        return company_id;
-    }
-
-    public void setCompany_id(long company_id) {
-        this.company_id = company_id;
+        return this.company.getId();
     }
 
     public long getCustomer_id() {
-        return customer_id;
-    }
-
-    public void setCustomer_id(long customer_id) {
-        this.customer_id = customer_id;
+        return this.company.getId();
     }
 
     public float getCost() {
