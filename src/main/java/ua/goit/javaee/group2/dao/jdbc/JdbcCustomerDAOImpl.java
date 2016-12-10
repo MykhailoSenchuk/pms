@@ -4,6 +4,7 @@ import ua.goit.javaee.group2.dao.CustomerDAO;
 import ua.goit.javaee.group2.model.Customer;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 
 public class JdbcCustomerDAOImpl implements CustomerDAO {

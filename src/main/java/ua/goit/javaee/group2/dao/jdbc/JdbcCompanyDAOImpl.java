@@ -4,6 +4,7 @@ import ua.goit.javaee.group2.dao.CompanyDAO;
 import ua.goit.javaee.group2.model.Company;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
