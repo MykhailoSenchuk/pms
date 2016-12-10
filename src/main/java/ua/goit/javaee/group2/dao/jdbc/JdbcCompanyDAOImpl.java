@@ -15,7 +15,7 @@ import ua.goit.javaee.group2.model.Company;
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
 
-    private static final String INSERT_ROW = "INSERT INTO pms.companies VALUES (DEFAULT,?)";
+    private static final String INSERT_ROW = "INSERT INTO pms.companies (company_name) VALUES (?)";
     private static final String DELETE_ROW = "DELETE FROM pms.companies WHERE id = ?";
     private static final String DELETE_ALL = "DELETE FROM jpms.companies";
     private static final String UPDATE_ROW = "UPDATE pms.companies SET company_name = ? WHERE id =?";
@@ -28,18 +28,51 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
     private DataSource dataSource;
 
     @Override
-    public Company save(Company object) throws SQLException{
+    public Company save(Company company) throws SQLException{
+        if(!company.isNew()){
+            return update(company);
+        }
+        else{
+            return create(company);
+        }
+    }
+
+    private Company create(Company company) throws SQLException{
         try (Connection connection = getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW)) {
-                ps.setString(1, object.getName());
-                ps.execute();
-                //add id
+            try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW,Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, company.getName());
+                if (ps.executeUpdate() == 0) {
+                    throw new SQLException("Creating company failed, no rows affected.");
+                }
+
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        company.setId(generatedKeys.getInt(1));
+                    }
+                    else {
+                        throw new SQLException("Creating company failed, no ID obtained.");
+                    }
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Can't save Company: " + e.getMessage(), e);
             throw e;
         }
-        return object;
+        return company;
+    }
+
+    @Override
+    public Company update(Company company){
+        try (Connection connection = getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
+                ps.setString(1, company.getName());
+                ps.setInt(2, company.getId());
+                return company;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -184,20 +217,6 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                     return companies;
 
                 }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public boolean update(Company company){
-        try (Connection connection = getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
-                ps.setString(1, company.getName());
-                ps.setInt(2, company.getId());
-                return ps.executeUpdate() > 0;
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);

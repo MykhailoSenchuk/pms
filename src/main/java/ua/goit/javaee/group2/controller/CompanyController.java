@@ -1,9 +1,12 @@
 package ua.goit.javaee.group2.controller;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import org.springframework.transaction.annotation.Transactional;
 import ua.goit.javaee.group2.dao.CompanyDAO;
+import ua.goit.javaee.group2.dao.DeveloperDAO;
 import ua.goit.javaee.group2.model.Company;
 import org.springframework.transaction.PlatformTransactionManager;
+import ua.goit.javaee.group2.model.Developer;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,7 +16,24 @@ public class CompanyController extends AbstractController<Company>{
     private PlatformTransactionManager txManager;
 
     private CompanyDAO companyDAO;
+    private DeveloperDAO developerDAO;
 
+    public void addDeveloperToCompany(Developer developer, Company company) throws SQLException{
+
+        if (company.isNew()){
+
+            System.out.println("company isn't registered in DB");
+            return;
+        }
+
+        if(developer.isNew()){
+            System.out.println("developer isn't registered in DB");
+        }
+
+        developer.setCompany(company);
+        developerDAO.save(developer);
+        company.addDeveloper(developer);
+    }
     //if table already have company with same name, than just return entity form table, don't create new one
     @Transactional
     @Override
@@ -77,5 +97,9 @@ public class CompanyController extends AbstractController<Company>{
 
     public void setCompanyDAO(CompanyDAO companyDAO) {
         this.companyDAO = companyDAO;
+    }
+
+    public void setDeveloperDAO(DeveloperDAO developerDAO) {
+        this.developerDAO = developerDAO;
     }
 }
