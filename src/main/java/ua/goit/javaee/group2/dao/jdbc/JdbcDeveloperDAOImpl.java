@@ -60,14 +60,14 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void saveAll(List<Developer> list) throws SQLException {
+    public void saveAll(List<Developer> list){
         for (Developer developer : list) {
             save(developer);
         }
     }
 
     @Override
-    public Developer load(int id) throws SQLException {
+    public Developer load(int id){
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement(
@@ -91,7 +91,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public List<Developer> findAll() throws SQLException {
+    public List<Developer> findAll() {
         List<Developer> developers = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
