@@ -18,7 +18,7 @@ public class CompanyController extends AbstractController<Company>{
     private CompanyDAO companyDAO;
     private DeveloperDAO developerDAO;
 
-    public void addDeveloperToCompany(Developer developer, Company company) throws SQLException{
+    public void addDeveloperToCompany(Developer developer, Company company) throws SQLException {
 
         if (company.isNew()){
 
@@ -35,23 +35,61 @@ public class CompanyController extends AbstractController<Company>{
         company.addDeveloper(developer);
     }
     //if table already have company with same name, than just return entity form table, don't create new one
+    @Transactional
     @Override
-    public Company add(Company company){return null;}
+    public Company add(Company company) throws SQLException{
 
-    @Override
-    public Company get(int id){return new Company(1, "Ciklum");}
+        if(company == null)
+            return null;
 
-    @Override
-    public List<Company> getAll(){return null;}
+        //search company by name
+        Company byName = companyDAO.load(company.getName());
 
-    @Override
-    public void update(Company company){}
+        //if wasn't found by name add row to db
+        if ( byName == null ){
+            companyDAO.save(company);
+            return company;
+        }
+        else
+            return byName;
+    }
 
+    @Transactional
     @Override
-    public void delete(int id){}
+    public Company get(int id)throws SQLException{
+        return companyDAO.load(id);
+    }
+    @Transactional
+    public boolean checkById (int id) throws SQLException{
+        return get(id) != null;
+    }
 
+    @Transactional
     @Override
-    public void deleteAll(){}
+    public List<Company> getAll()throws SQLException{
+        return companyDAO.findAll();
+    }
+
+    @Transactional
+    @Override
+    public void update(Company company) throws SQLException{
+        if(company == null){
+            return;
+        }
+        companyDAO.update(company);
+    }
+
+    @Transactional
+    @Override
+    public void delete(int id) throws SQLException{
+        companyDAO.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAll() throws SQLException{
+        companyDAO.deleteAll();
+    }
 
     public void setTxManager(PlatformTransactionManager txManager) {
         this.txManager = txManager;

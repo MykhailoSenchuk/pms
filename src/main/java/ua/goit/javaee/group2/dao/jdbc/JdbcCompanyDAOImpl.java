@@ -31,7 +31,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
     private DataSource dataSource;
 
     @Override
-    public Company save(Company company) throws SQLException{
+    public Company save(Company company) {
         if(!company.isNew()){
             return update(company);
         }
@@ -40,7 +40,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
         }
     }
 
-    private Company create(Company company) throws SQLException{
+    private Company create(Company company) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW,Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, company.getName());
@@ -59,7 +59,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Can't save Company: " + e.getMessage(), e);
-            throw e;
+            throw new RuntimeException(e);
         }
         return company;
     }
@@ -87,7 +87,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public boolean saveAll(List<Company> list) throws SQLException {
+    public void saveAll(List<Company> list) {
         try (Connection connection = getConnection()) {
             //insert each object into BD
             for (Company object : list) {
@@ -96,14 +96,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
 
                     //break method if the object is  not saved, provided that no commit will be made
                     if (ps.executeUpdate() == 0) {
-                        return false;
+                        return;
                     }
                 }
             }
-            return true;
+            return;
         } catch (SQLException e) {
             LOGGER.error("Can't save the list: "+e.getMessage(), e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
@@ -116,7 +116,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      */
 
     @Override
-    public boolean deleteById(int id) throws SQLException {
+    public void deleteById(int id) {
         boolean removed = false;
 
         try (Connection connection = getConnection()) {
@@ -126,10 +126,9 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Can't delete company: "+ e.getMessage(), e);
-            throw e;
+            throw new RuntimeException(e);
         }
 
-        return removed;
     }
 
     /**
@@ -139,14 +138,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public boolean deleteAll() throws SQLException {
+    public void deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeQuery(DELETE_ALL);
             }
         } catch (SQLException e) {
             LOGGER.error("Can't delete all companies: "+ e.getMessage(), e);
-            throw e;
+            throw new RuntimeException(e);
         }
         return true;
     }
@@ -159,7 +158,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public Company load(int id) throws SQLException{
+    public Company load(int id) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
                 ps.setInt(1, id);
@@ -173,7 +172,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Company wasn't loaded: "+ e.getMessage(), e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
@@ -220,5 +219,18 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                     return companies;
 
                 }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL Exception occurred: ", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 }
