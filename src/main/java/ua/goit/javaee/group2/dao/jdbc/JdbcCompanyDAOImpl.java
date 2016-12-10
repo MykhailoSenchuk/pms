@@ -40,4 +40,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
+
+    @Override
+    public boolean update(Company company) throws SQLException {
+        return false;
+    }
+
+    @Override
+    public Company load(String name) throws SQLException {
+        return null;
+    }
 }

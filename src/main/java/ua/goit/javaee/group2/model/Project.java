@@ -4,10 +4,15 @@ import java.util.Set;
 
 public class Project extends NamedEntity {
 
-    Company company;
+    String companyStr;
+    String customerStr;
+    private String project_name;
+    private long company_id;
+    private long customer_id;
 
-    Customer customer;
-
+    private Company company;
+    private Customer customer;
+    private float cost;
     Set<Developer> developers;
 
     public Project(String name, Company company, Customer customer, Set<Developer> developers) {
@@ -20,6 +25,89 @@ public class Project extends NamedEntity {
     public Project(Integer id, String name, Company company, Customer customer, Set<Developer> developers) {
         this(name, company, customer, developers);
         this.id = id;
+    }
+
+    public Project() {
+    }
+
+
+    /*@Override
+    public String toString() {
+        return "Project{" +
+                "ID=" + getId() +
+                ", company=" + company.getName() +
+                ", customer=" + customer.getName() +
+                ", project_name='" + getName() + '\'' +
+                ", company_id=" + company.getId() +
+                ", customer_id=" + customer.getId() +
+                ", cost=" + cost +
+                '}';
+    }*/
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "ID=" + getId() +
+                ", company=" + companyStr +
+                ", customer=" + customerStr +
+                ", project_name='" + project_name + '\'' +
+                ", company_id=" + company_id +
+                ", customer_id=" + customer_id +
+                ", cost=" + cost +
+                '}';
+    }
+
+
+    public String getCompanyStr() {
+        return companyStr;
+    }
+
+    public void setCompanyStr(String companyStr) {
+        this.companyStr = companyStr;
+    }
+
+    public String getCustomerStr() {
+        return customerStr;
+    }
+
+    public void setCustomerStr(String customerStr) {
+        this.customerStr = customerStr;
+    }
+
+    public String getProject_name() {
+        return project_name;
+    }
+
+    public void setCompany_id(long company_id) {
+        this.company_id = company_id;
+    }
+
+    public void setCustomer_id(long customer_id) {
+        this.customer_id = customer_id;
+    }
+
+    /*public void setProject_name(String project_name) {
+        this.setName(project_name);
+    }*/
+
+    public void setProject_name(String project_name) {
+        this.project_name = project_name;
+    }
+
+    public long getCompany_id() {
+        return this.company.getId();
+    }
+
+    public long getCustomer_id() {
+        return this.company.getId();
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public void setCost(float cost) {
+        this.cost = cost;
     }
 
     public Set<Developer> getDevelopers() {
