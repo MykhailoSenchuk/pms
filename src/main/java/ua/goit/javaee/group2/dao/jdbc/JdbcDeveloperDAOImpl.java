@@ -161,10 +161,11 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
         PreparedStatement preparedStatement;
         for (Skill skill : developer.getSkills()) {
             preparedStatement = connection.prepareStatement(
-                    "INSERT INTO pms.developers_skills(developer_id, skill_id) VALUES ?,?");
+                    "INSERT INTO pms.developers_skills(developer_id, skill_id) VALUES (?,?)");
             preparedStatement.setInt(1, developer.getId());
             preparedStatement.setInt(2, skill.getId());
-            preparedStatement.executeQuery();
+            preparedStatement.execute();
+            LOG.info("Adding skills successfull");
         }
     }
 
