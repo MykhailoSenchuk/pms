@@ -21,7 +21,7 @@ public class CompanyController extends AbstractController<Company>{
     public Company add(Company company){return null;}
 
     @Override
-    public Company get(int id){return null;}
+    public Company get(int id){return new Company(1, "Ciklum");}
 
     @Override
     public List<Company> getAll(){return null;}

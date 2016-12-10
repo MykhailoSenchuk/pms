@@ -33,24 +33,32 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     public Developer save(Developer developer) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement;
+            String sql;
             if (developer.isNew()) {
-                preparedStatement = connection.prepareStatement(
-                        "INSERT INTO pms.developers (first_name, last_name, company_id) VALUES (?,?,?)");
-                addSkills(developer, connection);
+                sql = "INSERT INTO pms.developers (first_name, last_name, company_id) VALUES (?,?,?)";
+                preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             } else {
-                preparedStatement = connection.prepareStatement(
-                        "UPDATE pms.developers SET first_name = ?, last_name = ?, company_id = ? WHERE id = ?");
+                sql = "UPDATE pms.developers SET first_name = ?, last_name = ?, company_id = ? WHERE id = ?";
                 removeSkillsFromDeveloper(developer, connection);
-                addSkills(developer, connection);
+                preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setInt(4, developer.getCompany().getId());
             }
             preparedStatement.setString(1, developer.getName());
             preparedStatement.setString(2, developer.getLastName());
             preparedStatement.setInt(3, developer.getCompany().getId());
-            ResultSet resultSet = preparedStatement.executeQuery();
+
+            preparedStatement.executeUpdate();
+
             if (developer.isNew()) {
-                developer.setId(resultSet.getInt("id"));
+                ResultSet resultSet = preparedStatement.getGeneratedKeys();
+                if (resultSet.next()) {
+                    developer.setId(resultSet.getInt(1));
+                } else {
+                    LOG.error("Some trouble happened while getting returned id.");
+                }
             }
+
+            addSkills(developer, connection);
             LOG.info("Developer " + developer + " successfully added to database.");
             return developer;
         } catch (SQLException e) {

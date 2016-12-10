@@ -20,16 +20,26 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     public Skill save(Skill skill){
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement;
+            String sql;
             if (skill.isNew()) {
-                preparedStatement = connection.prepareStatement(
-                        "INSERT INTO pms.skills (skill_name) VALUES (?)");
+                sql = "INSERT INTO pms.skills (skill_name) VALUES (?)";
+                preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             } else {
-                preparedStatement = connection.prepareStatement(
-                        "UPDATE pms.skills SET skill_name = ? WHERE id = ?");
+                sql = "UPDATE pms.skills SET skill_name = ? WHERE id = ?";
+                preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setInt(2, skill.getId());
             }
             preparedStatement.setString(1, skill.getName());
-            preparedStatement.execute();
+            preparedStatement.executeUpdate();
+
+            if (skill.isNew()) {
+                ResultSet resultSet = preparedStatement.getGeneratedKeys();
+                if (resultSet.next()) {
+                    skill.setId(resultSet.getInt(1));
+                } else {
+                    LOG.error("Some trouble happened while getting returned id.");
+                }
+            }
             LOG.info("Success. New skill name = " + skill + '.');
             return skill;
         } catch (SQLException e) {
