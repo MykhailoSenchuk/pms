@@ -493,7 +493,12 @@ public class Main {
         Set<Skill> skills = new HashSet<>();
         String skillName = br.readLine();
         while (!"".equals(skillName)) {
-            skills.add(skillController.add(new Skill(skillName)));
+            Skill skill = skillController.getByName(skillName);
+            if (skill != null) {
+                skills.add(skill);
+            } else {
+                skills.add(skillController.add(new Skill(skillName)));
+            }
             skillName = br.readLine();
         }
         return skills;

@@ -51,12 +51,8 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
             if (developer.isNew()) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
-//                if (resultSet.next()) {
                 resultSet.next();
                 developer.setId(resultSet.getInt(1));
-//                } else {
-//                    LOG.error("Some trouble happened while getting returned id.");
-//                }
             }
 
             addSkills(developer, connection);

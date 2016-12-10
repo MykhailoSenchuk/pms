@@ -73,6 +73,27 @@ public class JdbcSkillDAOImpl implements SkillDAO {
         }
     }
 
+    public Skill getByName(String name){
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement preparedStatement;
+            preparedStatement = connection.prepareStatement(
+                    "SELECT (id) FROM pms.skills WHERE skill_name=?");
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                Skill skill = new Skill(resultSet.getInt("id"), name);
+                LOG.info("Skill " + skill + " was successfully found in database.");
+                return skill;
+            } else {
+                LOG.info("Skill was not found.");
+                return null;
+            }
+        } catch (SQLException e) {
+            LOG.error("Exception occurred: " + e);
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public List<Skill> findAll() {
         List<Skill> skills = new ArrayList<>();

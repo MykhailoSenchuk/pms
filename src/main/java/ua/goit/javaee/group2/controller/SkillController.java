@@ -21,6 +21,9 @@ public class SkillController extends AbstractController<Skill> {
     @Transactional
     public Skill get(int id){return skillDAO.load(id);}
 
+    @Transactional
+    public Skill getByName(String name){return skillDAO.getByName(name);}
+
     @Override
     @Transactional
     public List<Skill> getAll(){return skillDAO.findAll();}
