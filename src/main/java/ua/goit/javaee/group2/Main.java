@@ -79,9 +79,7 @@ public class Main {
                         } else {
                             updatedSkills = developer.getSkills();
                         }
-                        developerController.update(
-                                new Developer(developer.getId(), developer.getName(), developer.getLastName(),
-                                        developer.getCompany(), updatedSkills));
+                        developerController.addSkillsToDeveloper(updatedSkills, developer);
                         System.out.println("Successful operation. ");
                     } else {
                         System.out.println("Sorry, there is no developer with such id.");
@@ -100,6 +98,24 @@ public class Main {
                     Project project = projectController.get(projectId);
                     if (project != null && developer != null) {
                         projectController.addDeveloperToProject(developer, project);
+                        System.out.print("Successful operation. ");
+                    } else {
+                        System.out.print("Sorry, bad id. ");
+                    }
+                    System.out.println("End of adding developer to existing project.");
+                    break;
+                }
+                case "8": //add developer to company
+                {
+                    System.out.println("Start of adding existing developer to existing company.." +
+                            "\nPlease input id of developer you want to add to project.");
+                    Integer developerId = getIdFromConsole();
+                    System.out.println("Please input id of company where you want to add the developer.");
+                    Integer companyId = getIdFromConsole();
+                    Developer developer = developerController.get(developerId);
+                    Company company = companyController.get(companyId);
+                    if (company != null && developer != null) {
+                        companyController.addDeveloperToCompany(developer, company);
                         System.out.print("Successful operation. ");
                     } else {
                         System.out.print("Sorry, bad id. ");
@@ -329,7 +345,7 @@ public class Main {
                     System.out.println("Start of deleting by id in table " + tableName + "..");
                     Integer id = getIdFromConsole();
                     String hardChoice = getAnswerForDeletingConfirmation();
-                    if (!("5".equals(hardChoice) || "".equals(hardChoice) || hardChoice.equalsIgnoreCase("y"))) {
+                    if (("5".equals(choice) && !"".equals(hardChoice) && hardChoice.equalsIgnoreCase("y"))) {
                         switch (choice) {
                             case "1": // deleting company by id
                             {
@@ -477,7 +493,12 @@ public class Main {
         Set<Skill> skills = new HashSet<>();
         String skillName = br.readLine();
         while (!"".equals(skillName)) {
-            skills.add(skillController.add(new Skill(skillName)));
+            Skill skill = skillController.getByName(skillName);
+            if (skill != null) {
+                skills.add(skill);
+            } else {
+                skills.add(skillController.add(new Skill(skillName)));
+            }
             skillName = br.readLine();
         }
         return skills;

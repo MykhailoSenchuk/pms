@@ -4,7 +4,6 @@ import ua.goit.javaee.group2.dao.ProjectDAO;
 import ua.goit.javaee.group2.model.Project;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
 
 public class JdbcProjectDAOImpl implements ProjectDAO {
@@ -12,32 +11,30 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     private DataSource dataSource;
 
     @Override
-    public Project save(Project object) throws SQLException {
+    public Project save(Project object){
         return null;
     }
 
     @Override
-    public boolean deleteAll() throws SQLException {
-        return false;
+    public void deleteAll(){
     }
 
     @Override
-    public boolean saveAll(List<Project> list) throws SQLException {
-        return false;
+    public void saveAll(List<Project> list){
     }
 
     @Override
-    public List<Project> findAll() throws SQLException {
+    public List<Project> findAll(){
         return null;
     }
 
     @Override
-    public boolean deleteById(int id) throws SQLException {
-        return false;
+    public void deleteById(int id){
+
     }
 
     @Override
-    public Project load(int id) throws SQLException {
+    public Project load(int id){
         return null;
     }
 

@@ -1,6 +1,9 @@
 package ua.goit.javaee.group2.model;
 
 public class Skill extends NamedEntity {
+    public Skill() {
+    }
+
     public Skill(String name) {
         super(name);
     }

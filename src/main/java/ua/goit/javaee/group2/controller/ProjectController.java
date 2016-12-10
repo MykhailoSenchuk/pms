@@ -15,7 +15,6 @@ public class ProjectController  extends AbstractController<Project> {
 
     public void addDeveloperToProject(Developer developer, Project project){}
 
-    //if table already have company with same name, than just return entity form table, don't create new one
     @Override
     public Project add(Project project){return null;}
 

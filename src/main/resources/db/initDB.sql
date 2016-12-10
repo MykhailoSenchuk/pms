@@ -1,3 +1,11 @@
+DROP TABLE pms.projects CASCADE;
+DROP TABLE pms.companies CASCADE;
+DROP TABLE pms.customers CASCADE;
+DROP TABLE pms.developers CASCADE;
+DROP TABLE pms.skills CASCADE;
+DROP TABLE pms.developers_skills CASCADE;
+DROP TABLE pms.projects_developers CASCADE;
+
 CREATE TABLE pms.companies
 (
     id serial NOT NULL,
