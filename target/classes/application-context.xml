@@ -44,6 +44,8 @@
     <bean id="companyController" class="ua.goit.javaee.group2.controller.CompanyController" >
         <property name="txManager" ref="txManager"/>
         <property name="companyDAO" ref="companyDAO"/>
+        <property name="developerDAO" ref="developerDAO"/>
+
     </bean>
 
     <bean id="customerController" class="ua.goit.javaee.group2.controller.CustomerController" >

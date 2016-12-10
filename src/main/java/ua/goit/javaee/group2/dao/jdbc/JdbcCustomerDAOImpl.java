@@ -1,10 +1,17 @@
 package ua.goit.javaee.group2.dao.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ua.goit.javaee.group2.dao.CustomerDAO;
 import ua.goit.javaee.group2.model.Customer;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcCustomerDAOImpl implements CustomerDAO {
@@ -23,7 +30,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
 
 
     @Override
-    public Customer save(Customer customer) throws SQLException{
+    public Customer save(Customer customer) {
         if(!customer.isNew()){
             return update(customer);
         }
@@ -33,7 +40,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
-    public Customer update(Customer customer) throws SQLException{
+    public Customer update(Customer customer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
 
@@ -47,12 +54,12 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
 
-    private Customer create(Customer customer) throws SQLException{
+    private Customer create(Customer customer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW,Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, customer.getName());
@@ -71,13 +78,13 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Can't save customer: " + e.getMessage(), e);
-            throw e;
+            throw new RuntimeException(e);
         }
         return customer;
     }
 
     @Override
-    public boolean saveAll(List<Customer> list) throws SQLException {
+    public void saveAll(List<Customer> list) {
         try (Connection connection = getConnection()) {
             //insert each customer into BD
             for (Customer customer : list) {
@@ -85,19 +92,19 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                     ps.setString(1, customer.getName());
                     //break method if the customer is  not saved, provided that no commit will be made
                     if (ps.executeUpdate() == 0) {
-                        return false;
+                        return;
                     }
                 }
             }
-            return true;
+            return;
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Customer load(int id) throws SQLException{
+    public Customer load(int id) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
                 ps.setInt(1, id);
@@ -111,12 +118,12 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public List<Customer> findAll() throws SQLException{
+    public List<Customer> findAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 try (ResultSet resultSet = st.executeQuery(GET_ALL)) {
@@ -133,12 +140,12 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public boolean deleteById(int id) throws SQLException{
+    public void deleteById(int id) {
         boolean removed = false;
 
         try (Connection connection = getConnection()) {
@@ -148,23 +155,21 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
 
-        return removed;
     }
 
     @Override
-    public boolean deleteAll() throws SQLException {
+    public void deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeQuery(DELETE_ALL);
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
-        return true;
     }
 
 

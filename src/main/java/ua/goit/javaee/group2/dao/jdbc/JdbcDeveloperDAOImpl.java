@@ -34,7 +34,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public Developer save(Developer developer) throws SQLException{
+    public Developer save(Developer developer) {
         if(!developer.isNew()){
             return update(developer);
         }
@@ -44,7 +44,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
 
-    private Developer update(Developer developer) throws SQLException{
+    private Developer update(Developer developer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
 
@@ -60,12 +60,12 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             }
         } catch (SQLException e) {
             LOG.error("SQL Exception occurred: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
 
-    private Developer create(Developer developer) throws SQLException{
+    private Developer create(Developer developer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -88,7 +88,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             }
         } catch (SQLException e) {
             LOG.error("Can't save developer: " + e.getMessage(), e);
-            throw e;
+            throw new RuntimeException(e);
         }
         return developer;
     }

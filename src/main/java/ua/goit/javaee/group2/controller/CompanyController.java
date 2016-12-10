@@ -8,6 +8,7 @@ import ua.goit.javaee.group2.model.Company;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Developer;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class CompanyController extends AbstractController<Company>{
@@ -17,7 +18,7 @@ public class CompanyController extends AbstractController<Company>{
     private CompanyDAO companyDAO;
     private DeveloperDAO developerDAO;
 
-    public void addDeveloperToCompany(Developer developer, Company company) throws SQLException{
+    public void addDeveloperToCompany(Developer developer, Company company) throws SQLException {
 
         if (company.isNew()){
 
