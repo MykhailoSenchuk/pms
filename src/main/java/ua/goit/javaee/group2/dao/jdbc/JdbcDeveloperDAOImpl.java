@@ -51,11 +51,12 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
             if (developer.isNew()) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
-                if (resultSet.next()) {
-                    developer.setId(resultSet.getInt(1));
-                } else {
-                    LOG.error("Some trouble happened while getting returned id.");
-                }
+//                if (resultSet.next()) {
+                resultSet.next();
+                developer.setId(resultSet.getInt(1));
+//                } else {
+//                    LOG.error("Some trouble happened while getting returned id.");
+//                }
             }
 
             addSkills(developer, connection);
@@ -68,14 +69,14 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void saveAll(List<Developer> list){
+    public void saveAll(List<Developer> list) {
         for (Developer developer : list) {
             save(developer);
         }
     }
 
     @Override
-    public Developer load(int id){
+    public Developer load(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement(
@@ -117,10 +118,10 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void deleteById(int id){
+    public void deleteById(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.developers WHERE id=?");
-            preparedStatement.setInt(1,id);
+            preparedStatement.setInt(1, id);
             preparedStatement.execute();
             LOG.info("Developer was successfully deleted.");
         } catch (SQLException e) {
@@ -130,7 +131,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void deleteAll(){
+    public void deleteAll() {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             statement.execute("DELETE FROM pms.developers");

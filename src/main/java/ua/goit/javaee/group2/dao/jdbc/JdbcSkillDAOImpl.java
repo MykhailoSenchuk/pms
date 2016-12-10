@@ -17,7 +17,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     private DataSource dataSource;
 
     @Override
-    public Skill save(Skill skill){
+    public Skill save(Skill skill) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement;
             String sql;
@@ -34,11 +34,8 @@ public class JdbcSkillDAOImpl implements SkillDAO {
 
             if (skill.isNew()) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
-                if (resultSet.next()) {
-                    skill.setId(resultSet.getInt(1));
-                } else {
-                    LOG.error("Some trouble happened while getting returned id.");
-                }
+                resultSet.next();
+                skill.setId(resultSet.getInt(1));
             }
             LOG.info("Success. New skill name = " + skill + '.');
             return skill;
@@ -49,12 +46,12 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     @Override
-    public void saveAll(List<Skill> skills){
+    public void saveAll(List<Skill> skills) {
         skills.forEach(this::save);
     }
 
     @Override
-    public Skill load(int id){
+    public Skill load(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement(
@@ -77,7 +74,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     @Override
-    public List<Skill> findAll(){
+    public List<Skill> findAll() {
         List<Skill> skills = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
@@ -93,10 +90,10 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     @Override
-    public void deleteById(int id){
+    public void deleteById(int id) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.skills WHERE id=?");
-            preparedStatement.setInt(1,id);
+            preparedStatement.setInt(1, id);
             preparedStatement.execute();
             LOG.info("Skill was successfully deleted.");
         } catch (SQLException e) {
