@@ -17,22 +17,20 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     private DataSource dataSource;
 
     @Override
-    public Skill save(Skill skill) throws SQLException {
+    public Skill save(Skill skill){
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement;
             if (skill.isNew()) {
                 preparedStatement = connection.prepareStatement(
-                        "INSERT INTO pms.skills (name) VALUES ?");
+                        "INSERT INTO pms.skills (skill_name) VALUES (?)");
             } else {
                 preparedStatement = connection.prepareStatement(
-                        "UPDATE pms.skills SET name = ? WHERE id = ?");
-                preparedStatement.setInt(1, skill.getId());
+                        "UPDATE pms.skills SET skill_name = ? WHERE id = ?");
+                preparedStatement.setInt(2, skill.getId());
             }
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (skill.isNew()) {
-                skill.setId(resultSet.getInt("id"));
-            }
-            LOG.info("Skill " + skill + " was successfully added to database.");
+            preparedStatement.setString(1, skill.getName());
+            preparedStatement.execute();
+            LOG.info("Success. New skill name = " + skill + '.');
             return skill;
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
@@ -41,14 +39,12 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     @Override
-    public void saveAll(List<Skill> skills) throws SQLException {
-        for (Skill skill : skills) {
-            save(skill);
-        }
+    public void saveAll(List<Skill> skills){
+        skills.forEach(this::save);
     }
 
     @Override
-    public Skill load(int id) throws SQLException {
+    public Skill load(int id){
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement;
             preparedStatement = connection.prepareStatement(
@@ -71,11 +67,11 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     @Override
-    public List<Skill> findAll() throws SQLException {
+    public List<Skill> findAll(){
         List<Skill> skills = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM pms.developers");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM pms.skills");
             while (resultSet.next()) {
                 skills.add(createSkill(resultSet));
             }
@@ -87,7 +83,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     @Override
-    public void deleteById(int id) throws SQLException {
+    public void deleteById(int id){
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.skills WHERE id=?");
             preparedStatement.setInt(1,id);
@@ -100,7 +96,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     @Override
-    public void deleteAll() throws SQLException {
+    public void deleteAll() {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             statement.execute("DELETE FROM pms.skills");
@@ -114,7 +110,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     private Skill createSkill(ResultSet resultSet) throws SQLException {
         Skill skill = new Skill();
         skill.setId(resultSet.getInt("id"));
-        skill.setName(resultSet.getString("first_name"));
+        skill.setName(resultSet.getString("skill_name"));
         return skill;
     }
 
