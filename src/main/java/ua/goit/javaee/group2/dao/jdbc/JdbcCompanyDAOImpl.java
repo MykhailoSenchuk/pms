@@ -1,19 +1,14 @@
 package ua.goit.javaee.group2.dao.jdbc;
 
 
-import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ua.goit.javaee.group2.dao.CompanyDAO;
 import ua.goit.javaee.group2.model.Company;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
@@ -147,7 +142,6 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             LOGGER.error("Can't delete all companies: "+ e.getMessage(), e);
             throw new RuntimeException(e);
         }
-        return true;
     }
 
     /**
