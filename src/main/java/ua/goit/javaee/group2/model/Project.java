@@ -30,6 +30,10 @@ public class Project extends NamedEntity {
     public Project() {
     }
 
+    public Project(Integer id, String name) {
+
+    }
+
 
     /*@Override
     public String toString() {

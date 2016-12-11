@@ -473,7 +473,7 @@ public class Main {
         System.out.println(entity != null ? "Successful reading of entity by id: " + entity : "Sorry, bad id.");
     }
 
-    private Set<Developer> getDevelopersFromConsole() throws IOException {
+    private Set<Developer> getDevelopersFromConsole() throws IOException, SQLException {
         System.out.println("Please add developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press \'Enter\' twice to end input.");
         Set<Developer> developers = new HashSet<>();
         String stringDeveloperId = br.readLine();

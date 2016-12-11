@@ -161,7 +161,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
-    public void deleteAll() {
+    public boolean deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeQuery(DELETE_ALL);
@@ -170,6 +170,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             LOGGER.error("SQL Exception occurred: ", e);
             throw new RuntimeException(e);
         }
+        return false;
     }
 
 

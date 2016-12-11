@@ -156,7 +156,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     }
 
     @Override
-    public void deleteAll() {
+    public boolean deleteAll() {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             statement.execute("DELETE FROM pms.developers");
@@ -165,6 +165,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             LOG.error("Exception occurred: " + e);
             throw new RuntimeException(e);
         }
+        return false;
     }
 
     private Developer createDeveloper(ResultSet resultSet) throws SQLException {

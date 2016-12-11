@@ -12,15 +12,13 @@ import org.slf4j.Logger;
 import ua.goit.javaee.group2.dao.CompanyDAO;
 import ua.goit.javaee.group2.model.Company;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.List;
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
 
     private static final String INSERT_ROW = "INSERT INTO pms.companies (company_name) VALUES (?)";
     private static final String DELETE_ROW = "DELETE FROM pms.companies WHERE id = ?";
-    private static final String DELETE_ALL = "DELETE FROM jpms.companies";
+    private static final String DELETE_ALL = "DELETE FROM pms.companies";
     private static final String UPDATE_ROW = "UPDATE pms.companies SET company_name = ? WHERE id =?";
     private static final String GET_BY_ID = "SELECT * FROM pms.companies WHERE id =?";
     private static final String GET_BY_NAME = "SELECT * FROM pms.companies WHERE company_name =?";
@@ -138,7 +136,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public void deleteAll() {
+    public boolean deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeQuery(DELETE_ALL);
