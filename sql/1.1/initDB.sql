@@ -21,12 +21,12 @@ CREATE TABLE pms.projects
     PRIMARY KEY (id),
 	FOREIGN KEY (company_id)
         REFERENCES pms.companies (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
 	FOREIGN KEY (customer_id)
         REFERENCES pms.customers (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 CREATE TABLE pms.developers
@@ -38,8 +38,8 @@ CREATE TABLE pms.developers
     PRIMARY KEY (id),
     FOREIGN KEY (company_id)
         REFERENCES pms.companies (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 CREATE TABLE pms.skills
@@ -57,12 +57,12 @@ CREATE TABLE pms.developers_skills
     PRIMARY KEY (developer_id, skill_id),
     FOREIGN KEY (developer_id)
         REFERENCES pms.developers (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (skill_id)
         REFERENCES pms.skills (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 CREATE TABLE pms.projects_developers
@@ -72,10 +72,10 @@ CREATE TABLE pms.projects_developers
     PRIMARY KEY (project_id, developer_id),
 	  FOREIGN KEY (project_id)
         REFERENCES pms.projects (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (developer_id)
         REFERENCES pms.developers (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );

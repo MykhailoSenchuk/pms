@@ -136,7 +136,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
     public void deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
-                st.executeQuery(DELETE_ALL);
+                st.executeUpdate(DELETE_ALL);
             }
         } catch (SQLException e) {
             LOGGER.error("Can't delete all companies: "+ e.getMessage(), e);
