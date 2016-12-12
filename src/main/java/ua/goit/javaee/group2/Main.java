@@ -346,7 +346,7 @@ public class Main {
                     System.out.println("Start of deleting by id in table " + tableName + "..");
                     Integer id = getIdFromConsole();
                     String hardChoice = getAnswerForDeletingConfirmation();
-                    if (("5".equals(choice) && !"".equals(hardChoice) && hardChoice.equalsIgnoreCase("y"))) {
+                    if ( hardChoice.equalsIgnoreCase("y") ) {
                         switch (choice) {
                             case "1": // deleting company by id
                             {
@@ -384,7 +384,7 @@ public class Main {
                 {
                     System.out.println("Start of deleting all rows in table " + tableName + "..");
                     String hardChoice = getAnswerForDeletingConfirmation();
-                    if (!("6".equals(hardChoice) || "".equals(hardChoice) || hardChoice.equalsIgnoreCase("y"))) {
+                    if (hardChoice.equalsIgnoreCase("y")) {
                         switch (choice) {
                             case "1": // deleting all companies
                             {
