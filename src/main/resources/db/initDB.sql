@@ -66,7 +66,7 @@ CREATE TABLE pms.developers_skills
     FOREIGN KEY (developer_id)
         REFERENCES pms.developers (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE CASCADE,
     FOREIGN KEY (skill_id)
         REFERENCES pms.skills (id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -81,9 +81,9 @@ CREATE TABLE pms.projects_developers
 	  FOREIGN KEY (project_id)
         REFERENCES pms.projects (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE CASCADE,
     FOREIGN KEY (developer_id)
         REFERENCES pms.developers (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
 );

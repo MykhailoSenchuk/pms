@@ -150,7 +150,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                     if (!resultSet.next()) {
                         return null;
                     }
-                    return new Project( resultSet.getInt(1), resultSet.getString(2));
+                    return new Project(resultSet.getInt(1), resultSet.getString(2));
                 }
             }
         } catch (SQLException e) {

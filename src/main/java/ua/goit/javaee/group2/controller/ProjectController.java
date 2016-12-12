@@ -1,14 +1,11 @@
 package ua.goit.javaee.group2.controller;
 
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import ua.goit.javaee.group2.dao.ProjectDAO;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import java.sql.SQLException;
 import java.util.List;

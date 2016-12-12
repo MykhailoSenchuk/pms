@@ -1,20 +1,15 @@
 package ua.goit.javaee.group2.dao.jdbc;
 
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ua.goit.javaee.group2.dao.CompanyDAO;
+import ua.goit.javaee.group2.model.Company;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import ua.goit.javaee.group2.dao.CompanyDAO;
-import ua.goit.javaee.group2.model.Company;
-
-
-import java.sql.SQLException;
-
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
 

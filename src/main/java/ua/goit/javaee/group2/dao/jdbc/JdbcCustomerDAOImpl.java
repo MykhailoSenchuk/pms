@@ -163,7 +163,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
     public void deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
-                st.executeQuery(DELETE_ALL);
+                st.executeUpdate(DELETE_ALL);
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);

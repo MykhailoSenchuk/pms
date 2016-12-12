@@ -346,7 +346,7 @@ public class Main {
                     System.out.println("Start of deleting by id in table " + tableName + "..");
                     Integer id = getIdFromConsole();
                     String hardChoice = getAnswerForDeletingConfirmation();
-                    if ( hardChoice.equalsIgnoreCase("y") ) {
+                    if (("5".equals(subMenuChoice) && !"".equals(hardChoice) && hardChoice.equalsIgnoreCase("y"))) {
                         switch (choice) {
                             case "1": // deleting company by id
                             {
@@ -384,7 +384,7 @@ public class Main {
                 {
                     System.out.println("Start of deleting all rows in table " + tableName + "..");
                     String hardChoice = getAnswerForDeletingConfirmation();
-                    if (hardChoice.equalsIgnoreCase("y")) {
+                    if (("6".equals(subMenuChoice) && !"".equals(hardChoice) && hardChoice.equalsIgnoreCase("y"))) {
                         switch (choice) {
                             case "1": // deleting all companies
                             {
@@ -473,7 +473,7 @@ public class Main {
         System.out.println(entity != null ? "Successful reading of entity by id: " + entity : "Sorry, bad id.");
     }
 
-    private Set<Developer> getDevelopersFromConsole() throws IOException {
+    private Set<Developer> getDevelopersFromConsole() throws IOException, SQLException {
         System.out.println("Please add developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press \'Enter\' twice to end input.");
         Set<Developer> developers = new HashSet<>();
         String stringDeveloperId = br.readLine();
