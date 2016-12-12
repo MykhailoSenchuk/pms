@@ -133,7 +133,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public boolean deleteAll() {
+    public void deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeQuery(DELETE_ALL);

@@ -1,18 +1,14 @@
 package ua.goit.javaee.group2.controller;
 
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import ua.goit.javaee.group2.dao.ProjectDAO;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
 public class ProjectController  extends AbstractController<Project> {
 
@@ -20,7 +16,7 @@ public class ProjectController  extends AbstractController<Project> {
 
     private ProjectDAO projectDAO;
 
-    public void addDeveloperToProject(Set<Developer> developer, Project project){
+    public void addDeveloperToProject(Developer developer, Project project){
         if (project.isNew()){
 
             System.out.println("project isn't registered in DB");
@@ -31,7 +27,7 @@ public class ProjectController  extends AbstractController<Project> {
             System.out.println("developer isn't registered in DB");
         }*/
 //TODO finish this
-      project.setDevelopers(developer);
+      project.getDevelopers().add(developer);
       projectDAO.save(project);
 
     }

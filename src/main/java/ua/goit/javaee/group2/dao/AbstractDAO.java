@@ -1,6 +1,5 @@
 package ua.goit.javaee.group2.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 
 interface AbstractDAO<T> {
@@ -8,13 +7,13 @@ interface AbstractDAO<T> {
 
     void saveAll(List<T> list);
 
-    T load(int id) throws SQLException;
+    T load(int id);
 
     List<T> findAll();
 
     void deleteById(int id);
 
-    boolean deleteAll();
+    void deleteAll();
 
 
 }
