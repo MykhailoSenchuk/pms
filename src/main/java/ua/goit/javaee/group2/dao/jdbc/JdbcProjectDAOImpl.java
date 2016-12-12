@@ -108,7 +108,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public boolean deleteAll(){
+    public void deleteAll(){
         try (Connection connection = getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.executeQuery("TRUNCATE pms.projects");
@@ -117,7 +117,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
             LOGGER.error("SQL Exception occurred: ", e);
             throw new RuntimeException(e);
         }
-        return false;
     }
 
     @Override
@@ -142,7 +141,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public Project load(int id) throws SQLException {
+    public Project load(int id) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(FIND_BY_ID)) {
                 ps.setInt(1, id);

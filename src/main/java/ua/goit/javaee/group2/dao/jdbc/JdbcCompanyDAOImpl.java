@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 import ua.goit.javaee.group2.dao.CompanyDAO;
 import ua.goit.javaee.group2.model.Company;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
 
@@ -131,7 +133,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
-    public boolean deleteAll() {
+    public void deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeQuery(DELETE_ALL);
