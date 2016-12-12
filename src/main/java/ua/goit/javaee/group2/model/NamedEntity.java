@@ -28,7 +28,8 @@ public class NamedEntity {
     }
 
     public String toString() {
-        return name;
+        return "id = '" + getId() + '\'' +
+                " name = '" + name + '\'';
     }
 
     public void setId(Integer id) {
