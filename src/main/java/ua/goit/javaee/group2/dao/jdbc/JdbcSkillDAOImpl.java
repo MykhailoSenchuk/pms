@@ -61,7 +61,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
             Skill skill;
             if (resultSet.next()) {
                 skill = createSkill(resultSet);
-                LOG.info("Skill " + skill + " was successfully added to database.");
+                LOG.info("Skill " + skill + " was successfully found in database.");
                 return skill;
             } else {
                 LOG.info("Skill was not found.");
@@ -119,7 +119,6 @@ public class JdbcSkillDAOImpl implements SkillDAO {
             LOG.info("Skill was successfully deleted.");
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -131,7 +130,6 @@ public class JdbcSkillDAOImpl implements SkillDAO {
             LOG.info("All skills were successfully deleted.");
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
         }
         return false;
     }
