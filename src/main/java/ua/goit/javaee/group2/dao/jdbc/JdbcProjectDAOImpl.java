@@ -289,6 +289,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         project.setCustomer(customerDAO.load( resultSet.getInt("customer_id") ));
         project.setId(resultSet.getInt("id"));
         project.setProject_name(resultSet.getString("project_name"));
+        project.setCost(resultSet.getFloat("cost"));
         return project;
     }
 
