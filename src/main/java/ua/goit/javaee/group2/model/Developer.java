@@ -56,7 +56,7 @@ public class Developer extends NamedEntity{
                 "id='" + getId() + '\'' +
                 " Name='" + getName() + '\'' +
                 " lastName='" + lastName + '\'' +
-                ", company=" + company +
+                ", company=" + company.getName() +
                 ", skills=" + skills +
                 '}';
     }

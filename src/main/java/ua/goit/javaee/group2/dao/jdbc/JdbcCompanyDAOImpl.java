@@ -12,15 +12,15 @@ import org.slf4j.Logger;
 import ua.goit.javaee.group2.dao.CompanyDAO;
 import ua.goit.javaee.group2.model.Company;
 
-import javax.sql.DataSource;
+
 import java.sql.SQLException;
-import java.util.List;
+
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
 
     private static final String INSERT_ROW = "INSERT INTO pms.companies (company_name) VALUES (?)";
     private static final String DELETE_ROW = "DELETE FROM pms.companies WHERE id = ?";
-    private static final String DELETE_ALL = "DELETE FROM jpms.companies";
+    private static final String DELETE_ALL = "DELETE FROM pms.companies";
     private static final String UPDATE_ROW = "UPDATE pms.companies SET company_name = ? WHERE id =?";
     private static final String GET_BY_ID = "SELECT * FROM pms.companies WHERE id =?";
     private static final String GET_BY_NAME = "SELECT * FROM pms.companies WHERE company_name =?";
@@ -47,7 +47,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 if (ps.executeUpdate() == 0) {
                     throw new SQLException("Creating company failed, no rows affected.");
                 }
-
+                // set generated ID
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         company.setId(generatedKeys.getInt(1));
@@ -64,12 +64,16 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
         return company;
     }
 
-    @Override
-    public Company update(Company company){
+    private Company update(Company company){
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
                 ps.setString(1, company.getName());
                 ps.setInt(2, company.getId());
+
+                if(ps.executeUpdate() == 0){
+                    throw new SQLException("Updating company failed, no rows affected");
+                }
+
                 return company;
             }
         } catch (SQLException e) {
@@ -141,13 +145,12 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
     public void deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
-                st.executeQuery(DELETE_ALL);
+                st.executeUpdate(DELETE_ALL);
             }
         } catch (SQLException e) {
             LOGGER.error("Can't delete all companies: "+ e.getMessage(), e);
             throw new RuntimeException(e);
         }
-        return true;
     }
 
     /**
