@@ -123,7 +123,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     @Override
-    public void deleteAll() {
+    public boolean deleteAll() {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             statement.execute("DELETE FROM pms.skills");
@@ -131,6 +131,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
         }
+        return false;
     }
 
     private Skill createSkill(ResultSet resultSet) throws SQLException {
