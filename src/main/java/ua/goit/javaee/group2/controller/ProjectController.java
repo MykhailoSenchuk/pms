@@ -19,10 +19,24 @@ public class ProjectController  extends AbstractController<Project> {
 
     private ProjectDAO projectDAO;
 
-    public void addDeveloperToProject(Developer developer, Project project){}
+    public void addDeveloperToProject(Developer developer, Project project){
+        if (project.isNew()){
+
+            System.out.println("project isn't registered in DB");
+            return;
+        }
+
+        /*if(developer.isNew()){
+            System.out.println("developer isn't registered in DB");
+        }*/
+//TODO finish this
+      project.getDevelopers().add(developer);
+      projectDAO.save(project);
+
+    }
 
     @Override
-    public Project add(Project project){return null;}
+    public Project add(Project project){return projectDAO.save(project);}
 
     @Transactional
     public void createTable(String project){
@@ -49,7 +63,7 @@ public class ProjectController  extends AbstractController<Project> {
     }
 
     @Override
-    public void update(Project project){}
+    public void update(Project project){projectDAO.save(project);}
 
     @Transactional
     public void updateTable(String project){
@@ -57,7 +71,7 @@ public class ProjectController  extends AbstractController<Project> {
     }
 
     @Override
-    public void delete(int id){}
+    public void delete(int id){projectDAO.deleteById(id);}
 
     @Transactional
     public void deleteTable(String project){
@@ -65,7 +79,7 @@ public class ProjectController  extends AbstractController<Project> {
     }
 
     @Override
-    public void deleteAll(){}
+    public void deleteAll(){projectDAO.deleteAll();}
 
     public void setTxManager(PlatformTransactionManager txManager) {
         this.txManager = txManager;

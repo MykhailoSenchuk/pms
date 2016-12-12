@@ -6,6 +6,7 @@ import ua.goit.javaee.group2.model.Skill;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class DeveloperController extends AbstractController<Developer> {
 
     @Override
     @Transactional
-    public Developer get(int id){
+    public Developer get(int id) throws SQLException {
         return developerDAO.load(id);
     }
 
