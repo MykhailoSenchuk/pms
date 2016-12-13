@@ -316,7 +316,7 @@ public class Main {
                                 System.out.print("Please enter new customer id of updated project: ");
                                 Integer newCustomerId = Integer.valueOf(br.readLine());
 
-                                System.out.println("Please developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press twice \'Enter\' to end input.");
+                                System.out.println("Please update developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press twice \'Enter\' to end input.");
 
                                 Set<Developer> newDevelopers = new HashSet<>();
                                 String stringDeveloperId = br.readLine();
