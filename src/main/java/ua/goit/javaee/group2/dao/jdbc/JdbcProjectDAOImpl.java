@@ -20,13 +20,9 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     static final String SELECT_ALL = "SELECT * FROM pms.projects JOIN pms.companies ON (pms.projects.company_id = pms.companies.id)\n" +
             "  JOIN pms.customers ON (pms.customers.id = pms.projects.customer_id)";
-
     static final String FIND_BY_ID = "SELECT * FROM pms.projects WHERE id = ?";
-
     static final String CREATE_TABLE = "CREATE table new_table (id int not null,string TEXT NOT NULL)";
-
     static final String GET_BY_NAME = "SELECT * FROM pms.projects WHERE project_name =?";
-
     private static final String UPDATE_ROW = "UPDATE pms.projects SET project_name = ?, customer_id = ?, company_id =? WHERE id =?";
     private static final String INSERT_ROW = "INSERT INTO pms.projects (project_name, customer_id, company_id, cost) VALUES (?,?,?,?)";
 
@@ -54,7 +50,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     private static int inputCost(BufferedReader br) {
         int selectCost = 0;
         try {
-            System.out.print("Input cost:");
+            System.out.print("Input cost of project:");
             selectCost = Integer.parseInt(br.readLine());
         } catch (NumberFormatException e) {
             System.out.println("Wrong input. Need a number!!!");
@@ -66,17 +62,27 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     private DataSource dataSource;
 
-
     @Override
     public Project save(Project project) {
         if (!project.isNew()) {
             update(project);
-
+            removeDeveloperOf(project);
         } else {
             create(project);
         }
         addDeveloperTo(project);
         return project;
+    }
+
+    private void removeDeveloperOf(Project project) {
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("DELETE FROM pms.projects_developers WHERE project_id=?");
+            ps.setInt(1, project.getId());
+            ps.execute();
+        } catch (SQLException e) {
+            LOGGER.error("Exception occurred: " + e);
+            throw new RuntimeException(e);
+        }
     }
 
     private void addDeveloperTo(Project project){
@@ -105,11 +111,9 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 preparedStatement.setInt(3, project.getCompany().getId());
                 preparedStatement.setInt(4, inputCost(br));
 
-
                 if (preparedStatement.executeUpdate() == 0) {
                     throw new SQLException("Creating project failed, no rows affected.");
                 }
-
                 try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         project.setId(generatedKeys.getInt(1));
@@ -155,7 +159,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                     if (!resultSet.next()) {
                         return null;
                     }
-
                     return new Project(resultSet.getInt(1), resultSet.getString(2));
                 }
             }
@@ -171,7 +174,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     public void deleteAll(){
         try (Connection connection = getConnection()) {
             try (Statement statement = connection.createStatement()) {
-                statement.executeQuery("TRUNCATE pms.projects");
+                statement.execute("DELETE FROM pms.projects CASCADE");
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
@@ -197,7 +200,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
             LOGGER.error("SQL Exception occurred: ", e);
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -220,18 +222,14 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
                 project.setCompany(companyDAO.load( resultSet.getInt("company_id") ));
                 project.setCustomer(customerDAO.load( resultSet.getInt("customer_id") ));
-
-
                 project.setId(resultSet.getInt("id"));
                 project.setProject_name(resultSet.getString("project_name"));
-
                 project.setCompany_id(resultSet.getLong("company_id"));
                 project.setCustomer_id(resultSet.getLong("customer_id"));
                 project.setCompanyStr(resultSet.getString("company_name"));
                 project.setCustomerStr(resultSet.getString("customer_name"));
                 project.setCost(resultSet.getFloat("cost"));
 
-                //System.out.println(project);
                 try{
                     resultProject.add(project);
                 }catch (NullPointerException e) {
@@ -239,7 +237,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB " + " " + e);
+            System.out.println("Exception occurred while connecting to DB" + " " + e);
             throw new RuntimeException(e);
         }
         return resultProject;
@@ -254,12 +252,10 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
             LOGGER.info("Project was successfully deleted.");
         } catch (SQLException e) {
             LOGGER.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
 
     }
-
-
 
     @Override
     public Project findById(int id) throws SQLException {
@@ -313,7 +309,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 System.out.println("Can't create Table... " + e);
             }
         } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB " + " " + e);
+            System.out.println("Exception occurred while connecting to DB" + " " + e);
             throw new RuntimeException(e);
         }
     }
@@ -333,7 +329,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 System.out.println("Can't update Table... " + e);
             }
         } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB " + " " + e);
+            System.out.println("Exception occurred while connecting to DB" + " " + e);
             throw new RuntimeException(e);
         }
     }
