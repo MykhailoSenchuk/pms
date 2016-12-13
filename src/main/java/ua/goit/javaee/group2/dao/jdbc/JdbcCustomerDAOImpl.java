@@ -39,8 +39,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
         }
     }
 
-    @Override
-    public Customer update(Customer customer) {
+    private Customer update(Customer customer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
 
@@ -48,7 +47,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                 ps.setInt(2, customer.getId());
 
                 if(ps.executeUpdate() == 0){
-                    throw new SQLException("Creating customer failed, no rows affected");
+                    throw new SQLException("Updating customer failed, no rows affected");
                 }
                 return customer;
             }

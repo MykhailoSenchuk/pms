@@ -5,6 +5,6 @@ import ua.goit.javaee.group2.model.Customer;
 import java.sql.SQLException;
 
 public interface CustomerDAO extends AbstractDAO<Customer> {
-    Customer update(Customer company) throws SQLException;
+
     Customer load(String name)throws SQLException;
 }

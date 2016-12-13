@@ -74,9 +74,10 @@ public class CompanyController extends AbstractController<Company>{
     @Override
     public void update(Company company) throws SQLException{
         if(company == null){
+            System.out.println("no object was provided");
             return;
         }
-        companyDAO.update(company);
+        companyDAO.save(company);
     }
 
     @Transactional

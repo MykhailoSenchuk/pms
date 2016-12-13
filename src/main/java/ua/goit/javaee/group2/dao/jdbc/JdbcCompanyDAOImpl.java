@@ -42,7 +42,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 if (ps.executeUpdate() == 0) {
                     throw new SQLException("Creating company failed, no rows affected.");
                 }
-
+                // set generated ID
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         company.setId(generatedKeys.getInt(1));
@@ -59,12 +59,16 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
         return company;
     }
 
-    @Override
-    public Company update(Company company){
+    private Company update(Company company){
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
                 ps.setString(1, company.getName());
                 ps.setInt(2, company.getId());
+
+                if(ps.executeUpdate() == 0){
+                    throw new SQLException("Updating company failed, no rows affected");
+                }
+
                 return company;
             }
         } catch (SQLException e) {

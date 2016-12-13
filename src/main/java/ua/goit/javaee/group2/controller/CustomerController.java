@@ -52,7 +52,11 @@ public class CustomerController extends AbstractController<Customer> {
     @Transactional
     @Override
     public void update(Customer customer) throws SQLException{
-        customerDAO.update(customer);
+        if(customer == null){
+            System.out.println("no object was provided");
+            return;
+        }
+        customerDAO.save(customer);
     }
 
     @Transactional
