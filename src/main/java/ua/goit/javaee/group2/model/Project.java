@@ -4,8 +4,8 @@ import java.util.Set;
 
 public class Project extends NamedEntity {
 
-    String companyStr;
-    String customerStr;
+    private String companyStr;
+    private String customerStr;
     private String project_name;
     private long company_id;
     private long customer_id;
@@ -13,7 +13,7 @@ public class Project extends NamedEntity {
     private Company company;
     private Customer customer;
     private float cost;
-    Set<Developer> developers;
+    private Set<Developer> developers;
 
     public Project(String name, Company company, Customer customer, Set<Developer> developers) {
         super(name);
@@ -35,7 +35,7 @@ public class Project extends NamedEntity {
     }
 
 
-    /*@Override
+    @Override
     public String toString() {
         return "Project{" +
                 "ID=" + getId() +
@@ -46,9 +46,9 @@ public class Project extends NamedEntity {
                 ", customer_id=" + customer.getId() +
                 ", cost=" + cost +
                 '}';
-    }*/
+    }
 
-    @Override
+    /*@Override
     public String toString() {
         return "Project{" +
                 "ID=" + getId() +
@@ -59,7 +59,7 @@ public class Project extends NamedEntity {
                 ", customer_id=" + customer_id +
                 ", cost=" + cost +
                 '}';
-    }
+    }*/
 
 
     public String getCompanyStr() {
@@ -90,13 +90,13 @@ public class Project extends NamedEntity {
         this.customer_id = customer_id;
     }
 
-    /*public void setProject_name(String project_name) {
-        this.setName(project_name);
-    }*/
-
     public void setProject_name(String project_name) {
-        this.project_name = project_name;
+        this.setName(project_name);
     }
+
+    /*public void setProject_name(String project_name) {
+        this.project_name = project_name;
+    }*/
 
     public long getCompany_id() {
         return this.company.getId();

@@ -8,7 +8,7 @@ public interface ProjectDAO extends AbstractDAO<Project> {
 
     Project update(Project customer);
 
-    Project load(String name) throws SQLException;
+    Project loadString(String name) throws SQLException;
 
     Project findById(int id) throws SQLException;
 

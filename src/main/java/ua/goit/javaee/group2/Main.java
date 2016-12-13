@@ -486,7 +486,12 @@ public class Main {
 
     private Integer getIdFromConsole() throws IOException {
         System.out.print("Enter id: ");
-        return Integer.valueOf(br.readLine());
+        try {
+            return Integer.valueOf(br.readLine());
+        }catch (NumberFormatException e){
+            System.out.println("Need to be a number");
+            return null;
+        }
     }
 
     private Set<Skill> getSkillsFromConsole() throws IOException {

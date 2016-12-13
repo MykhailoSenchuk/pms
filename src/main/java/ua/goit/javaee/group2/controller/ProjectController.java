@@ -1,8 +1,11 @@
 package ua.goit.javaee.group2.controller;
 
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import ua.goit.javaee.group2.dao.ProjectDAO;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
@@ -23,9 +26,9 @@ public class ProjectController  extends AbstractController<Project> {
             return;
         }
 
-        /*if(developer.isNew()){
+        if(developer.isNew()){
             System.out.println("developer isn't registered in DB");
-        }*/
+        }
 //TODO finish this
       project.getDevelopers().add(developer);
       projectDAO.save(project);
@@ -46,16 +49,16 @@ public class ProjectController  extends AbstractController<Project> {
     }
 
     public List<Project> getAll() throws SQLException {
-        //TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
-        //try{
+        TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
+        try{
             List<Project> result = projectDAO.findAll();
-        //    txManager.commit(status);
+            txManager.commit(status);
             return result;
-        //}catch (NullPointerException e){
-        //    System.out.println("Null pointer");
-        //    txManager.rollback(status);
-        //    throw new RuntimeException();
-        //}
+        }catch (NullPointerException e){
+            System.out.println("Null pointer");
+            txManager.rollback(status);
+            throw new RuntimeException();
+        }
 
     }
 
