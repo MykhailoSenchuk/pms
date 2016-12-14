@@ -131,7 +131,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     public Project update(Project project) {
-        System.out.println("Company ID is - " + project.getCompany_id());
         try (Connection connection = getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_ROW)) {
                     if (project.getName() == null){
@@ -250,6 +249,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 }catch (NullPointerException e) {
                     System.out.println("NullPointerException happens at: findAll()");
                 }
+                //resultSet.close(); ---------Where to close this?????
             }
         } catch (SQLException e) {
             System.out.println("Exception occurred while connecting to DB" + " " + e);

@@ -334,8 +334,16 @@ public class Main {
                                     newDevelopers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
                                     stringDeveloperId = br.readLine();
                                 }
+                                if (companyController.get(newCompanyId) != null && customerController.get(newCustomerId) != null){
+                                    projectController.update(new Project(id, newName, companyController.get(newCompanyId)
+                                            , customerController.get(newCustomerId), newDevelopers));
+                                }else {
+                                    System.out.println("Some inputs are null: " + "customerID - "
+                                            + customerController.get(newCustomerId) + ", companyID - "
+                                            + companyController.get(newCompanyId) + ". Nothing were updated");
+                                }
 
-                                projectController.update(new Project(id, newName, companyController.get(newCompanyId), customerController.get(newCustomerId), newDevelopers));
+
                             }else {
                                 System.out.println("Sorry. Bad id.");
                             }
