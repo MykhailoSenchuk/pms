@@ -245,8 +245,9 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     @Override
     public void deleteById(int id){
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.projects WHERE id=?");
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.projects WHERE id=?")) {
+
             preparedStatement.setInt(1, id);
             preparedStatement.execute();
             LOGGER.info("Project was successfully deleted.");

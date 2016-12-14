@@ -1,10 +1,10 @@
-DROP TABLE pms.projects CASCADE;
-DROP TABLE pms.companies CASCADE;
-DROP TABLE pms.customers CASCADE;
-DROP TABLE pms.developers CASCADE;
-DROP TABLE pms.skills CASCADE;
-DROP TABLE pms.developers_skills CASCADE;
-DROP TABLE pms.projects_developers CASCADE;
+DROP TABLE IF EXISTS pms.projects CASCADE;
+DROP TABLE IF EXISTS pms.companies CASCADE;
+DROP TABLE IF EXISTS pms.customers CASCADE;
+DROP TABLE IF EXISTS pms.developers CASCADE;
+DROP TABLE IF EXISTS pms.skills CASCADE;
+DROP TABLE IF EXISTS pms.developers_skills CASCADE;
+DROP TABLE IF EXISTS pms.projects_developers CASCADE;
 
 CREATE TABLE pms.companies
 (
@@ -26,15 +26,16 @@ CREATE TABLE pms.projects
 	  company_id integer NOT NULL,
     customer_id integer NOT NULL,
     project_name character varying(50) NOT NULL,
+    cost numeric(10,2),
     PRIMARY KEY (id),
 	FOREIGN KEY (company_id)
         REFERENCES pms.companies (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE CASCADE,
 	FOREIGN KEY (customer_id)
         REFERENCES pms.customers (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
 );
 
 CREATE TABLE pms.developers
@@ -47,7 +48,7 @@ CREATE TABLE pms.developers
     FOREIGN KEY (company_id)
         REFERENCES pms.companies (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
 );
 
 CREATE TABLE pms.skills
@@ -70,7 +71,7 @@ CREATE TABLE pms.developers_skills
     FOREIGN KEY (skill_id)
         REFERENCES pms.skills (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
 );
 
 CREATE TABLE pms.projects_developers
@@ -87,3 +88,7 @@ CREATE TABLE pms.projects_developers
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
+
+GRANT SELECT ON ALL TABLES IN SCHEMA pms TO "user";
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA pms TO "user";
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA pms to "user";

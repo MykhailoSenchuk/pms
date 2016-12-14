@@ -15,13 +15,13 @@ INSERT INTO pms.customers
 		('Ukrzaliznytsya');
 
 INSERT INTO pms.projects 
-		(company_id,customer_id,project_name)
+		(company_id,customer_id,project_name,cost)
 	VALUES 
-		(1,1,'Financial Software'),
-		(2,3,'Ticketing Software'),
-		(5,2,'Website Project'),
-		(5,3,'CMS Software'),
-		(2,1,'Website Architecture');
+		(1,1,'Financial Software',100000),
+		(2,3,'Ticketing Software',200000),
+		(5,2,'Website Project',300000),
+		(5,3,'CMS Software',400000),
+		(2,1,'Website Architecture',500000);
 
 INSERT INTO pms.developers
 (first_name,last_name,company_id)

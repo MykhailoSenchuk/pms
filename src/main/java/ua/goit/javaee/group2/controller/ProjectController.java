@@ -20,19 +20,20 @@ public class ProjectController  extends AbstractController<Project> {
     private ProjectDAO projectDAO;
 
     public void addDeveloperToProject(Developer developer, Project project){
-        if (project.isNew()){
 
+        if (project.isNew()){
             System.out.println("project isn't registered in DB");
             return;
         }
-
         if(developer.isNew()){
             System.out.println("developer isn't registered in DB");
         }
-//TODO finish this
-      project.getDevelopers().add(developer);
-      projectDAO.save(project);
-
+        if (project.getDevelopers() != null){
+            //project.getDevelopers().add(developer);
+            projectDAO.save(project);
+        }else{
+            System.out.println("Sorry, NPE exception " + project.getDevelopers());
+        }
     }
 
     @Override
@@ -59,7 +60,6 @@ public class ProjectController  extends AbstractController<Project> {
             txManager.rollback(status);
             throw new RuntimeException();
         }
-
     }
 
     @Override

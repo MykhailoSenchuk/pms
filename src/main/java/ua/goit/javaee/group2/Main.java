@@ -174,19 +174,30 @@ public class Main {
                             String lastName = br.readLine();
                             System.out.print("Please set company for new developer. ");
                             Integer companyId = getIdFromConsole();
-                            developerController.add(
-                                    new Developer(name, lastName, companyController.get(companyId), getSkillsFromConsole()));
-                            break;
+                            if (companyController.get(companyId) != null){
+                                developerController.add(
+                                        new Developer(name, lastName, companyController.get(companyId), getSkillsFromConsole()));
+                                break;
+                            }else System.out.println("Sorry there is no such row in database: "
+                                    + "companyId - " + companyController.get(companyId));
+                            continue;
+
                         }
                         case "4": //  adding new project
                         {
-                            System.out.print("Please set company of new project. ");
+                            System.out.print("Please set company of new project: ");
                             Integer companyId = getIdFromConsole();
                             System.out.print("Please set customer of new project: ");
                             Integer customerId = getIdFromConsole();
-                            projectController.add(new Project(name, companyController.get(companyId),
-                                    customerController.get(customerId), getDevelopersFromConsole()));
-                            break;
+                            if (companyController.get(companyId) != null && customerController.get(customerId) != null){
+                                projectController.add(new Project(name, companyController.get(companyId),
+                                        customerController.get(customerId), getDevelopersFromConsole()));
+                                break;
+                            }
+                            else System.out.println("Sorry there is no such rows in database: "
+                                    + "companyId - " + companyController.get(companyId) + ", "
+                                    + "customerId - " + customerController.get(customerId));
+                            continue;
                         }
                         case "5": //  adding new skill
                         {
@@ -194,8 +205,7 @@ public class Main {
                             break;
                         }
                     }
-
-                    System.out.println("New entity was successfully added in table" + tableName + ".");
+                    System.out.println("New entity was successfully added in table " + tableName + ".");
                     System.out.println("End of creating new row in table " + tableName + '.');
                     continue;
                 }
@@ -355,23 +365,44 @@ public class Main {
                             }
                             case "2": // deleting customer by id
                             {
-                                customerController.delete(id);
-                                break;
+                                if (customerController.get(id) != null){
+                                    customerController.delete(id);
+                                    break;
+                                }else {
+                                    System.out.println("Sorry, there is no row with id " + customerController.get(id));
+                                    continue;
+                                }
+
                             }
                             case "3": // deleting developer by id
                             {
+                                if (developerController.get(id) != null){
                                 developerController.delete(id);
                                 break;
+                                }else {
+                                    System.out.println("Sorry, there is no row with id " + developerController.get(id));
+                                    continue;
+                                }
                             }
                             case "4": //  deleting project by id
                             {
+                                if (projectController.get(id) != null){
                                 projectController.delete(id);
                                 break;
+                                }else {
+                                    System.out.println("Sorry, there is no row with id " + projectController.get(id));
+                                    continue;
+                                }
                             }
                             case "5": //  deleting skill by id
                             {
+                                if (skillController.get(id) != null){
                                 skillController.delete(id);
                                 break;
+                                }else {
+                                    System.out.println("Sorry, there is no row with id " + skillController.get(id));
+                                    continue;
+                                }
                             }
                         }
                     } else {
