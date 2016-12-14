@@ -10,6 +10,8 @@ import ua.goit.javaee.group2.dao.ProjectDAO;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,8 +22,8 @@ public class ProjectController  extends AbstractController<Project> {
     private ProjectDAO projectDAO;
 
     public void addDeveloperToProject(Developer developer, Project project){
-
-        if (project.isNew()){
+        projectDAO.addDevToProject(developer,project);
+        /*if (project.isNew()){
             System.out.println("project isn't registered in DB");
             return;
         }
@@ -33,7 +35,7 @@ public class ProjectController  extends AbstractController<Project> {
             projectDAO.save(project);
         }else{
             System.out.println("Sorry, NPE exception " + project.getDevelopers());
-        }
+        }*/
     }
 
     @Override
