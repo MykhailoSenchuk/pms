@@ -24,7 +24,9 @@ public class DeveloperController extends AbstractController<Developer> {
 
     @Override
     @Transactional
-    public Developer add(Developer developer){return developerDAO.save(developer);}
+    public Developer add (Developer developer) {
+        return developerDAO.save(developer);
+    }
 
     @Override
     @Transactional
@@ -40,7 +42,15 @@ public class DeveloperController extends AbstractController<Developer> {
 
     @Override
     @Transactional
-    public void update(Developer developer){developerDAO.save(developer);}
+    public void update(Developer developer){
+
+        if(developer.getCompany() == null) {
+            //TODO make logger
+            System.out.println("Error: no company assigned");
+            return;
+        }
+        developerDAO.save(developer);
+    }
 
     @Override
     @Transactional
