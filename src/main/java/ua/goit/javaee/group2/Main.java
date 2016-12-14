@@ -464,7 +464,7 @@ public class Main {
                     continue;
                 }
                 default:
-                    System.out.print("\nPlease, choose 0-5 : ");
+                    System.out.print("\nPlease, choose 0-6 : ");
             }
         }
     }
