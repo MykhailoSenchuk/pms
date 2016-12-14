@@ -2,15 +2,11 @@ package ua.goit.javaee.group2.dao.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ua.goit.javaee.group2.controller.*;
 import ua.goit.javaee.group2.dao.CompanyDAO;
 import ua.goit.javaee.group2.dao.CustomerDAO;
 import ua.goit.javaee.group2.dao.ProjectDAO;
-import ua.goit.javaee.group2.model.Company;
-import ua.goit.javaee.group2.model.Customer;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
-
 import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -91,7 +87,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         try(PreparedStatement preparedStatement = getConnection().prepareStatement(
                 "INSERT INTO pms.projects_developers(developer_id, project_id) VALUES (?,?)")) {
             for (Developer developer : project.getDevelopers()) {
-
                 preparedStatement.setInt(2, project.getId());
                 preparedStatement.setInt(1, developer.getId());
                 preparedStatement.execute();
@@ -148,9 +143,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                     }else {
                         preparedStatement.setLong(3, project.getCompany().getId());
                     }
-
                     preparedStatement.setInt(4, project.getId());
-
 
                 if (preparedStatement.executeUpdate() == 0) {
                     throw new SQLException("Updating project failed, no rows affected");
@@ -168,7 +161,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         try (Connection connection = getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_NAME)) {
                 preparedStatement.setString(1, name);
-
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (!resultSet.next()) {
                         return null;
@@ -181,8 +173,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
             throw e;
         }
     }
-
-
 
     @Override
     public void deleteAll(){
@@ -262,22 +252,18 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     public void deleteById(int id){
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.projects WHERE id=?")) {
-
             preparedStatement.setInt(1, id);
             preparedStatement.execute();
             LOGGER.info("Project was successfully deleted.");
         } catch (SQLException e) {
             LOGGER.error("Exception occurred: " + e);
-            //throw new RuntimeException(e);
         }
-
     }
 
     @Override
     public Project findById(int id) throws SQLException {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)){
-
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)){
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             Project project;
@@ -308,7 +294,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
-
 
     //@Transactional(propagation = Propagation.MANDATORY)
 

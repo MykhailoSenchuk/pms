@@ -34,7 +34,6 @@ public class Project extends NamedEntity {
 
     }
 
-
     @Override
     public String toString() {
         return "Project{" +
@@ -47,20 +46,6 @@ public class Project extends NamedEntity {
                 ", cost=" + cost +
                 '}';
     }
-
-    /*@Override
-    public String toString() {
-        return "Project{" +
-                "ID=" + getId() +
-                ", company=" + companyStr +
-                ", customer=" + customerStr +
-                ", project_name='" + project_name + '\'' +
-                ", company_id=" + company_id +
-                ", customer_id=" + customer_id +
-                ", cost=" + cost +
-                '}';
-    }*/
-
 
     public String getCompanyStr() {
         return companyStr;
@@ -93,10 +78,6 @@ public class Project extends NamedEntity {
     public void setProject_name(String project_name) {
         this.setName(project_name);
     }
-
-    /*public void setProject_name(String project_name) {
-        this.project_name = project_name;
-    }*/
 
     public long getCompany_id() {
         return this.company.getId();
