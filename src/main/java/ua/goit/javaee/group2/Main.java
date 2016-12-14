@@ -173,6 +173,7 @@ public class Main {
                             System.out.print("Please enter last name of new developer: ");
                             String lastName = br.readLine();
                             System.out.print("Please set company for new developer. ");
+                            companyController.getAll().forEach(System.out::println);
                             Integer companyId = getIdFromConsole();
                             if (companyController.get(companyId) != null){
                                 developerController.add(
@@ -205,6 +206,7 @@ public class Main {
                             break;
                         }
                     }
+                    //TODO situations with failed operation
                     System.out.println("New entity was successfully added in table " + tableName + ".");
                     System.out.println("End of creating new row in table " + tableName + '.');
                     continue;
@@ -305,8 +307,9 @@ public class Main {
                                 System.out.print("Please enter new last name of updated developer: ");
                                 String newLastName = br.readLine();
                                 System.out.print("Please enter new company id of updated developer: ");
-                                Integer newCompanyId = Integer.valueOf(br.readLine());
+                                Integer newCompanyId = getIdFromConsole();
                                 System.out.println("Now you need to input all skills of updated developer.");
+
                                 developerController.update(new Developer(id, newName, newLastName, companyController.get(newCompanyId), getSkillsFromConsole()));
                             }else {
                                 System.out.println("Sorry. Bad id.");
@@ -515,19 +518,31 @@ public class Main {
         return developers;
     }
 
+    //No longer provide null result
     private Integer getIdFromConsole() throws IOException {
         System.out.print("Enter id: ");
-        try {
-            return Integer.valueOf(br.readLine());
-        }catch (NumberFormatException e){
-            System.out.println("Need to be a number");
-            return null;
+
+        Integer result = -1;
+        boolean firstCycle = true;
+        while( result <= 0 ) {
+            try {
+                if(!firstCycle)
+                    System.out.println("incorrect input, need positive, not equal to 0 and not null");
+                firstCycle = false;
+                result = Integer.valueOf(br.readLine());
+            }
+            catch (NumberFormatException e){
+                result = 0;
+            }
         }
+        return result;
+
     }
 
     private Set<Skill> getSkillsFromConsole() throws IOException {
         System.out.println("Type name of skill of developer, press \'Enter\' after each skill name. To stop input press \'Enter\' twice.");
         Set<Skill> skills = new HashSet<>();
+        skillController.getAll().forEach(System.out::println);
         String skillName = br.readLine();
         while (!"".equals(skillName)) {
             Skill skill = skillController.getByName(skillName);
