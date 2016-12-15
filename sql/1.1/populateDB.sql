@@ -70,3 +70,63 @@ INSERT INTO pms.projects_developers
 		(3,5),
 		(4,5), 
 		(5,3);
+
+-- Added from 1.2 --
+UPDATE
+  pms.developers
+SET
+  salary = 10000
+WHERE id = 1;
+UPDATE
+  pms.developers
+SET
+  salary = 20000
+WHERE id = 2;
+UPDATE
+  pms.developers
+SET
+  salary = 30000
+WHERE
+  id = 3;
+UPDATE
+  pms.developers
+SET
+  salary = 40000
+WHERE
+  id = 4;
+UPDATE
+  pms.developers
+SET
+  salary = 50000
+WHERE id = 5;
+
+UPDATE
+  pms.projects
+SET
+  cost = 500000
+WHERE
+  id = 1;
+UPDATE
+  pms.projects
+SET
+  cost = 550000
+WHERE
+  id = 2;
+UPDATE
+  pms.projects
+SET
+  cost = 600000
+WHERE
+  id = 3;
+UPDATE
+  pms.projects
+SET
+  cost = 650000
+WHERE
+  id = 4;
+UPDATE
+  pms.projects
+SET
+  cost = 700000
+WHERE
+  id = 5;

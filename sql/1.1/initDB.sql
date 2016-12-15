@@ -79,3 +79,14 @@ CREATE TABLE pms.projects_developers
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
+
+-- Added from 1.2 --
+ALTER TABLE
+  pms.developers
+ADD
+  salary numeric(10,2);
+
+ALTER TABLE
+  pms.projects
+ADD
+  cost numeric(10,2);
