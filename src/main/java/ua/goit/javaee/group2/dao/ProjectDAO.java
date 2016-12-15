@@ -1,5 +1,6 @@
 package ua.goit.javaee.group2.dao;
 
+import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
 
 import java.sql.SQLException;
@@ -17,5 +18,7 @@ public interface ProjectDAO extends AbstractDAO<Project> {
     void updateTable(String sqlQuery);
 
     void deleteTable(String tableName);
+
+    void addDevToProject(Developer developer, Project project);
 
 }
