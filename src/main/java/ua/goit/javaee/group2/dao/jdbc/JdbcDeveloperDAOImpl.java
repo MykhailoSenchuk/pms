@@ -51,7 +51,10 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
                 ps.setString(1, developer.getName());
                 ps.setString(2, developer.getLastName());
-                ps.setInt(3, developer.getCompany().getId());
+                if(developer.getCompany() != null)
+                    ps.setInt(3, developer.getCompany().getId());
+                else
+                    ps.setNull(3,Types.INTEGER);
                 ps.setInt(4, developer.getId());
 
                 if (ps.executeUpdate() == 0) {

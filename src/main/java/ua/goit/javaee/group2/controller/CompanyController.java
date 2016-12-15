@@ -20,6 +20,11 @@ public class CompanyController extends AbstractController<Company>{
 
     public void addDeveloperToCompany(Developer developer, Company company) throws SQLException {
 
+        if( company == null ){
+            // TODO make logger
+            System.out.println("Company wasn't provided");
+            return;
+        }
         if (company.isNew()){
 
             System.out.println("company isn't registered in DB");
@@ -39,10 +44,12 @@ public class CompanyController extends AbstractController<Company>{
     @Override
     public Company add(Company company) throws SQLException{
 
-        if(company == null)
+        if(company == null || company.getName() == null || "".equals(company.getName()) ) {
+            System.out.println("company wasn't provided");
             return null;
-
+        }
         //search company by name
+        //TODO make name unique in DB
         Company byName = companyDAO.load(company.getName());
 
         //if wasn't found by name add row to db
