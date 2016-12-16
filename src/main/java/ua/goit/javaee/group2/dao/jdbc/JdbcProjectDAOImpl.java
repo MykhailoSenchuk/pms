@@ -31,7 +31,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     private CustomerDAO customerDAO;
 
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private Connection connection;
+    //private Connection connection;
 
     private static int inputID(BufferedReader br) {
         int selectId = 0;
@@ -74,7 +74,8 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     private void removeDeveloperOf(Project project) {
-        try(PreparedStatement ps = getConnection().prepareStatement("DELETE FROM pms.projects_developers WHERE project_id=?")) {
+        try(Connection connection = getConnection();
+                PreparedStatement ps = connection.prepareStatement("DELETE FROM pms.projects_developers WHERE project_id=?")) {
             ps.setInt(1, project.getId());
             ps.execute();
         } catch (SQLException e) {
@@ -84,7 +85,8 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     private void addDeveloperTo(Project project){
-        try(PreparedStatement preparedStatement = getConnection().prepareStatement(
+        try(Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO pms.projects_developers(developer_id, project_id) VALUES (?,?)")) {
             for (Developer developer : project.getDevelopers()) {
                 preparedStatement.setInt(2, project.getId());
@@ -128,21 +130,21 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     public Project update(Project project) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_ROW)) {
-                    if (project.getName() == null){
-                        System.out.println("There can't be empty name of project");
-                    }else {
-                        preparedStatement.setString(1, project.getName());
-                    }
-                    if (project.getCustomer().getId() == null){
-                        System.out.println("customerId is: " + project.getCustomer().getId());
-                    }else {
-                        preparedStatement.setLong(2, project.getCustomer().getId());
-                    }
-                    if (project.getCompany().getId() == null){
-                        System.out.println("companyId is: " + project.getCompany().getId());
-                    }else {
-                        preparedStatement.setLong(3, project.getCompany().getId());
-                    }
+                if (project.getName() == null){
+                    System.out.println("There can't be empty name of project");
+                }else {
+                    preparedStatement.setString(1, project.getName());
+                }
+                if (project.getCustomer().getId() == null){
+                    System.out.println("customerId is: " + project.getCustomer().getId());
+                }else {
+                    preparedStatement.setLong(2, project.getCustomer().getId());
+                }
+                if (project.getCompany().getId() == null){
+                    System.out.println("companyId is: " + project.getCompany().getId());
+                }else {
+                    preparedStatement.setLong(3, project.getCompany().getId());
+                }
                     preparedStatement.setInt(4, project.getId());
 
                 if (preparedStatement.executeUpdate() == 0) {
@@ -215,31 +217,31 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     @Override
     public List<Project> findAll() {
         List<Project> resultProject = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
             System.out.println("Successfully connected to DB...");
 
-            ResultSet resultSet = statement.executeQuery(SELECT_ALL);
+            try(ResultSet resultSet = statement.executeQuery(SELECT_ALL)){
 
-            while (resultSet.next()){
-                Project project = new Project();
+                while (resultSet.next()) {
+                    Project project = new Project();
 
-                project.setCompany(companyDAO.load( resultSet.getInt("company_id") ));
-                project.setCustomer(customerDAO.load( resultSet.getInt("customer_id") ));
-                project.setId(resultSet.getInt("id"));
-                project.setProject_name(resultSet.getString("project_name"));
-                project.setCompany_id(resultSet.getLong("company_id"));
-                project.setCustomer_id(resultSet.getLong("customer_id"));
-                project.setCompanyStr(resultSet.getString("company_name"));
-                project.setCustomerStr(resultSet.getString("customer_name"));
-                project.setCost(resultSet.getFloat("cost"));
+                    project.setCompany(companyDAO.load(resultSet.getInt(Project.COMPANY_ID)));
+                    project.setCustomer(customerDAO.load(resultSet.getInt(Project.CUSTOMER_ID)));
+                    project.setId(resultSet.getInt(Project.ID));
+                    project.setProject_name(resultSet.getString(Project.PROJECT_NAME));
+                    project.setCompany_id(resultSet.getLong(Project.COMPANY_ID));
+                    project.setCustomer_id(resultSet.getLong(Project.CUSTOMER_ID));
+                    project.setCompanyStr(resultSet.getString(Project.COMPANY_NAME));
+                    project.setCustomerStr(resultSet.getString(Project.CUSTOMER_NAME));
+                    project.setCost(resultSet.getFloat(Project.COST));
 
-                try{
-                    resultProject.add(project);
-                }catch (NullPointerException e) {
-                    System.out.println("NullPointerException happens at: findAll()");
+                    try {
+                        resultProject.add(project);
+                    } catch (NullPointerException e) {
+                        System.out.println("NullPointerException happens at: findAll()");
+                    }
                 }
-                //resultSet.close(); ---------Where to close this?????
             }
         } catch (SQLException e) {
             System.out.println("Exception occurred while connecting to DB" + " " + e);
@@ -250,7 +252,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     @Override
     public void deleteById(int id){
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.projects WHERE id=?")) {
             preparedStatement.setInt(1, id);
             preparedStatement.execute();
@@ -262,18 +264,20 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     @Override
     public Project findById(int id) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)){
             preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            Project project;
-            if (resultSet.next()) {
-                project = createProject(resultSet);
-                LOGGER.info("Project " + project + " successfully added to database.");
-                return project;
-            } else {
-                LOGGER.info("Project was not found.");
-                return null;
+
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                Project project;
+                if (resultSet.next()) {
+                    project = createProject(resultSet);
+                    LOGGER.info("Project " + project + " successfully added to database.");
+                    return project;
+                } else {
+                    LOGGER.info("Project was not found.");
+                    return null;
+                }
             }
         } catch (SQLException e) {
             LOGGER.error("Exception occurred: " + e);
@@ -283,11 +287,11 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     private Project createProject(ResultSet resultSet) throws SQLException {
         Project project = new Project();
-        project.setCompany(companyDAO.load( resultSet.getInt("company_id") ));
-        project.setCustomer(customerDAO.load( resultSet.getInt("customer_id") ));
-        project.setId(resultSet.getInt("id"));
-        project.setProject_name(resultSet.getString("project_name"));
-        project.setCost(resultSet.getFloat("cost"));
+        project.setCompany(companyDAO.load( resultSet.getInt(Project.COMPANY_ID) ));
+        project.setCustomer(customerDAO.load( resultSet.getInt(Project.CUSTOMER_ID) ));
+        project.setId(resultSet.getInt(Project.ID));
+        project.setProject_name(resultSet.getString(Project.PROJECT_NAME));
+        project.setCost(resultSet.getFloat(Project.COST));
         return project;
     }
 
@@ -298,7 +302,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     //@Transactional(propagation = Propagation.MANDATORY)
 
     public void createTable(String sqlQuery) {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
             System.out.println("Successfully connected to DB...");
             try{
@@ -318,7 +322,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     //@Transactional(propagation = Propagation.MANDATORY)
     @Override
     public void updateTable(String sqlQuery) {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
             System.out.println("Successfully connected to DB...");
             try{
@@ -338,7 +342,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     //@Transactional(propagation = Propagation.MANDATORY)
     @Override
     public void deleteTable(String tableName) {
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
             System.out.println("Successfully connected to DB...");
             try{
@@ -360,8 +364,9 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         if (developer.isNew() && project.isNew()){
             System.out.println("Developer or project isn't registered in DB");
         }else {
-            try (PreparedStatement preparedStatement = getConnection()
-                    .prepareStatement("INSERT INTO pms.projects_developers (project_id, developer_id) VALUES (?,?)")) {
+            try (Connection connection = getConnection();
+                 PreparedStatement preparedStatement = connection
+                 .prepareStatement("INSERT INTO pms.projects_developers (project_id, developer_id) VALUES (?,?)")){
                 preparedStatement.setInt(1,project.getId());
                 preparedStatement.setInt(2,developer.getId());
                 if (project.getId() != null && developer.getId() != null){
@@ -370,11 +375,9 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                     System.out.println("One of the inputs is null: " + "projectId - "
                             + project.getId() + ", " + "developerId - " + developer.getId());
                 }
-
             } catch (SQLException e) {
                 LOGGER.error("Can't establish connection " + e);
             }
-
         }
     }
 

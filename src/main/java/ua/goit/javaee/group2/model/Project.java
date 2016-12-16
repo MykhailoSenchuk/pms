@@ -4,6 +4,14 @@ import java.util.Set;
 
 public class Project extends NamedEntity {
 
+    public static String COMPANY_ID = "company_id";
+    public static String CUSTOMER_ID = "customer_id";
+    public static String ID = "id";
+    public static String PROJECT_NAME = "project_name";
+    public static String COMPANY_NAME = "company_name";
+    public static String CUSTOMER_NAME = "customer_name";
+    public static String COST = "cost";
+
     private String companyStr;
     private String customerStr;
     private String project_name;

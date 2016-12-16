@@ -20,12 +20,13 @@ public class ProjectController  extends AbstractController<Project> {
     private PlatformTransactionManager txManager;
 
     private ProjectDAO projectDAO;
-
+    @Transactional
     public void addDeveloperToProject(Developer developer, Project project){
         projectDAO.addDevToProject(developer,project);
     }
 
     @Override
+    @Transactional
     public Project add(Project project){return projectDAO.save(project);}
 
     @Transactional
@@ -37,7 +38,7 @@ public class ProjectController  extends AbstractController<Project> {
     public Project get(int id) throws SQLException {
         return projectDAO.findById(id);
     }
-
+    @Transactional
     public List<Project> getAll() throws SQLException {
         TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
         try{
@@ -52,6 +53,7 @@ public class ProjectController  extends AbstractController<Project> {
     }
 
     @Override
+    @Transactional
     public void update(Project project){projectDAO.save(project);}
 
     @Transactional
@@ -60,6 +62,7 @@ public class ProjectController  extends AbstractController<Project> {
     }
 
     @Override
+    @Transactional
     public void delete(int id){projectDAO.deleteById(id);}
 
     @Transactional
@@ -68,6 +71,7 @@ public class ProjectController  extends AbstractController<Project> {
     }
 
     @Override
+    @Transactional
     public void deleteAll(){projectDAO.deleteAll();}
 
     public void setTxManager(PlatformTransactionManager txManager) {
