@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 public class DeveloperController extends AbstractController<Developer> {
-
     private PlatformTransactionManager txManager;
 
     private static final Logger LOG = LoggerFactory.getLogger(DeveloperController.class);
