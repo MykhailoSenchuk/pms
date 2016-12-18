@@ -33,19 +33,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     //private Connection connection;
 
-    private static int inputID(BufferedReader br) {
-        int selectId = 0;
-        try {
-            System.out.print("Input id:");
-            selectId = Integer.parseInt(br.readLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Wrong input. Need a number!!!");
-        } catch (IOException e) {
-            System.out.println("IOException occurred");
-        }
-        return selectId;
-    }
-
     private static int inputCost(BufferedReader br) {
         int selectCost = 0;
         try {
@@ -159,24 +146,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public Project loadString(String name) throws SQLException {
-        try (Connection connection = getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_NAME)) {
-                preparedStatement.setString(1, name);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (!resultSet.next()) {
-                        return null;
-                    }
-                    return new Project(resultSet.getInt(1), resultSet.getString(2));
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-            throw e;
-        }
-    }
-
-    @Override
     public void deleteAll(){
         try (Connection connection = getConnection()) {
             try (Statement statement = connection.createStatement()) {
@@ -210,10 +179,27 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     @Override
     public Project load(int id) {
-        return null;
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)){
+            preparedStatement.setInt(1, id);
+
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                Project project;
+                if (resultSet.next()) {
+                    project = createProject(resultSet);
+                    LOGGER.info("Project " + project + " successfully found in database.");
+                    return project;
+                } else {
+                    LOGGER.info("Project was not found.");
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Exception occurred: " + e);
+            throw new RuntimeException(e);
+        }
     }
 
-    //@Transactional(propagation = Propagation.MANDATORY)
     @Override
     public List<Project> findAll() {
         List<Project> resultProject = new ArrayList<>();
@@ -262,29 +248,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         }
     }
 
-    @Override
-    public Project findById(int id) throws SQLException {
-        try (Connection connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)){
-            preparedStatement.setInt(1, id);
-
-            try(ResultSet resultSet = preparedStatement.executeQuery()) {
-                Project project;
-                if (resultSet.next()) {
-                    project = createProject(resultSet);
-                    LOGGER.info("Project " + project + " successfully added to database.");
-                    return project;
-                } else {
-                    LOGGER.info("Project was not found.");
-                    return null;
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
-        }
-    }
-
     private Project createProject(ResultSet resultSet) throws SQLException {
         Project project = new Project();
         project.setCompany(companyDAO.load( resultSet.getInt(Project.COMPANY_ID) ));
@@ -297,66 +260,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
-    }
-
-    //@Transactional(propagation = Propagation.MANDATORY)
-
-    public void createTable(String sqlQuery) {
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            System.out.println("Successfully connected to DB...");
-            try{
-                System.out.println("Creating Table...");
-                statement.execute(sqlQuery);
-                System.out.println("New Table successfully created");
-
-            }catch (SQLException e){
-                System.out.println("Can't create Table... " + e);
-            }
-        } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB" + " " + e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    //@Transactional(propagation = Propagation.MANDATORY)
-    @Override
-    public void updateTable(String sqlQuery) {
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            System.out.println("Successfully connected to DB...");
-            try{
-                System.out.println("Updating Table...");
-                statement.execute(sqlQuery);
-                System.out.println("Table successfully updated");
-
-            }catch (SQLException e){
-                System.out.println("Can't update Table... " + e);
-            }
-        } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB" + " " + e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    //@Transactional(propagation = Propagation.MANDATORY)
-    @Override
-    public void deleteTable(String tableName) {
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            System.out.println("Successfully connected to DB...");
-            try{
-                System.out.println("Deleting Table...");
-                statement.execute(tableName);
-                System.out.println("Table successfully deleted");
-
-            }catch (SQLException e){
-                System.out.println("Can't delete Table... " + e);
-            }
-        } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB " + " " + e);
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

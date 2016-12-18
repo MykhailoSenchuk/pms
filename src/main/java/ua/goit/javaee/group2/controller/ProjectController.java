@@ -36,7 +36,7 @@ public class ProjectController  extends AbstractController<Project> {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Project get(int id) throws SQLException {
-        return projectDAO.findById(id);
+        return projectDAO.load(id);
     }
     @Transactional
     public List<Project> getAll() throws SQLException {
