@@ -244,6 +244,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 while (resultSet.next()) {
                     Project project = new Project();
 
+
                     project.setCompany(companyDAO.load(resultSet.getInt(Project.COMPANY_ID)));
                     project.setCustomer(customerDAO.load(resultSet.getInt(Project.CUSTOMER_ID)));
                     project.setId(resultSet.getInt(Project.ID));
