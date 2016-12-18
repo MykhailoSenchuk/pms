@@ -376,44 +376,23 @@ public class Main {
                             }
                             case "2": // deleting customer by id
                             {
-                                if (customerController.get(id) != null){
-                                    customerController.delete(id);
-                                    break;
-                                }else {
-                                    System.out.println("Sorry, there is no row with id " + customerController.get(id));
-                                    continue;
-                                }
-
+                                deleteEntityById(tableName, id, customerController);
+                                break;
                             }
                             case "3": // deleting developer by id
                             {
-                                if (developerController.get(id) != null){
-                                developerController.delete(id);
+                                deleteEntityById(tableName, id, developerController);
                                 break;
-                                }else {
-                                    System.out.println("Sorry, there is no row with id " + developerController.get(id));
-                                    continue;
-                                }
                             }
                             case "4": //  deleting project by id
                             {
-                                if (projectController.get(id) != null){
-                                projectController.delete(id);
+                                deleteEntityById(tableName, id, projectController);
                                 break;
-                                }else {
-                                    System.out.println("Sorry, there is no row with id " + projectController.get(id));
-                                    continue;
-                                }
                             }
                             case "5": //  deleting skill by id
                             {
-                                if (skillController.get(id) != null){
-                                skillController.delete(id);
+                                deleteEntityById(tableName, id, skillController);
                                 break;
-                                }else {
-                                    System.out.println("Sorry, there is no row with id " + skillController.get(id));
-                                    continue;
-                                }
                             }
                         }
                     } else {

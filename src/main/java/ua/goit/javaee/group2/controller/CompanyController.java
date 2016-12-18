@@ -29,7 +29,7 @@ public class CompanyController extends AbstractController<Company>{
             System.out.println("company isn't registered in DB");
             return;
         }
-        
+
         if(developer.isNew()){
             System.out.println("developer isn't registered in DB");
         }
