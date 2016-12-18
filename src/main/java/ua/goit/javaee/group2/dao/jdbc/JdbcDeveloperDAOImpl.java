@@ -18,8 +18,32 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
-    private static final String UPDATE_ROW = "UPDATE pms.developers SET first_name = ?, last_name = ?, company_id =? WHERE id =?";
-    private static final String INSERT_ROW = "INSERT INTO pms.developers (first_name, last_name, company_id) VALUES (?,?,?)";
+    private static final String UPDATE_ROW = String.format(
+            "UPDATE pms.developers SET %s = ?, %s = ?, %s = ? WHERE %s = ?",
+            Developer.FIRST_NAME, Developer.LAST_NAME, Developer.COMPANY_ID, Developer.ID);
+
+    private static final String INSERT_ROW = String.format(
+            "INSERT INTO pms.developers (%s, %s, %s) VALUES (?,?,?)",
+            Developer.FIRST_NAME, Developer.LAST_NAME, Developer.COMPANY_ID);
+
+    private static final String GET_BY_ID = String.format(
+            "SELECT * FROM pms.developers WHERE %s = ?", Developer.ID);
+
+    private static final String GET_ALL = "SELECT * FROM pms.developers";
+
+    private static final String DELETE_BY_ID = String.format(
+            "DELETE FROM pms.developers WHERE %s = ?", Developer.ID);;
+
+    private static final String DELETE_SKILLS_FROM_DEVELOPER = String.format(
+            "DELETE FROM pms.developers_skills WHERE %s = ?", Developer.ID);
+
+    private static final String ADD_SKILLS_TO_DEVELOPER =
+            "INSERT INTO pms.developers_skills(developer_id, skill_id) VALUES (?,?)";
+
+    private static final String GET_SKILLS_OF_DEVELOPER =
+            "SELECT skill_id FROM pms.developers_skills WHERE developer_id=?";
+
+    private static final String DELETE_ALL = "DELETE FROM pms.developers";
 
     private static final Logger LOG = getLogger(JdbcDeveloperDAOImpl.class);
 
@@ -64,7 +88,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             }
         } catch (SQLException e) {
             LOG.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -91,23 +115,20 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             }
         } catch (SQLException e) {
             LOG.error("Can't save developer: " + e.getMessage(), e);
-            throw new RuntimeException(e);
+            return null;
         }
         return developer;
     }
 
     @Override
     public void saveAll(List<Developer> list) {
-        for (Developer developer : list) {
-            save(developer);
-        }
+        list.forEach(this::save);
     }
 
     @Override
     public Developer load(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM pms.developers WHERE id=?")) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_ID)) {
                 preparedStatement.setInt(1, id);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     Developer developer;
@@ -124,7 +145,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             }
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -133,7 +154,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
         List<Developer> developers = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             try (Statement statement = connection.createStatement()) {
-                try (ResultSet resultSet = statement.executeQuery("SELECT * FROM pms.developers")) {
+                try (ResultSet resultSet = statement.executeQuery(GET_ALL)) {
                     while (resultSet.next()) {
                         Developer developer = createDeveloper(resultSet);
                         retrieveSkillsOf(developer);
@@ -145,21 +166,20 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
     @Override
     public void deleteById(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.developers WHERE id=?")) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_ID)) {
                 preparedStatement.setInt(1, id);
                 preparedStatement.execute();
                 LOG.info("Developer was successfully deleted.");
             }
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -167,12 +187,11 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     public void deleteAll() {
         try (Connection connection = dataSource.getConnection()) {
             try (Statement statement = connection.createStatement()) {
-                statement.execute("DELETE FROM pms.developers");
+                statement.execute(DELETE_ALL);
                 LOG.info("All developers were successfully deleted.");
             }
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -187,19 +206,17 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
     private void removeSkillsOf(Developer developer) {
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("DELETE FROM pms.developers_skills WHERE developer_id=?");
+            PreparedStatement preparedStatement = getConnection().prepareStatement(DELETE_SKILLS_FROM_DEVELOPER);
             preparedStatement.setInt(1, developer.getId());
             preparedStatement.execute();
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
         }
     }
 
     private void addSkillsTo(Developer developer) {
         try (Connection connection = getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO pms.developers_skills(developer_id, skill_id) VALUES (?,?)")) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(ADD_SKILLS_TO_DEVELOPER)) {
                 for (Skill skill : developer.getSkills()) {
                     preparedStatement.setInt(1, developer.getId());
                     preparedStatement.setInt(2, skill.getId());
@@ -209,15 +226,13 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             }
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
         }
     }
 
     private void retrieveSkillsOf(Developer developer) {
-
         try (Connection connection = getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT skill_id FROM pms.developers_skills WHERE developer_id=?")) {
+                    GET_SKILLS_OF_DEVELOPER)) {
                 preparedStatement.setInt(1, developer.getId());
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     Set<Skill> skills = new HashSet<>();
@@ -229,7 +244,6 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             }
         } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
         }
     }
 

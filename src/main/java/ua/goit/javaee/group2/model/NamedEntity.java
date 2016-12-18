@@ -3,6 +3,8 @@ package ua.goit.javaee.group2.model;
 
 public class NamedEntity {
 
+    public static final String ID = "id";
+
     protected Integer id;
 
     protected String name;

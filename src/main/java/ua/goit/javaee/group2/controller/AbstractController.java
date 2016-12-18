@@ -1,6 +1,7 @@
 package ua.goit.javaee.group2.controller;
 
 import org.slf4j.Logger;
+import ua.goit.javaee.group2.model.NamedEntity;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -23,8 +24,8 @@ public abstract class AbstractController<T> {
 
     public abstract void deleteAll() throws SQLException;
 
-    public <T> boolean isNullThanPrintAndLogErrorMessageFor(T t) {
-        if (t == null) {
+    public <T extends NamedEntity> boolean isNullThanPrintAndLogErrorMessageFor(T t) {
+        if (t == null || t.getName() == null || "".equals(t.getName())) {
             String message = "Object " + t.getClass().getSimpleName() + " was not provided for updating method";
             LOG.error(message);
             System.out.println(message);

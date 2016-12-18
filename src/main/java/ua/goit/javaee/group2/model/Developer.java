@@ -4,11 +4,10 @@ import java.util.Set;
 
 public class Developer extends NamedEntity{
 
-    public static String ID = "id";
-    public static String FIRST_NAME = "first_name";
-    public static String LAST_NAME = "last_name";
-    public static String COMPANY_ID = "company_id";
-    public static String SKILL_ID = "skill_id";
+    public static final String FIRST_NAME = "first_name";
+    public static final String LAST_NAME = "last_name";
+    public static final String COMPANY_ID = "company_id";
+    public static final String SKILL_ID = "skill_id";
 
     private String lastName;
 

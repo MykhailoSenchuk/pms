@@ -20,8 +20,6 @@ public class ProjectController  extends AbstractController<Project> {
     private ProjectDAO projectDAO;
     @Transactional
     public void addDeveloperToProject(Developer developer, Project project){
-        if (isNullThanPrintAndLogErrorMessageFor(developer)) return;
-        if (isNullThanPrintAndLogErrorMessageFor(project)) return;
         projectDAO.addDevToProject(developer,project);
     }
 

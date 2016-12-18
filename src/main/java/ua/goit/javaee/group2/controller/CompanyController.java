@@ -21,21 +21,17 @@ public class CompanyController extends AbstractController<Company> {
 
     @Transactional
     public void addDeveloperToCompany(Developer developer, Company company) throws SQLException {
-        if (isNullThanPrintAndLogErrorMessageFor(company)) return;
-
         if (company.isNew()) {
             String message = "Company isn't registered in database yet.";
             LOG.error(message);
             System.out.println(message);
             return;
         }
-
         if (developer.isNew()) {
             String message = "Developer isn't registered in DB yet";
             System.out.println(message);
             LOG.error(message);
         }
-
         developer.setCompany(company);
         developerDAO.save(developer);
         company.addDeveloper(developer);
@@ -45,14 +41,9 @@ public class CompanyController extends AbstractController<Company> {
     @Transactional
     @Override
     public Company add(Company company) throws SQLException {
-        if (company == null || company.getName() == null || "".equals(company.getName())) {
-            String message = "Company wasn't provided";
-            System.out.println(message);
-            LOG.error(message);
-            return null;
-        }
+        if (isNullThanPrintAndLogErrorMessageFor(company)) return null;
 
-        //search company by name
+            //search company by name
         Company byName = companyDAO.load(company.getName());
 
         //if wasn't found by name add row to db

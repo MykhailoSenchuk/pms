@@ -52,7 +52,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Can't save Company: " + e.getMessage(), e);
-            throw new RuntimeException(e);
+            return null;
         }
         return company;
     }
@@ -69,7 +69,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -95,7 +95,6 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Can't save the list: " + e.getMessage(), e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -114,7 +113,6 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Can't delete company: " + e.getMessage(), e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -130,7 +128,6 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Can't delete all companies: " + e.getMessage(), e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -155,7 +152,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Company wasn't loaded: " + e.getMessage(), e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -179,7 +176,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -197,7 +194,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 

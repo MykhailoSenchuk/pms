@@ -50,7 +50,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -71,7 +71,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Can't save customer: " + e.getMessage(), e);
-            throw new RuntimeException(e);
+            return null;
         }
         return customer;
     }
@@ -91,7 +91,6 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -109,7 +108,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -127,22 +126,19 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
     @Override
     public void deleteById(int id) {
-        boolean removed = false;
-
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(DELETE_ROW)) {
                 ps.setLong(1, id);
-                removed = ps.executeUpdate() > 0;
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -154,7 +150,6 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -172,7 +167,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-            throw e;
+            return null;
         }
     }
 

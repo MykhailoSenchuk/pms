@@ -2,9 +2,7 @@ package ua.goit.javaee.group2.model;
 
 public class Skill extends NamedEntity {
 
-    public static String ID = "id";
-
-    public static String NAME = "skill_name";
+    public static final String NAME = "skill_name";
 
     public Skill() {
     }

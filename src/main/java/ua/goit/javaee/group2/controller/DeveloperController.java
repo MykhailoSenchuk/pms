@@ -15,8 +15,6 @@ public class DeveloperController extends AbstractController<Developer> {
 
     @Transactional
     public void addSkillsToDeveloper(Set<Skill> skills, Developer developer){
-        if (isNullThanPrintAndLogErrorMessageFor(skills)) return;
-        if (isNullThanPrintAndLogErrorMessageFor(developer)) return;
         developer.setSkills(skills);
         developerDAO.save(developer);
     }

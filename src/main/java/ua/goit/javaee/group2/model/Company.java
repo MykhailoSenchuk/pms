@@ -4,9 +4,7 @@ import java.util.Set;
 
 public class Company extends NamedEntity {
 
-    public static String ID = "id";
-
-    public static String NAME = "company_name";
+    public static final String NAME = "company_name";
 
     private Set<Developer> developers;
 

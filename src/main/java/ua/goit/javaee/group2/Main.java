@@ -205,7 +205,6 @@ public class Main {
                             break;
                         }
                     }
-                    //TODO situations with failed operation
                     System.out.println("New entity was successfully added in table " + tableName + ".");
                     System.out.println("End of creating new row in table " + tableName + '.');
                     continue;
@@ -218,27 +217,27 @@ public class Main {
                     switch (choice) {
                         case "1": // reading company by id
                         {
-                            printCompanyById(id, companyController);
+                            printEntityById(id, companyController);
                             break;
                         }
                         case "2": // reading customer by id
                         {
-                            printCompanyById(id, customerController);
+                            printEntityById(id, customerController);
                             break;
                         }
                         case "3": // reading developer by id
                         {
-                            printCompanyById(id, developerController);
+                            printEntityById(id, developerController);
                             break;
                         }
                         case "4": //  reading project by id
                         {
-                            printCompanyById(id, projectController);
+                            printEntityById(id, projectController);
                             break;
                         }
                         case "5": //  reading skill by id
                         {
-                            printCompanyById(id, skillController);
+                            printEntityById(id, skillController);
                             break;
                         }
                     }
@@ -500,7 +499,7 @@ public class Main {
         }
     }
 
-    private <T> void printCompanyById(Integer id, AbstractController<T> controller) throws SQLException {
+    private <T> void printEntityById(Integer id, AbstractController<T> controller) throws SQLException {
         T entity = controller.get(id);
         System.out.println(entity != null ? "Successful reading of entity by id: " + entity : "Sorry, bad id.");
     }
