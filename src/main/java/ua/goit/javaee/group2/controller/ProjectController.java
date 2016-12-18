@@ -20,26 +20,22 @@ public class ProjectController  extends AbstractController<Project> {
     private ProjectDAO projectDAO;
     @Transactional
     public void addDeveloperToProject(Developer developer, Project project){
-        if (isNullThanPrintAndLogErrorMessageForObject(developer)) return;
-        if (isNullThanPrintAndLogErrorMessageForObject(project)) return;
+        if (isNullThanPrintAndLogErrorMessageFor(developer)) return;
+        if (isNullThanPrintAndLogErrorMessageFor(project)) return;
         projectDAO.addDevToProject(developer,project);
     }
 
     @Override
     @Transactional
     public Project add(Project project){
-        if (isNullThanPrintAndLogErrorMessageForObject(project)) return null;
+        if (isNullThanPrintAndLogErrorMessageFor(project)) return null;
         return projectDAO.save(project);}
-
-    @Transactional
-    public void createTable(String project){
-        projectDAO.createTable(project);
-    }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Project get(int id) throws SQLException {
         return projectDAO.findById(id);
     }
+
     @Transactional
     public List<Project> getAll() throws SQLException {
         TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
@@ -56,21 +52,14 @@ public class ProjectController  extends AbstractController<Project> {
 
     @Override
     @Transactional
-    public void update(Project project){projectDAO.save(project);}
-
-    @Transactional
-    public void updateTable(String project){
-        projectDAO.updateTable(project);
+    public void update(Project project){
+        if (isNullThanPrintAndLogErrorMessageFor(project)) return;
+        projectDAO.save(project);
     }
 
     @Override
     @Transactional
     public void delete(int id){projectDAO.deleteById(id);}
-
-    @Transactional
-    public void deleteTable(String project){
-        projectDAO.deleteTable(project);
-    }
 
     @Override
     @Transactional

@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public abstract  class AbstractController<T> {
+public abstract class AbstractController<T> {
 
     private static final Logger LOG = getLogger(AbstractController.class);
 
@@ -23,7 +23,7 @@ public abstract  class AbstractController<T> {
 
     public abstract void deleteAll() throws SQLException;
 
-    public <T> boolean isNullThanPrintAndLogErrorMessageForObject(T t) {
+    public <T> boolean isNullThanPrintAndLogErrorMessageFor(T t) {
         if (t == null) {
             String message = "Object " + t.getClass().getSimpleName() + " was not provided for updating method";
             LOG.error(message);

@@ -1,8 +1,5 @@
 package ua.goit.javaee.group2.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import ua.goit.javaee.group2.dao.DeveloperDAO;
 import ua.goit.javaee.group2.model.Developer;
@@ -13,21 +10,21 @@ import java.util.List;
 import java.util.Set;
 
 public class DeveloperController extends AbstractController<Developer> {
-    private PlatformTransactionManager txManager;
-
-    private static final Logger LOG = LoggerFactory.getLogger(DeveloperController.class);
 
     private DeveloperDAO developerDAO;
 
     @Transactional
     public void addSkillsToDeveloper(Set<Skill> skills, Developer developer){
+        if (isNullThanPrintAndLogErrorMessageFor(skills)) return;
+        if (isNullThanPrintAndLogErrorMessageFor(developer)) return;
         developer.setSkills(skills);
         developerDAO.save(developer);
     }
 
     @Override
     @Transactional
-    public Developer add (Developer developer) {
+    public Developer add(Developer developer) {
+        if (isNullThanPrintAndLogErrorMessageFor(developer)) return null;
         return developerDAO.save(developer);
     }
 
@@ -46,7 +43,7 @@ public class DeveloperController extends AbstractController<Developer> {
     @Override
     @Transactional
     public void update(Developer developer){
-        if (isNullThanPrintAndLogErrorMessageForObject(developer.getCompany())) return;
+        if (isNullThanPrintAndLogErrorMessageFor(developer.getCompany())) return;
         developerDAO.save(developer);
     }
 
@@ -60,9 +57,5 @@ public class DeveloperController extends AbstractController<Developer> {
 
     public void setDeveloperDAO(DeveloperDAO developerDAO) {
         this.developerDAO = developerDAO;
-    }
-
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.txManager = txManager;
     }
 }
