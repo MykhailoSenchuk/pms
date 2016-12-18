@@ -16,25 +16,24 @@ import java.util.List;
 
 public class JdbcCustomerDAOImpl implements CustomerDAO {
 
-    private static final String INSERT_ROW = "INSERT INTO pms.customers (customer_name) VALUES (?)";
-    private static final String DELETE_ROW = "DELETE FROM pms.customers WHERE id = ?";
-    private static final String DELETE_ALL = "DELETE FROM pms.customers";
-    private static final String UPDATE_ROW = "UPDATE pms.customers SET customer_name = ? WHERE id =?";
-    private static final String GET_BY_ID = "SELECT * FROM pms.customers WHERE id =?";
-    private static final String GET_BY_NAME = "SELECT * FROM pms.customers WHERE customer_name =?";
-    private static final String GET_ALL = "SELECT * FROM pms.customers";
+    private static final String DELETE_ALL  = "DELETE FROM pms.customers";
+    private static final String DELETE_ROW  = String.format("DELETE FROM pms.customers WHERE %s = ?", Customer.ID);
+    private static final String GET_ALL     = "SELECT * FROM pms.customers";
+    private static final String GET_BY_ID   = String.format("SELECT * FROM pms.customers WHERE %s =?", Customer.ID);
+    private static final String GET_BY_NAME = String.format("SELECT * FROM pms.customers WHERE %s =?", Customer.NAME);
+    private static final String INSERT_ROW  = String.format("INSERT INTO pms.customers (%s) VALUES (?)", Customer.NAME);
+    private static final String UPDATE_ROW  = String.format("UPDATE pms.customers SET %s = ? WHERE %s =?",
+            Customer.NAME, Customer.ID);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerDAO.class);
 
     private DataSource dataSource;
 
-
     @Override
     public Customer save(Customer customer) {
-        if(!customer.isNew()){
+        if (!customer.isNew()) {
             return update(customer);
-        }
-        else{
+        } else {
             return create(customer);
         }
     }
@@ -42,11 +41,9 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
     private Customer update(Customer customer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
-
                 ps.setString(1, customer.getName());
                 ps.setInt(2, customer.getId());
-
-                if(ps.executeUpdate() == 0){
+                if (ps.executeUpdate() == 0) {
                     throw new SQLException("Updating customer failed, no rows affected");
                 }
                 return customer;
@@ -57,20 +54,17 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
         }
     }
 
-
     private Customer create(Customer customer) {
         try (Connection connection = getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW,Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, customer.getName());
                 if (ps.executeUpdate() == 0) {
                     throw new SQLException("Creating customer failed, no rows affected.");
                 }
-
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         customer.setId(generatedKeys.getInt(1));
-                    }
-                    else {
+                    } else {
                         throw new SQLException("Creating customer failed, no ID obtained.");
                     }
                 }
@@ -107,12 +101,11 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
                 ps.setInt(1, id);
-
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
                         return null;
                     }
-                    return new Customer(resultSet.getInt(1), resultSet.getString(2));
+                    return new Customer(resultSet.getInt(Customer.ID), resultSet.getString(Customer.NAME));
                 }
             }
         } catch (SQLException e) {
@@ -126,15 +119,11 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 try (ResultSet resultSet = st.executeQuery(GET_ALL)) {
-
                     List<Customer> customers = new ArrayList<>();
-
                     while (resultSet.next()) {
-                        customers.add(new Customer(resultSet.getInt(1), resultSet.getString(2)));
+                        customers.add(new Customer(resultSet.getInt(Customer.ID), resultSet.getString(Customer.NAME)));
                     }
-
                     return customers;
-
                 }
             }
         } catch (SQLException e) {
@@ -156,7 +145,6 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             LOGGER.error("SQL Exception occurred: ", e);
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -171,20 +159,16 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
         }
     }
 
-
-
     @Override
     public Customer load(String name) throws SQLException {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_NAME)) {
                 ps.setString(1, name);
-
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
                         return null;
                     }
-
-                    return new Customer(resultSet.getInt(1), resultSet.getString(2));
+                    return new Customer(resultSet.getInt(Customer.ID), resultSet.getString(Customer.NAME));
                 }
             }
         } catch (SQLException e) {

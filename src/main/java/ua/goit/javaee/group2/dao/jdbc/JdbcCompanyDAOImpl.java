@@ -13,13 +13,14 @@ import java.util.List;
 
 public class JdbcCompanyDAOImpl implements CompanyDAO {
 
-    private static final String INSERT_ROW = "INSERT INTO pms.companies (company_name) VALUES (?)";
-    private static final String DELETE_ROW = "DELETE FROM pms.companies WHERE id = ?";
-    private static final String DELETE_ALL = "DELETE FROM pms.companies";
-    private static final String UPDATE_ROW = "UPDATE pms.companies SET company_name = ? WHERE id =?";
-    private static final String GET_BY_ID = "SELECT * FROM pms.companies WHERE id =?";
-    private static final String GET_BY_NAME = "SELECT * FROM pms.companies WHERE company_name =?";
-    private static final String GET_ALL = "SELECT * FROM pms.companies";
+    private static final String DELETE_ALL  = "DELETE FROM pms.companies";
+    private static final String DELETE_ROW  = String.format("DELETE FROM pms.companies WHERE %s = ?", Company.ID);
+    private static final String GET_ALL     = "SELECT * FROM pms.companies";
+    private static final String GET_BY_ID   = String.format("SELECT * FROM pms.companies WHERE %s =?", Company.ID);
+    private static final String GET_BY_NAME = String.format("SELECT * FROM pms.companies WHERE %s =?", Company.NAME);
+    private static final String INSERT_ROW  = String.format("INSERT INTO pms.companies (%s) VALUES (?)", Company.NAME);
+    private static final String UPDATE_ROW  = String.format("UPDATE pms.companies SET %s = ? WHERE %s =?",
+            Company.NAME, Company.ID);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyDAO.class);
 
@@ -27,17 +28,16 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
 
     @Override
     public Company save(Company company) {
-        if(!company.isNew()){
+        if (!company.isNew()) {
             return update(company);
-        }
-        else{
+        } else {
             return create(company);
         }
     }
 
     private Company create(Company company) {
         try (Connection connection = getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW,Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, company.getName());
                 if (ps.executeUpdate() == 0) {
                     throw new SQLException("Creating company failed, no rows affected.");
@@ -46,8 +46,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         company.setId(generatedKeys.getInt(1));
-                    }
-                    else {
+                    } else {
                         throw new SQLException("Creating company failed, no ID obtained.");
                     }
                 }
@@ -59,16 +58,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
         return company;
     }
 
-    private Company update(Company company){
+    private Company update(Company company) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
                 ps.setString(1, company.getName());
                 ps.setInt(2, company.getId());
-
-                if(ps.executeUpdate() == 0){
+                if (ps.executeUpdate() == 0) {
                     throw new SQLException("Updating company failed, no rows affected");
                 }
-
                 return company;
             }
         } catch (SQLException e) {
@@ -77,12 +74,10 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
         }
     }
 
-
     /**
      * Saves list of companies to DB. Commit only if all objects will be saved.
      *
      * @param list of Company objects
-     * @return status of operation
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
@@ -99,9 +94,8 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                     }
                 }
             }
-            return;
         } catch (SQLException e) {
-            LOGGER.error("Can't save the list: "+e.getMessage(), e);
+            LOGGER.error("Can't save the list: " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -110,30 +104,23 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      * Deletes companies row by id
      *
      * @param id
-     * @return true if a row was delete, false if no row was deleted
      * @throws RuntimeException on SQLException and the Logger message
      */
-
     @Override
     public void deleteById(int id) {
-        boolean removed = false;
-
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(DELETE_ROW)) {
                 ps.setLong(1, id);
-                removed = ps.executeUpdate() > 0;
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
-            LOGGER.error("Can't delete company: "+ e.getMessage(), e);
+            LOGGER.error("Can't delete company: " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
-
     }
 
     /**
      * Delete all rows from companies table
-     *
-     * @return true if no exception was thrown
      * @throws RuntimeException on SQLException and the Logger message
      */
     @Override
@@ -143,7 +130,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 st.executeUpdate(DELETE_ALL);
             }
         } catch (SQLException e) {
-            LOGGER.error("Can't delete all companies: "+ e.getMessage(), e);
+            LOGGER.error("Can't delete all companies: " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -160,16 +147,15 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
                 ps.setInt(1, id);
-
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
                         return null;
                     }
-                    return new Company(resultSet.getInt(1), resultSet.getString(2));
+                    return new Company(resultSet.getInt(Company.ID), resultSet.getString(Company.NAME));
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Company wasn't loaded: "+ e.getMessage(), e);
+            LOGGER.error("Company wasn't loaded: " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -179,20 +165,17 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
      *
      * @param name
      * @return company object, null if entry wasn't found
-     * @throws SQLException
      */
     @Override
     public Company load(String name) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_NAME)) {
                 ps.setString(1, name);
-
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
                         return null;
                     }
-
-                    return new Company(resultSet.getInt(1), resultSet.getString(2));
+                    return new Company(resultSet.getInt(Company.ID), resultSet.getString(Company.NAME));
                 }
             }
         } catch (SQLException e) {
@@ -203,19 +186,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
 
     @Override
     public List<Company> findAll() {
-
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 try (ResultSet resultSet = st.executeQuery(GET_ALL)) {
-
                     List<Company> companies = new ArrayList<>();
-
                     while (resultSet.next()) {
-                        companies.add(new Company(resultSet.getInt(1), resultSet.getString(2)));
+                        companies.add(new Company(resultSet.getInt(Company.ID), resultSet.getString(Company.NAME)));
                     }
-
                     return companies;
-
                 }
             }
         } catch (SQLException e) {

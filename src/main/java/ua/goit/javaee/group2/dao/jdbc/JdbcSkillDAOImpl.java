@@ -18,17 +18,15 @@ public class JdbcSkillDAOImpl implements SkillDAO {
 
     @Override
     public Skill save(Skill skill) {
-
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null ;
-
         try (Connection connection = dataSource.getConnection()) {
             String sql;
             if (skill.isNew()) {
-                sql = "INSERT INTO pms.skills (skill_name) VALUES (?)";
+                sql = String.format("INSERT INTO pms.skills (%s) VALUES (?)", Skill.NAME);
                 preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             } else {
-                sql = "UPDATE pms.skills SET skill_name = ? WHERE id = ?";
+                sql = String.format("UPDATE pms.skills SET %s = ? WHERE %s = ?", Skill.NAME, Skill.ID);
                 preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setInt(2, skill.getId());
             }
@@ -37,8 +35,11 @@ public class JdbcSkillDAOImpl implements SkillDAO {
 
             if (skill.isNew()) {
                 resultSet = preparedStatement.getGeneratedKeys();
-                resultSet.next();
-                skill.setId(resultSet.getInt(1));
+                if (resultSet.next()) {
+                    skill.setId(resultSet.getInt(1));
+                } else {
+                    LOG.error("Something went wrong. Couldn't retrieve generated key from database.");
+                }
             }
             LOG.info("Success. New skill name = " + skill + '.');
             return skill;
@@ -73,7 +74,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     public Skill load(int id) {
         try (Connection connection = dataSource.getConnection()) {
             try( PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM pms.skills WHERE id=?") ) {
+                    String.format("SELECT * FROM pms.skills WHERE %s=?", Skill.ID)) ) {
                 preparedStatement.setInt(1, id);
                 try ( ResultSet resultSet = preparedStatement.executeQuery() ) {
                     Skill skill;
@@ -94,14 +95,13 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     }
 
     public Skill getByName(String name){
-
         try (Connection connection = dataSource.getConnection()) {
             try( PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT (id) FROM pms.skills WHERE skill_name=?") ){
+                    String.format("SELECT (id) FROM pms.skills WHERE %s = ?", Skill.NAME))){
                 preparedStatement.setString(1, name);
                 try ( ResultSet resultSet = preparedStatement.executeQuery() ) {
                     if (resultSet.next()) {
-                        Skill skill = new Skill(resultSet.getInt("id"), name);
+                        Skill skill = new Skill(resultSet.getInt(Skill.ID), name);
                         LOG.info("Skill " + skill + " was successfully found in database.");
                         return skill;
                     } else {
@@ -119,8 +119,6 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     @Override
     public List<Skill> findAll() {
         List<Skill> skills = new ArrayList<>();
-
-
         try (Connection connection = dataSource.getConnection()) {
             try( Statement statement = connection.createStatement() ) {
                 try( ResultSet resultSet = statement.executeQuery("SELECT * FROM pms.skills") ) {
@@ -139,7 +137,8 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     @Override
     public void deleteById(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            try( PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.skills WHERE id=?")) {
+            try( PreparedStatement preparedStatement =
+                         connection.prepareStatement(String.format("DELETE FROM pms.skills WHERE %s = ?", Skill.ID))) {
                 preparedStatement.setInt(1, id);
                 preparedStatement.execute();
                 LOG.info("Skill was successfully deleted.");
@@ -163,8 +162,8 @@ public class JdbcSkillDAOImpl implements SkillDAO {
 
     private Skill createSkill(ResultSet resultSet) throws SQLException {
         Skill skill = new Skill();
-        skill.setId(resultSet.getInt("id"));
-        skill.setName(resultSet.getString("skill_name"));
+        skill.setId(resultSet.getInt(Skill.ID));
+        skill.setName(resultSet.getString(Skill.NAME));
         return skill;
     }
 
