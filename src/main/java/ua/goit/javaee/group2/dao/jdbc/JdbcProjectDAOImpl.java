@@ -2,8 +2,10 @@ package ua.goit.javaee.group2.dao.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ua.goit.javaee.group2.controller.DeveloperController;
 import ua.goit.javaee.group2.dao.CompanyDAO;
 import ua.goit.javaee.group2.dao.CustomerDAO;
+import ua.goit.javaee.group2.dao.DeveloperDAO;
 import ua.goit.javaee.group2.dao.ProjectDAO;
 import ua.goit.javaee.group2.model.Company;
 import ua.goit.javaee.group2.model.Customer;
@@ -146,24 +148,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public Project loadByName(String name) throws SQLException {
-        try (Connection connection = getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_NAME)) {
-                preparedStatement.setString(1, name);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (!resultSet.next()) {
-                        return null;
-                    }
-                    return new Project(resultSet.getInt(1), resultSet.getString(2));
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-            return null;
-        }
-    }
-
-    @Override
     public void deleteAll() {
         try (Connection connection = getConnection()) {
             try (Statement statement = connection.createStatement()) {
@@ -194,21 +178,42 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     @Override
     public Project load(int id) {
-        try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_ID)) {
+            preparedStatement.setInt(1, id);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                Project project;
+                if (resultSet.next()) {
+                    project = createProject(resultSet);
+                    LOGGER.info("Project " + project + " successfully added to database.");
+                    return project;
+                } else {
+                    LOGGER.info("Project was not found.");
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Exception occurred: " + e);
+            throw new RuntimeException(e);
+        }
+
+        /*try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
                 ps.setInt(1, id);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
                         return null;
                     }
-                    Set<Developer> developers = d
+
+                    Set<Developer> developers;
                     return new Project(
 
                             resultSet.getInt(Project.ID),
                             resultSet.getString(Project.PROJECT_NAME),
                             companyDAO.load(resultSet.getInt(Project.COMPANY_ID)),
                             customerDAO.load(resultSet.getInt(Project.CUSTOMER_ID)),
-                    developers,
+                            developers,
                             resultSet.getFloat(Project.COST));
 
 
@@ -217,10 +222,10 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
             return null;
-        }
+        }*/
 
 
-        try (Connection connection = getConnection()) {
+        /*try (Connection connection = getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement()) {
                 preparedStatement.setInt(1, id);
                 preparedStatement.executeUpdate();
@@ -228,7 +233,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
-        }
+        }*/
     }
 
     //@Transactional(propagation = Propagation.MANDATORY)
@@ -280,29 +285,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         }
     }
 
-    @Override
-    public Project findById(int id) throws SQLException {
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_ID)) {
-            preparedStatement.setInt(1, id);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                Project project;
-                if (resultSet.next()) {
-                    project = createProject(resultSet);
-                    LOGGER.info("Project " + project + " successfully added to database.");
-                    return project;
-                } else {
-                    LOGGER.info("Project was not found.");
-                    return null;
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
-        }
-    }
-
     private Project createProject(ResultSet resultSet) throws SQLException {
         Project project = new Project();
         project.setCompany(companyDAO.load(resultSet.getInt(Project.COMPANY_ID)));
@@ -317,65 +299,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         this.dataSource = dataSource;
     }
 
-    //@Transactional(propagation = Propagation.MANDATORY)
-
-    public void createTable(String sqlQuery) {
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            System.out.println("Successfully connected to DB...");
-            try {
-                System.out.println("Creating Table...");
-                statement.execute(sqlQuery);
-                System.out.println("New Table successfully created");
-
-            } catch (SQLException e) {
-                System.out.println("Can't create Table... " + e);
-            }
-        } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB" + " " + e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    //@Transactional(propagation = Propagation.MANDATORY)
-    @Override
-    public void updateTable(String sqlQuery) {
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            System.out.println("Successfully connected to DB...");
-            try {
-                System.out.println("Updating Table...");
-                statement.execute(sqlQuery);
-                System.out.println("Table successfully updated");
-
-            } catch (SQLException e) {
-                System.out.println("Can't update Table... " + e);
-            }
-        } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB" + " " + e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    //@Transactional(propagation = Propagation.MANDATORY)
-    @Override
-    public void deleteTable(String tableName) {
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement()) {
-            System.out.println("Successfully connected to DB...");
-            try {
-                System.out.println("Deleting Table...");
-                statement.execute(tableName);
-                System.out.println("Table successfully deleted");
-
-            } catch (SQLException e) {
-                System.out.println("Can't delete Table... " + e);
-            }
-        } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB " + " " + e);
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public void addDevToProject(Developer developer, Project project) {

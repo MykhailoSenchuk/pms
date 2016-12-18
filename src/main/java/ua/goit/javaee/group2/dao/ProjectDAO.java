@@ -9,16 +9,6 @@ public interface ProjectDAO extends AbstractDAO<Project> {
 
     Project update(Project customer);
 
-    Project loadByName(String name) throws SQLException;
-
-    Project findById(int id) throws SQLException;
-
-    void createTable(String sqlQuery);
-
-    void updateTable(String sqlQuery);
-
-    void deleteTable(String tableName);
-
     void addDevToProject(Developer developer, Project project);
 
 }

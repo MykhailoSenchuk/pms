@@ -31,21 +31,12 @@ public class ProjectController  extends AbstractController<Project> {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public Project get(int id) throws SQLException {
-        return projectDAO.findById(id);
+        return projectDAO.load(id);
     }
 
     @Transactional
     public List<Project> getAll() throws SQLException {
-        TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED));
-        try{
-            List<Project> result = projectDAO.findAll();
-            txManager.commit(status);
-            return result;
-        }catch (NullPointerException e){
-            System.out.println("Null pointer occurred");
-            txManager.rollback(status);
-            throw new RuntimeException();
-        }
+        return  projectDAO.findAll();
     }
 
     @Override
