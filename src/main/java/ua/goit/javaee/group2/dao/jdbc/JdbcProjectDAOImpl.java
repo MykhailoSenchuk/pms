@@ -7,10 +7,8 @@ import ua.goit.javaee.group2.dao.CustomerDAO;
 import ua.goit.javaee.group2.dao.ProjectDAO;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
+
 import javax.sql.DataSource;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     static final String SELECT_ALL = "SELECT * FROM pms.projects JOIN pms.companies ON (pms.projects.company_id = pms.companies.id)\n" +
             "  JOIN pms.customers ON (pms.customers.id = pms.projects.customer_id)";
     static final String FIND_BY_ID = "SELECT * FROM pms.projects WHERE id = ?";
-    static final String CREATE_TABLE = "CREATE table new_table (id int not null,string TEXT NOT NULL)";
     static final String GET_BY_NAME = "SELECT * FROM pms.projects WHERE project_name =?";
     private static final String UPDATE_ROW = "UPDATE pms.projects SET project_name = ?, customer_id = ?, company_id =? WHERE id =?";
     private static final String INSERT_ROW = "INSERT INTO pms.projects (project_name, customer_id, company_id, cost) VALUES (?,?,?,?)";
@@ -29,35 +26,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     static final Logger LOGGER = LoggerFactory.getLogger(ProjectDAO.class);
     private CompanyDAO companyDAO;
     private CustomerDAO customerDAO;
-
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    //private Connection connection;
-
-    private static int inputID(BufferedReader br) {
-        int selectId = 0;
-        try {
-            System.out.print("Input id:");
-            selectId = Integer.parseInt(br.readLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Wrong input. Need a number!!!");
-        } catch (IOException e) {
-            System.out.println("IOException occurred");
-        }
-        return selectId;
-    }
-
-    private static int inputCost(BufferedReader br) {
-        int selectCost = 0;
-        try {
-            System.out.print("Input cost of project:");
-            selectCost = Integer.parseInt(br.readLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Wrong input. Need a number!!!");
-        } catch (IOException e) {
-            System.out.println("IOException occurred");
-        }
-        return selectCost;
-    }
 
     private DataSource dataSource;
 
@@ -69,7 +37,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         } else {
             create(project);
         }
-        addDeveloperTo(project);
+        addDevelopersTo(project);
         return project;
     }
 
@@ -84,7 +52,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         }
     }
 
-    private void addDeveloperTo(Project project){
+    private void addDevelopersTo(Project project){
         try(Connection connection = getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO pms.projects_developers(developer_id, project_id) VALUES (?,?)")) {
@@ -107,7 +75,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 preparedStatement.setString(1, project.getName());
                 preparedStatement.setInt(2, project.getCustomer().getId());
                 preparedStatement.setInt(3, project.getCompany().getId());
-                preparedStatement.setInt(4, inputCost(br));
+                preparedStatement.setFloat(4, project.getCost());
 
                 if (preparedStatement.executeUpdate() == 0) {
                     throw new SQLException("Creating project failed, no rows affected.");

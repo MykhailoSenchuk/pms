@@ -174,30 +174,29 @@ public class Main {
                             String lastName = br.readLine();
                             System.out.print("Please set company for new developer. ");
                             companyController.getAll().forEach(System.out::println);
-                            Integer companyId = getIdFromConsole();
-                            if (companyController.get(companyId) != null){
+                            Company company = companyController.get(getIdFromConsole());
+                            if (company != null) {
                                 developerController.add(
-                                        new Developer(name, lastName, companyController.get(companyId), getSkillsFromConsole()));
+                                        new Developer(name, lastName, company, getSkillsFromConsole()));
                                 break;
-                            }else System.out.println("Sorry there is no such row in database: "
-                                    + "companyId - " + companyController.get(companyId));
+                            } else System.out.println("Sorry there is no such row in database: "
+                                    + "companyId - " + company);
                             continue;
 
                         }
                         case "4": //  adding new project
                         {
                             System.out.print("Please set company of new project: ");
-                            Integer companyId = getIdFromConsole();
+                            Company company = companyController.get(getIdFromConsole());
                             System.out.print("Please set customer of new project: ");
-                            Integer customerId = getIdFromConsole();
-                            if (companyController.get(companyId) != null && customerController.get(customerId) != null){
-                                projectController.add(new Project(name, companyController.get(companyId),
-                                        customerController.get(customerId), getDevelopersFromConsole()));
+                            Customer customer = customerController.get(getIdFromConsole());
+                            Float cost = getCostOfProject();
+                            if (company != null && customer != null) {
+                                projectController.add(new Project(name, company, customer, getDevelopersFromConsole(), cost));
                                 break;
-                            }
-                            else System.out.println("Sorry there is no such rows in database: "
-                                    + "companyId - " + companyController.get(companyId) + ", "
-                                    + "customerId - " + customerController.get(customerId));
+                            } else System.out.println("Sorry there is no such rows in database: "
+                                    + "companyId - " + company + ", "
+                                    + "customerId - " + customer);
                             continue;
                         }
                         case "5": //  adding new skill
@@ -307,11 +306,15 @@ public class Main {
                                 System.out.print("Please enter new last name of updated developer: ");
                                 String newLastName = br.readLine();
                                 System.out.print("Please enter new company id of updated developer: ");
-                                Integer newCompanyId = getIdFromConsole();
+                                Company company = companyController.get(getIdFromConsole());
                                 System.out.println("Now you need to input all skills of updated developer.");
-
-                                developerController.update(new Developer(id, newName, newLastName, companyController.get(newCompanyId), getSkillsFromConsole()));
-                            }else {
+                                if (company != null) {
+                                    developerController.update(new Developer(id, newName, newLastName, company, getSkillsFromConsole()));
+                                } else {
+                                    System.out.println("Company for developer to update wasn't found in database.\n" +
+                                            "Developer was not updated.");
+                                }
+                            } else {
                                 System.out.println("Sorry. Bad id.");
                             }
                             break;
@@ -319,35 +322,29 @@ public class Main {
                         case "4": //  updating project
                         {
                             Project project = projectController.get(id);
-                            if (project!=null) {
+                            if (project != null) {
                                 System.out.println("Project for update:\n" + project);
                                 System.out.print("Enter new name of project:");
                                 String newName = br.readLine();
 
                                 System.out.print("Please enter new company id of updated project: ");
-                                Integer newCompanyId = Integer.valueOf(br.readLine());
+                                Company company = companyController.get(getIdFromConsole());
                                 System.out.print("Please enter new customer id of updated project: ");
-                                Integer newCustomerId = Integer.valueOf(br.readLine());
+                                Customer customer = customerController.get(getIdFromConsole());
 
                                 System.out.println("Please update developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press twice \'Enter\' to end input.");
 
-                                Set<Developer> newDevelopers = new HashSet<>();
-                                String stringDeveloperId = br.readLine();
-                                while (!"".equals(stringDeveloperId)) {
-                                    newDevelopers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
-                                    stringDeveloperId = br.readLine();
-                                }
-                                if (companyController.get(newCompanyId) != null && customerController.get(newCustomerId) != null){
-                                    projectController.update(new Project(id, newName, companyController.get(newCompanyId)
-                                            , customerController.get(newCustomerId), newDevelopers));
-                                }else {
+                                Set<Developer> newDevelopers = getDevelopersFromConsole();
+                                Float newProjectCost = getCostOfProject();
+                                if (company != null && customer != null) {
+                                    projectController.update(
+                                            new Project(id, newName, company, customer, newDevelopers, newProjectCost));
+                                } else {
                                     System.out.println("Some inputs are null: " + "customerID - "
-                                            + customerController.get(newCustomerId) + ", companyID - "
-                                            + companyController.get(newCompanyId) + ". Nothing were updated");
+                                            + customer + ", companyID - "
+                                            + company + ". Nothing were updated");
                                 }
-
-
-                            }else {
+                            } else {
                                 System.out.println("Sorry. Bad id.");
                             }
                             break;
@@ -451,7 +448,21 @@ public class Main {
         }
     }
 
-//  that is temporary method, we can do that work in one query to database
+    private Float getCostOfProject() throws IOException {
+        Float cost;
+        while (true) {
+            try {
+                System.out.print("Please set cost of project: ");
+                cost = Float.valueOf(br.readLine());
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Wrong input. Please try again to input float number.");
+            }
+        }
+        return cost;
+    }
+
+    //  that is temporary method, we can do that work in one query to database
     private <T> void deleteEntityById(String tableName, Integer id, AbstractController<T> controller) throws SQLException {
         T t = controller.get(id);
         if (t != null) {
@@ -462,7 +473,7 @@ public class Main {
         }
     }
 
-    private <T extends NamedEntity> void  updateAndPrintEntityRetrievedByIdInputedFromConsole(Integer id, AbstractController<T> controller) throws IOException,SQLException {
+    private <T extends NamedEntity> void updateAndPrintEntityRetrievedByIdInputedFromConsole(Integer id, AbstractController<T> controller) throws IOException, SQLException {
         T t = controller.get(id);
         if (t != null) {
             System.out.println("Entity for update:\n" + t);
@@ -471,7 +482,7 @@ public class Main {
             t.setName(newName);
             controller.update(t);
         } else {
-            System.out.println("Sorry. Bad id.");
+            System.out.println("Sorry. Bad id. Couldn't retrieve entity with that id from database.");
         }
     }
 
@@ -480,7 +491,7 @@ public class Main {
         return br.readLine();
     }
 
-    private <T> void readAllRowsFromTable(AbstractController<T> controller) throws SQLException{
+    private <T> void readAllRowsFromTable(AbstractController<T> controller) throws SQLException {
         List<T> entities = controller.getAll();
         if (entities != null) {
             entities.forEach(System.out::println);
@@ -497,33 +508,56 @@ public class Main {
     private Set<Developer> getDevelopersFromConsole() throws IOException, SQLException {
         System.out.println("Please add developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press \'Enter\' twice to end input.");
         Set<Developer> developers = new HashSet<>();
-        String stringDeveloperId = br.readLine();
-        while (!"".equals(stringDeveloperId)) {
-            developers.add(developerController.get(Integer.valueOf(stringDeveloperId)));
-            stringDeveloperId = br.readLine();
+        Integer developerIdFromConsole = getIdFromConsoleOrDoubleEnter();
+        while (developerIdFromConsole != -1) {
+            Developer developer = developerController.get(developerIdFromConsole);
+            if (developer != null) {
+                developers.add(developer);
+            } else {
+                System.out.println("Sorry, bad id of developer. Couldn't retrieve from database.");
+            }
+            developerIdFromConsole = getIdFromConsole();
         }
         return developers;
     }
 
-    //No longer provide null result
+    //doesn't allow to input not integer or integer < 1
     private Integer getIdFromConsole() throws IOException {
-        System.out.print("Enter id: ");
-
-        Integer result = -1;
-        boolean firstCycle = true;
-        while( result <= 0 ) {
+        while (true) {
             try {
-                if(!firstCycle)
-                    System.out.println("incorrect input, need positive, not equal to 0 and not null");
-                firstCycle = false;
-                result = Integer.valueOf(br.readLine());
+                System.out.print("Enter id: ");
+                String input = br.readLine();
+                Integer result = Integer.valueOf(input);
+                if (result > 0){
+                    return result;
+                }
+            } catch (NumberFormatException e) {
+                LOG.error("Number NumberFormatException occurred while parsing input.");
             }
-            catch (NumberFormatException e){
-                result = 0;
-            }
+            System.out.println("Incorrect input. Please input integer which is > 0.");
         }
-        return result;
+    }
 
+    //return -1 Integer to terminate input id double Enter pressed
+    //doesn't allow to input not integer or integer < 1
+    private Integer getIdFromConsoleOrDoubleEnter() throws IOException {
+        while (true) {
+            try {
+                System.out.print("Enter id: ");
+                String input = br.readLine();
+                if ("".equals(input)){
+                    return -1;
+                }
+                Integer result = Integer.valueOf(input);
+                if (result > 0){
+                    return result;
+                }
+            } catch (NumberFormatException e) {
+                LOG.error("Number NumberFormatException occurred while parsing input.");
+            }
+            System.out.println("Incorrect input. Please enter input integer > 0 " +
+                    "or press \'Enter\' twice to terminate input of id's.");
+        }
     }
 
     private Set<Skill> getSkillsFromConsole() throws IOException {

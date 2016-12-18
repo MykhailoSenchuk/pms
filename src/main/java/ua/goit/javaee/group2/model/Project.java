@@ -35,11 +35,22 @@ public class Project extends NamedEntity {
         this.id = id;
     }
 
+    public Project(Integer id, String name, Company company, Customer customer, Set<Developer> developers, Float cost){
+        this(id, name, company, customer, developers);
+        this.cost = cost;
+    }
+
+    public Project(String name, Company company, Customer customer, Set<Developer> developers, Float cost){
+        this(name, company, customer, developers);
+        this.cost = cost;
+    }
+
     public Project() {
     }
 
     public Project(Integer id, String name) {
-
+        this.id = id;
+        this.name = name;
     }
 
     @Override

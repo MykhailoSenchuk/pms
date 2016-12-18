@@ -1,5 +1,7 @@
 package ua.goit.javaee.group2.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import ua.goit.javaee.group2.dao.CustomerDAO;
@@ -12,14 +14,15 @@ public class CustomerController extends AbstractController<Customer> {
 
     private PlatformTransactionManager txManager;
 
+    private static final Logger LOG = LoggerFactory.getLogger(CustomerController.class);
+
     private CustomerDAO customerDAO;
 
     //if table already have company with same name, than just return entity form table, don't create new one
     @Transactional
     @Override
     public Customer add(Customer customer) throws SQLException {
-        if(customer == null)
-            return null;
+        if (isNullThanPrintAndLogErrorMessageForObject(customer)) return null;
 
     //search customer by name
     Customer byName = customerDAO.load(customer.getName());
@@ -52,10 +55,7 @@ public class CustomerController extends AbstractController<Customer> {
     @Transactional
     @Override
     public void update(Customer customer) throws SQLException{
-        if(customer == null){
-            System.out.println("no object was provided");
-            return;
-        }
+        if (isNullThanPrintAndLogErrorMessageForObject(customer)) return;
         customerDAO.save(customer);
     }
 

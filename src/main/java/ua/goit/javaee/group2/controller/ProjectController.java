@@ -10,8 +10,6 @@ import ua.goit.javaee.group2.dao.ProjectDAO;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -22,12 +20,16 @@ public class ProjectController  extends AbstractController<Project> {
     private ProjectDAO projectDAO;
     @Transactional
     public void addDeveloperToProject(Developer developer, Project project){
+        if (isNullThanPrintAndLogErrorMessageForObject(developer)) return;
+        if (isNullThanPrintAndLogErrorMessageForObject(project)) return;
         projectDAO.addDevToProject(developer,project);
     }
 
     @Override
     @Transactional
-    public Project add(Project project){return projectDAO.save(project);}
+    public Project add(Project project){
+        if (isNullThanPrintAndLogErrorMessageForObject(project)) return null;
+        return projectDAO.save(project);}
 
     @Transactional
     public void createTable(String project){

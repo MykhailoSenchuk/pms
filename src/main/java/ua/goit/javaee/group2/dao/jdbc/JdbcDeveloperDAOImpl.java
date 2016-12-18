@@ -51,10 +51,10 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
                 ps.setString(1, developer.getName());
                 ps.setString(2, developer.getLastName());
-                if(developer.getCompany() != null)
+                if (developer.getCompany() != null)
                     ps.setInt(3, developer.getCompany().getId());
                 else
-                    ps.setNull(3,Types.INTEGER);
+                    ps.setNull(3, Types.INTEGER);
                 ps.setInt(4, developer.getId());
 
                 if (ps.executeUpdate() == 0) {
@@ -105,11 +105,11 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
     @Override
     public Developer load(int id) {
-        try ( Connection connection = dataSource.getConnection() ) {
-            try( PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT * FROM pms.developers WHERE id=?") ) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT * FROM pms.developers WHERE id=?")) {
                 preparedStatement.setInt(1, id);
-                try( ResultSet resultSet = preparedStatement.executeQuery() ) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     Developer developer;
                     if (resultSet.next()) {
                         developer = createDeveloper(resultSet);
@@ -132,8 +132,8 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     public List<Developer> findAll() {
         List<Developer> developers = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
-            try( Statement statement = connection.createStatement()){
-                try(ResultSet resultSet = statement.executeQuery("SELECT * FROM pms.developers") ){
+            try (Statement statement = connection.createStatement()) {
+                try (ResultSet resultSet = statement.executeQuery("SELECT * FROM pms.developers")) {
                     while (resultSet.next()) {
                         Developer developer = createDeveloper(resultSet);
                         retrieveSkillsOf(developer);
@@ -152,7 +152,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     @Override
     public void deleteById(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.developers WHERE id=?")){
+            try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.developers WHERE id=?")) {
                 preparedStatement.setInt(1, id);
                 preparedStatement.execute();
                 LOG.info("Developer was successfully deleted.");
@@ -166,7 +166,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     @Override
     public void deleteAll() {
         try (Connection connection = dataSource.getConnection()) {
-            try(Statement statement = connection.createStatement()){
+            try (Statement statement = connection.createStatement()) {
                 statement.execute("DELETE FROM pms.developers");
                 LOG.info("All developers were successfully deleted.");
             }
@@ -196,10 +196,10 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
         }
     }
 
-    private void addSkillsTo(Developer developer){
-        try (Connection connection = getConnection() ){
-            try( PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO pms.developers_skills(developer_id, skill_id) VALUES (?,?)") ){
+    private void addSkillsTo(Developer developer) {
+        try (Connection connection = getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO pms.developers_skills(developer_id, skill_id) VALUES (?,?)")) {
                 for (Skill skill : developer.getSkills()) {
                     preparedStatement.setInt(1, developer.getId());
                     preparedStatement.setInt(2, skill.getId());
@@ -213,13 +213,13 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
         }
     }
 
-    private void retrieveSkillsOf(Developer developer){
+    private void retrieveSkillsOf(Developer developer) {
 
-        try (Connection connection = getConnection()){
-            try(PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT skill_id FROM pms.developers_skills WHERE developer_id=?")){
+        try (Connection connection = getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT skill_id FROM pms.developers_skills WHERE developer_id=?")) {
                 preparedStatement.setInt(1, developer.getId());
-                try( ResultSet resultSet = preparedStatement.executeQuery()){
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     Set<Skill> skills = new HashSet<>();
                     while (resultSet.next()) {
                         skills.add(skillDAO.load(resultSet.getInt("skill_id")));
@@ -227,8 +227,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
                     developer.setSkills(skills);
                 }
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             LOG.error("Exception occurred: " + e);
             throw new RuntimeException(e);
         }

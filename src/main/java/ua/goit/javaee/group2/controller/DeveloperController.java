@@ -1,10 +1,12 @@
 package ua.goit.javaee.group2.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 import ua.goit.javaee.group2.dao.DeveloperDAO;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Skill;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.Set;
 public class DeveloperController extends AbstractController<Developer> {
 
     private PlatformTransactionManager txManager;
+
+    private static final Logger LOG = LoggerFactory.getLogger(DeveloperController.class);
 
     private DeveloperDAO developerDAO;
 
@@ -43,12 +47,7 @@ public class DeveloperController extends AbstractController<Developer> {
     @Override
     @Transactional
     public void update(Developer developer){
-
-        if(developer.getCompany() == null) {
-            //TODO make logger
-            System.out.println("Error: no company assigned");
-            return;
-        }
+        if (isNullThanPrintAndLogErrorMessageForObject(developer.getCompany())) return;
         developerDAO.save(developer);
     }
 

@@ -1,5 +1,6 @@
 package ua.goit.javaee.group2.controller;
 
+import org.slf4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import ua.goit.javaee.group2.dao.CompanyDAO;
@@ -10,28 +11,32 @@ import ua.goit.javaee.group2.model.Developer;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class CompanyController extends AbstractController<Company>{
 
     private PlatformTransactionManager txManager;
+
+    private static final Logger LOG = getLogger(CompanyController.class);
 
     private CompanyDAO companyDAO;
     private DeveloperDAO developerDAO;
 
     @Transactional
     public void addDeveloperToCompany(Developer developer, Company company) throws SQLException {
-        if( company == null ){
-            // TODO make logger
-            System.out.println("Company wasn't provided");
-            return;
-        }
+        if (isNullThanPrintAndLogErrorMessageForObject(company)) return;
 
         if (company.isNew()){
-            System.out.println("company isn't registered in DB");
+            String message = "Company isn't registered in database yet.";
+            LOG.error(message);
+            System.out.println(message);
             return;
         }
 
         if(developer.isNew()){
-            System.out.println("developer isn't registered in DB");
+            String message = "Developer isn't registered in DB yet";
+            System.out.println(message);
+            LOG.error(message);
         }
 
         developer.setCompany(company);
@@ -43,13 +48,14 @@ public class CompanyController extends AbstractController<Company>{
     @Transactional
     @Override
     public Company add(Company company) throws SQLException{
-
         if(company == null || company.getName() == null || "".equals(company.getName()) ) {
-            System.out.println("company wasn't provided");
+            String message = "Company wasn't provided";
+            System.out.println(message);
+            LOG.error(message);
             return null;
         }
+
         //search company by name
-        //TODO make name unique in DB
         Company byName = companyDAO.load(company.getName());
 
         //if wasn't found by name add row to db
@@ -80,10 +86,7 @@ public class CompanyController extends AbstractController<Company>{
     @Transactional
     @Override
     public void update(Company company) throws SQLException{
-        if(company == null){
-            System.out.println("no object was provided");
-            return;
-        }
+        if (isNullThanPrintAndLogErrorMessageForObject(company)) return;
         companyDAO.save(company);
     }
 
