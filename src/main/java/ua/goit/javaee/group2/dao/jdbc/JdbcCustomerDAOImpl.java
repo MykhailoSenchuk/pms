@@ -89,7 +89,6 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                     }
                 }
             }
-            return;
         } catch (SQLException e) {
             LOGGER.error("SQL Exception occurred: ", e);
             throw new RuntimeException(e);

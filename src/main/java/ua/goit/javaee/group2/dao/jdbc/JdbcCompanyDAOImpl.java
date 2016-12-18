@@ -1,6 +1,5 @@
 package ua.goit.javaee.group2.dao.jdbc;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ua.goit.javaee.group2.dao.CompanyDAO;
