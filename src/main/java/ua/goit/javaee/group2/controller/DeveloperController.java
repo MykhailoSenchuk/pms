@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 public class DeveloperController extends AbstractController<Developer> {
-
     private PlatformTransactionManager txManager;
 
     private DeveloperDAO developerDAO;

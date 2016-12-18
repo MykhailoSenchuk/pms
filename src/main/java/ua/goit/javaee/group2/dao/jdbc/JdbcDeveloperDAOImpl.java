@@ -18,8 +18,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
-    private static final String UPDATE_ROW = "UPDATE pms.developers SET first_name = ?, last_name = ?, company_id =? WHERE id =?";
-    private static final String INSERT_ROW = "INSERT INTO pms.developers (first_name, last_name, company_id) VALUES (?,?,?)";
+    private static final String UPDATE_ROW
+            = "UPDATE pms.developers SET first_name = ?, last_name = ?, company_id =? WHERE id =?";
+    private static final String INSERT_ROW
+            = "INSERT INTO pms.developers (first_name, last_name, company_id) VALUES (?,?,?)";
 
     private static final Logger LOG = getLogger(JdbcDeveloperDAOImpl.class);
 
@@ -67,7 +69,6 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             throw new RuntimeException(e);
         }
     }
-
 
     private Developer create(Developer developer) {
         try (Connection connection = getConnection()) {
@@ -152,7 +153,8 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     @Override
     public void deleteById(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            try(PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.developers WHERE id=?")){
+            try(PreparedStatement preparedStatement = connection
+                    .prepareStatement("DELETE FROM pms.developers WHERE id=?")){
                 preparedStatement.setInt(1, id);
                 preparedStatement.execute();
                 LOG.info("Developer was successfully deleted.");
@@ -178,16 +180,17 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
     private Developer createDeveloper(ResultSet resultSet) throws SQLException {
         Developer developer = new Developer();
-        developer.setId(resultSet.getInt("id"));
-        developer.setName(resultSet.getString("first_name"));
-        developer.setLastName(resultSet.getString("last_name"));
-        developer.setCompany(companyDAO.load(resultSet.getInt("company_id")));
+        developer.setId(resultSet.getInt(Developer.ID));
+        developer.setName(resultSet.getString(Developer.FIRST_NAME));
+        developer.setLastName(resultSet.getString(Developer.LAST_NAME));
+        developer.setCompany(companyDAO.load(resultSet.getInt(Developer.COMPANY_ID)));
         return developer;
     }
 
     private void removeSkillsOf(Developer developer) {
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("DELETE FROM pms.developers_skills WHERE developer_id=?");
+            PreparedStatement preparedStatement = getConnection()
+                    .prepareStatement("DELETE FROM pms.developers_skills WHERE developer_id=?");
             preparedStatement.setInt(1, developer.getId());
             preparedStatement.execute();
         } catch (SQLException e) {
@@ -222,7 +225,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
                 try( ResultSet resultSet = preparedStatement.executeQuery()){
                     Set<Skill> skills = new HashSet<>();
                     while (resultSet.next()) {
-                        skills.add(skillDAO.load(resultSet.getInt("skill_id")));
+                        skills.add(skillDAO.load(resultSet.getInt(Developer.SKILL_ID)));
                     }
                     developer.setSkills(skills);
                 }
