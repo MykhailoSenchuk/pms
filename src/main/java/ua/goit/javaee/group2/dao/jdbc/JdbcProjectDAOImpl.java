@@ -186,7 +186,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 Project project;
                 if (resultSet.next()) {
                     project = createProject(resultSet);
-                    LOGGER.info("Project " + project + " successfully added to database.");
+                    LOGGER.info("Project " + project + " successfully founded by Id");
                     return project;
                 } else {
                     LOGGER.info("Project was not found.");
