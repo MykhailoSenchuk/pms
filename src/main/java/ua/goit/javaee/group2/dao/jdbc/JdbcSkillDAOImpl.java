@@ -41,11 +41,10 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                     LOG.error("Something went wrong. Couldn't retrieve generated key from database.");
                 }
             }
-            LOG.info("Success. New skill name = " + skill + '.');
             return skill;
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            LOG.error("Exception occurred while saving skill", e);
+            return null;
         }
         finally {
             try{
@@ -53,14 +52,14 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                     resultSet.close();
             }
             catch (SQLException e){
-                LOG.error("Error while closing result set" + e.getMessage(), e);
+                LOG.error("Error while closing result set", e);
             }
             try{
                 if( preparedStatement!= null)
                     preparedStatement.close();
             }
             catch (SQLException e){
-                LOG.error("Error while closing prepared statement" + e.getMessage(), e);
+                LOG.error("Error while closing prepared statement", e);
             }
         }
     }
@@ -89,7 +88,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while loading skill", e);
             throw new RuntimeException(e);
         }
     }
@@ -111,8 +110,8 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            LOG.error("Exception occurred getting skill by name", e);
+            return null;
         }
     }
 
@@ -129,8 +128,8 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            LOG.error("Exception occurred while finding all skills", e);
+            return null;
         }
     }
 
@@ -144,7 +143,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                 LOG.info("Skill was successfully deleted.");
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while deleting skill by id", e);
         }
     }
 
@@ -156,7 +155,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                 LOG.info("All skills were successfully deleted.");
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while deleting all skills", e);
         }
     }
 
