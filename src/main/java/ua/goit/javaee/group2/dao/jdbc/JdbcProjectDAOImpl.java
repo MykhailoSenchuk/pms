@@ -198,13 +198,14 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     private Set<Developer> getDevelopersByProjectId(int id) throws SQLException {
         Set<Developer> developers = new HashSet<>();
-        try (PreparedStatement ps = getConnection().prepareStatement(GET_DEVS_BY_PROJECT_ID)) {
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(GET_DEVS_BY_PROJECT_ID)) {
             ps.setInt(1, id);
-            ResultSet resultSet = ps.executeQuery();
-            while (resultSet.next()) {
-                developers.add(developerDAO.load(resultSet.getInt("developer_id")));
+            try (ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    developers.add(developerDAO.load(resultSet.getInt("developer_id")));
+                }
             }
-
         } catch (SQLException e) {
             LOG.error("Exception occurred while getting developers by project id.", e);
             return null;
