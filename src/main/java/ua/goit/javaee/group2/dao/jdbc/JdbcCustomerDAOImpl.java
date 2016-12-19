@@ -172,7 +172,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                 ps.setString(1, name);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
-                        LOGGER.error("Can\'t load customer by name.");
+                        LOGGER.info("Couldn\'t load customer by name.");
                         return null;
                     }
                     LOGGER.info("Customer was successfully loaded by name.");

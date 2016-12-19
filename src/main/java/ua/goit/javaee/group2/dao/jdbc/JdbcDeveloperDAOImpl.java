@@ -34,8 +34,8 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     private static final String DELETE_BY_ID = String.format(
             "DELETE FROM pms.developers WHERE %s = ?", Developer.ID);;
 
-    private static final String DELETE_SKILLS_FROM_DEVELOPER = String.format(
-            "DELETE FROM pms.developers_skills WHERE %s = ?", Developer.ID);
+    private static final String DELETE_SKILLS_FROM_DEVELOPER =
+            "DELETE FROM pms.developers_skills WHERE developer_id = ?";
 
     private static final String ADD_SKILLS_TO_DEVELOPER =
             "INSERT INTO pms.developers_skills(developer_id, skill_id) VALUES (?,?)";

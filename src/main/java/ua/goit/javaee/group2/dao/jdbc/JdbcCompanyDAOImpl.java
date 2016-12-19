@@ -180,7 +180,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 ps.setString(1, name);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
-                        LOGGER.error("Loading company failed.");
+                        LOGGER.info("Loading company by name wasn\'t successful.");
                         return null;
                     }
                     LOGGER.info("Company was successfully loaded by name.");
@@ -202,7 +202,7 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                     while (resultSet.next()) {
                         companies.add(new Company(resultSet.getInt(Company.ID), resultSet.getString(Company.NAME)));
                     }
-                    LOGGER.info("Companies were successfully found by name.");
+                    LOGGER.info("All companies were successfully retrieved from DB.");
                     return companies;
                 }
             }

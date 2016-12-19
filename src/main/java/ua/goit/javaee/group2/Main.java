@@ -140,7 +140,7 @@ public class Main {
         String tableName = table(choice);
         String subMenuChoice = "";
         while (!"0".equalsIgnoreCase(subMenuChoice)) {
-            System.out.println(
+            System.out.print(
                     "\n---------Menu for " + tableName + "---------\n" +
                             "1. Create (add 1 new entity).\n" +
                             "2. Read by id.\n" +
@@ -148,7 +148,8 @@ public class Main {
                             "4. Update by id (update 1 entity).\n" +
                             "5. Delete by id.\n" +
                             "6. Delete all.\n" +
-                            "0. Back to main menu.\n");
+                            "0. Back to main menu.\n\n" +
+                            "Please make your choice: ");
             subMenuChoice = br.readLine();
 
             switch (subMenuChoice) {
@@ -300,10 +301,18 @@ public class Main {
                             Developer developer = developerController.get(id);
                             if (developer != null) {
                                 System.out.println("Developer for update:\n" + developer);
-                                System.out.print("Enter new name of developer:");
+                                System.out.print("Enter new name of developer or press 'Enter' " +
+                                        "if you dont want to change name: ");
                                 String newName = br.readLine();
-                                System.out.print("Please enter new last name of updated developer: ");
+                                if ("".equals(newName)){
+                                    newName = developer.getName();
+                                }
+                                System.out.print("Please enter new last name of updated developer or press \'Enter\' " +
+                                        "if you dont want to change last name: ");
                                 String newLastName = br.readLine();
+                                if ("".equals(newLastName)){
+                                    newLastName = developer.getLastName();
+                                }
                                 System.out.print("Please enter new company id of updated developer: ");
                                 Company company = companyController.get(getIdFromConsole());
                                 System.out.println("Now you need to input all skills of updated developer.");
