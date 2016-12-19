@@ -53,10 +53,6 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
 
     private SkillDAO skillDAO;
 
-    public JdbcDeveloperDAOImpl() {
-        LOG.info("Successfully connected to database ");
-    }
-
     @Override
     public Developer save(Developer developer) {
         if (!developer.isNew()) {
@@ -72,7 +68,6 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
     private Developer update(Developer developer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
-
                 ps.setString(1, developer.getName());
                 ps.setString(2, developer.getLastName());
                 if (developer.getCompany() != null)
@@ -82,39 +77,38 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
                 ps.setInt(4, developer.getId());
 
                 if (ps.executeUpdate() == 0) {
-                    throw new SQLException("Updating developer failed, no rows affected");
+                    LOG.error("Updating developer failed, no rows affected");
+                    return null;
                 }
                 return developer;
             }
         } catch (SQLException e) {
-            LOG.error("SQL Exception occurred: ", e);
+            LOG.error("Exception occurred while updating developer.", e);
             return null;
         }
     }
 
-
     private Developer create(Developer developer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW, Statement.RETURN_GENERATED_KEYS)) {
-
                 ps.setString(1, developer.getName());
                 ps.setString(2, developer.getLastName());
                 ps.setInt(3, developer.getCompany().getId());
-
                 if (ps.executeUpdate() == 0) {
-                    throw new SQLException("Creating developer failed, no rows affected.");
+                    LOG.error("Creating developer failed, no rows affected.");
+                    return null;
                 }
-
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         developer.setId(generatedKeys.getInt(1));
                     } else {
-                        throw new SQLException("Creating developer failed, no ID obtained.");
+                        LOG.error("Creating developer failed, no ID obtained.");
+                        return null;
                     }
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Can't save developer: " + e.getMessage(), e);
+            LOG.error("Exception occurred while creating developer.", e);
             return null;
         }
         return developer;
@@ -144,7 +138,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while loading developer by id.", e);
             return null;
         }
     }
@@ -160,12 +154,12 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
                         retrieveSkillsOf(developer);
                         developers.add(developer);
                     }
+                    LOG.info("Finding developers in DB was successful.");
                     return developers;
                 }
             }
-
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while finding all developers.", e);
             return null;
         }
     }
@@ -176,10 +170,10 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_ID)) {
                 preparedStatement.setInt(1, id);
                 preparedStatement.execute();
-                LOG.info("Developer was successfully deleted.");
             }
+            LOG.info("Developer was successfully deleted.");
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while deleting developer by id.", e);
         }
     }
 
@@ -188,10 +182,10 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
         try (Connection connection = dataSource.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(DELETE_ALL);
-                LOG.info("All developers were successfully deleted.");
             }
+            LOG.info("All developers were successfully deleted.");
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while deleting all developers.", e);
         }
     }
 
@@ -209,8 +203,9 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
             PreparedStatement preparedStatement = getConnection().prepareStatement(DELETE_SKILLS_FROM_DEVELOPER);
             preparedStatement.setInt(1, developer.getId());
             preparedStatement.execute();
+            LOG.info("Removing skills of developer from DB was successful.");
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while removing skills of developer.", e);
         }
     }
 
@@ -221,11 +216,11 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
                     preparedStatement.setInt(1, developer.getId());
                     preparedStatement.setInt(2, skill.getId());
                     preparedStatement.execute();
-                    LOG.info("Adding skills successful");
                 }
             }
+            LOG.info("Adding skills to developer was successful.");
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while adding skills to developer.", e);
         }
     }
 
@@ -242,8 +237,9 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
                     developer.setSkills(skills);
                 }
             }
+            LOG.info("Retrieving skills of developer from DB was successful.");
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while retrieving skills of developer from DB.", e);
         }
     }
 

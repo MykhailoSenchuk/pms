@@ -40,8 +40,6 @@ public class Main {
         main.start();
     }
 
-//    test comment
-
     private void start() throws Exception {
 
         String choice = "";
@@ -468,7 +466,7 @@ public class Main {
         T t = controller.get(id);
         if (t != null) {
             controller.delete(id);
-            System.out.println("Entity from table " + tableName + " with id=" + id + "was successfully deleted:\n");
+            System.out.println("Entity from table " + tableName + " with id=" + id + " was successfully deleted.\n");
         } else {
             System.out.println("Sorry. Bad id.");
         }
@@ -478,7 +476,7 @@ public class Main {
         T t = controller.get(id);
         if (t != null) {
             System.out.println("Entity for update:\n" + t);
-            System.out.print("Enter new name:");
+            System.out.print("Enter new name: ");
             String newName = br.readLine();
             t.setName(newName);
             controller.update(t);
@@ -494,7 +492,7 @@ public class Main {
 
     private <T> void readAllRowsFromTable(AbstractController<T> controller) throws SQLException {
         List<T> entities = controller.getAll();
-        if (entities != null) {
+        if (entities.size() > 0) {
             entities.forEach(System.out::println);
         } else {
             System.out.println("Sorry. There is no entity in table.");

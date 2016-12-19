@@ -66,6 +66,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
              PreparedStatement ps = connection.prepareStatement(REMOVE_DEVELOPER_FROM_PROJECT)) {
             ps.setInt(1, project.getId());
             ps.execute();
+            LOG.info("Removing developer from project was successful.");
         } catch (SQLException e) {
             LOG.error("Exception occurred while removing developers from project. ", e);
         }
@@ -78,6 +79,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 preparedStatement.setInt(2, project.getId());
                 preparedStatement.setInt(1, developer.getId());
                 preparedStatement.execute();
+                LOG.info("Adding developers to project was successful.");
             }
         } catch (SQLException e) {
             LOG.error("Exception occurred while adding developers to project. ", e);
@@ -100,6 +102,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         project.setId(generatedKeys.getInt(1));
+                        LOG.info("Creating project was successful.");
                         return project;
                     } else {
                         LOG.error("Exception occurred while saving project. ");
@@ -126,6 +129,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                     LOG.error("No row in projects was affected");
                     return null;
                 }
+                LOG.info("Updating was successful.");
                 return project;
             }
         } catch (SQLException e) {
@@ -139,6 +143,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         try (Connection connection = getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(DELETE_ALL);
+                LOG.info("Deleting all projects was successful.");
             }
         } catch (SQLException e) {
             LOG.error("Exception occurred while deleting all projects.", e);
@@ -157,6 +162,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                         LOG.error("Project was not saved");
                         return;
                     }
+                    LOG.info("Saving all projects was successful.");
                 }
             }
         } catch (SQLException e) {
@@ -171,8 +177,10 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 ps.setInt(1, id);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
+                        LOG.error("Project was not loaded by id.");
                         return null;
                     }
+                    LOG.info("Loading project by id was successful.");
                     return new Project(
                             resultSet.getInt(Project.ID),
                             resultSet.getString(Project.PROJECT_NAME),
@@ -194,13 +202,14 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
             ps.setInt(1, id);
             try (ResultSet resultSet = ps.executeQuery()) {
                 while (resultSet.next()) {
-                    developers.add(developerDAO.load(resultSet.getInt(Developer.ID)));
+                    developers.add(developerDAO.load(resultSet.getInt("developer_id")));
                 }
             }
         } catch (SQLException e) {
             LOG.error("Exception occurred while getting developers by project id.", e);
             return null;
         }
+        LOG.info("Getting developers by project id was successful.");
         return developers;
     }
 
@@ -226,6 +235,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
             LOG.error("Exception occurred while finding all projects", e);
             return null;
         }
+        LOG.info("Finding all projects was successful.");
         return projects;
     }
 
@@ -235,6 +245,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.projects WHERE id=?")) {
             preparedStatement.setInt(1, id);
             preparedStatement.execute();
+            LOG.info("Deleting project by id was successful.");
         } catch (SQLException e) {
             LOG.error("Exception occurred while deleting project by id", e);
         }
@@ -243,7 +254,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
     @Override
     public void addDevToProject(Developer developer, Project project) {
         if (developer.isNew() && project.isNew()) {
-            System.out.println("Developer or project isn't registered in DB");
+            LOG.error("Adding developer to project failed.");
         } else {
             try (Connection connection = getConnection();
                  PreparedStatement preparedStatement = connection
@@ -252,6 +263,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                     preparedStatement.setInt(1, project.getId());
                     preparedStatement.setInt(2, developer.getId());
                     preparedStatement.execute();
+                    LOG.info("Adding developer to project was successful.");
                 } else {
                     LOG.error("Can\'t add developer to project, wrong parameters.");
                 }

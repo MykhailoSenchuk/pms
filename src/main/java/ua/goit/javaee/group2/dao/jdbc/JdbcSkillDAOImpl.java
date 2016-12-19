@@ -48,6 +48,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                     LOG.error("Something went wrong. Couldn't retrieve generated key from database.");
                 }
             }
+            LOG.info("Skill was successfully saved.");
             return skill;
         } catch (SQLException e) {
             LOG.error("Exception occurred while saving skill", e);
@@ -88,7 +89,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                         LOG.info("Skill " + skill + " was successfully found in database.");
                         return skill;
                     } else {
-                        LOG.info("Skill was not found.");
+                        LOG.error("Skill was not found.");
                         return null;
                     }
                 }
@@ -109,7 +110,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                         LOG.info("Skill " + skill + " was successfully found in database.");
                         return skill;
                     } else {
-                        LOG.info("Skill was not found.");
+                        LOG.error("Skill was not found.");
                         return null;
                     }
                 }
@@ -129,6 +130,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                     while (resultSet.next()) {
                         skills.add(createSkill(resultSet));
                     }
+                    LOG.info("All skills were successfully found.");
                     return skills;
                 }
             }

@@ -39,21 +39,24 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, company.getName());
                 if (ps.executeUpdate() == 0) {
-                    throw new SQLException("Creating company failed, no rows affected.");
+                    LOGGER.error("Creating company failed.");
+                    return null;
                 }
                 // set generated ID
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         company.setId(generatedKeys.getInt(1));
                     } else {
-                        throw new SQLException("Creating company failed, no ID obtained.");
+                        LOGGER.error("Creating company failed. no ID obtained.");
+                        return null;
                     }
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Can't save Company: " + e.getMessage(), e);
+            LOGGER.error("Exception occurred while creating company.", e);
             return null;
         }
+        LOGGER.info("Company was successfully created.");
         return company;
     }
 
@@ -63,12 +66,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 ps.setString(1, company.getName());
                 ps.setInt(2, company.getId());
                 if (ps.executeUpdate() == 0) {
-                    throw new SQLException("Updating company failed, no rows affected");
+                    LOGGER.error("Updating company failed.");
+                    return null;
                 }
+                LOGGER.info("Company was successfully updated.");
                 return company;
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while updating company.", e);
             return null;
         }
     }
@@ -89,12 +94,14 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
 
                     //break method if the object is  not saved, provided that no commit will be made
                     if (ps.executeUpdate() == 0) {
+                        LOGGER.error("Saving companies failed.");
                         return;
                     }
                 }
             }
+            LOGGER.info("Companies were successfully saved.");
         } catch (SQLException e) {
-            LOGGER.error("Can't save the list: " + e.getMessage(), e);
+            LOGGER.error("Exception occurred while saving companies.", e);
         }
     }
 
@@ -110,9 +117,10 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
             try (PreparedStatement ps = connection.prepareStatement(DELETE_ROW)) {
                 ps.setLong(1, id);
                 ps.executeUpdate();
+                LOGGER.info("Company was successfully deleted by id.");
             }
         } catch (SQLException e) {
-            LOGGER.error("Can't delete company: " + e.getMessage(), e);
+            LOGGER.error("Exception occurred while deleting company by id.", e);
         }
     }
 
@@ -125,9 +133,10 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeUpdate(DELETE_ALL);
+                LOGGER.info("All companies were successfully deleted.");
             }
         } catch (SQLException e) {
-            LOGGER.error("Can't delete all companies: " + e.getMessage(), e);
+            LOGGER.error("Exception occurred while deleting companies.", e);
         }
     }
 
@@ -145,13 +154,15 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 ps.setInt(1, id);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
+                        LOGGER.error("Loading company failed.");
                         return null;
                     }
+                    LOGGER.info("Company was successfully loaded by id.");
                     return new Company(resultSet.getInt(Company.ID), resultSet.getString(Company.NAME));
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Company wasn't loaded: " + e.getMessage(), e);
+            LOGGER.error("Exception occurred while loading company by id.", e);
             return null;
         }
     }
@@ -169,13 +180,15 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                 ps.setString(1, name);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
+                        LOGGER.error("Loading company failed.");
                         return null;
                     }
+                    LOGGER.info("Company was successfully loaded by name.");
                     return new Company(resultSet.getInt(Company.ID), resultSet.getString(Company.NAME));
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while loading company by name.", e);
             return null;
         }
     }
@@ -189,11 +202,12 @@ public class JdbcCompanyDAOImpl implements CompanyDAO {
                     while (resultSet.next()) {
                         companies.add(new Company(resultSet.getInt(Company.ID), resultSet.getString(Company.NAME)));
                     }
+                    LOGGER.info("Companies were successfully found by name.");
                     return companies;
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while loading companies.", e);
             return null;
         }
     }
