@@ -7,7 +7,6 @@ public class Developer extends NamedEntity{
     public static final String FIRST_NAME = "first_name";
     public static final String LAST_NAME = "last_name";
     public static final String COMPANY_ID = "company_id";
-    public static final String SKILL_ID = "skill_id";
 
     private String lastName;
 

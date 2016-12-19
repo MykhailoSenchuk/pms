@@ -7,13 +7,14 @@ public class Project extends NamedEntity {
     public static final String COMPANY_ID = "company_id";
     public static final String CUSTOMER_ID = "customer_id";
     public static final String PROJECT_NAME = "project_name";
-    public static final String COMPANY_NAME = "company_name";
-    public static final String CUSTOMER_NAME = "customer_name";
     public static final String COST = "cost";
 
     private Company company;
+
     private Customer customer;
+
     private float cost;
+
     private Set<Developer> developers;
 
     public Project(String name, Company company, Customer customer, Set<Developer> developers) {
