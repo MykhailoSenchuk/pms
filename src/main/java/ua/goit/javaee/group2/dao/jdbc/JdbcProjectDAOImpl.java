@@ -200,11 +200,11 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         Set<Developer> developers = new HashSet<>();
         try (PreparedStatement ps = getConnection().prepareStatement(GET_DEVS_BY_PROJECT_ID)) {
             ps.setInt(1, id);
-            try (ResultSet resultSet = ps.executeQuery()) {
-                while (resultSet.next()) {
-                    developers.add(developerDAO.load(resultSet.getInt("developer_id")));
-                }
+            ResultSet resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                developers.add(developerDAO.load(resultSet.getInt("developer_id")));
             }
+
         } catch (SQLException e) {
             LOG.error("Exception occurred while getting developers by project id.", e);
             return null;

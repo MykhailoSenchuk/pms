@@ -129,7 +129,7 @@ public class JdbcDeveloperDAOImpl implements DeveloperDAO {
                     if (resultSet.next()) {
                         developer = createDeveloper(resultSet);
                         retrieveSkillsOf(developer);
-                        LOG.info("Developer " + developer + " successfully added to database.");
+                        LOG.info("Developer " + developer + " successfully loaded from DB.");
                         return developer;
                     } else {
                         LOG.info("Developer was not found.");

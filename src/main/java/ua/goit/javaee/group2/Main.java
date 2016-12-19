@@ -187,9 +187,9 @@ public class Main {
                         }
                         case "4": //  adding new project
                         {
-                            System.out.print("Please set company of new project: ");
+                            System.out.print("Please set company of new project. ");
                             Company company = companyController.get(getIdFromConsole());
-                            System.out.print("Please set customer of new project: ");
+                            System.out.print("Please set customer of new project. ");
                             Customer customer = customerController.get(getIdFromConsole());
                             Float cost = getCostOfProject();
                             if (company != null && customer != null) {
@@ -516,7 +516,7 @@ public class Main {
     private Set<Developer> getDevelopersFromConsole() throws IOException, SQLException {
         System.out.println("Please add developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press \'Enter\' twice to end input.");
         Set<Developer> developers = new HashSet<>();
-        Integer developerIdFromConsole = getIdFromConsoleOrDoubleEnter();
+        Integer developerIdFromConsole = getIdFromConsoleOrPressEnterToStopInput();
         while (developerIdFromConsole != -1) {
             Developer developer = developerController.get(developerIdFromConsole);
             if (developer != null) {
@@ -524,7 +524,7 @@ public class Main {
             } else {
                 System.out.println("Sorry, bad id of developer. Couldn't retrieve from database.");
             }
-            developerIdFromConsole = getIdFromConsole();
+            developerIdFromConsole = getIdFromConsoleOrPressEnterToStopInput();
         }
         return developers;
     }
@@ -548,7 +548,7 @@ public class Main {
 
     //return -1 Integer to terminate input id double Enter pressed
     //doesn't allow to input not integer or integer < 1
-    private Integer getIdFromConsoleOrDoubleEnter() throws IOException {
+    private Integer getIdFromConsoleOrPressEnterToStopInput() throws IOException {
         while (true) {
             try {
                 System.out.print("Enter id: ");
