@@ -236,7 +236,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         }*/
     }
 
-    //@Transactional(propagation = Propagation.MANDATORY)
     @Override
     public List<Project> findAll() {
         List<Project> resultProject = new ArrayList<>();
