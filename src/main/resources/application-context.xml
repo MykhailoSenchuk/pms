@@ -57,7 +57,6 @@
     </bean>
 
     <bean id="projectController" class="ua.goit.javaee.group2.controller.ProjectController" >
-        <property name="txManager" ref="txManager"/>
         <property name="projectDAO" ref="projectDAO"/>
     </bean>
 
