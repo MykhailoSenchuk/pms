@@ -7,19 +7,12 @@ public class Project extends NamedEntity {
     public static final String COMPANY_ID = "company_id";
     public static final String CUSTOMER_ID = "customer_id";
     public static final String PROJECT_NAME = "project_name";
-    public static final String COMPANY_NAME = "company_name";
-    public static final String CUSTOMER_NAME = "customer_name";
     public static final String COST = "cost";
 
     private Company company;
     private Customer customer;
     private float cost;
     private Set<Developer> developers;
-    private String project_name;
-    private long company_id;
-    private long customer_id;
-    private String companyStr;
-    private String customerStr;
 
     public Project(String name, Company company, Customer customer, Set<Developer> developers) {
         super(name);
@@ -99,25 +92,5 @@ public class Project extends NamedEntity {
 
     public void setDevelopers(Set<Developer> developers) {
         this.developers = developers;
-    }
-
-    public void setProject_name(String project_name) {
-        this.project_name = project_name;
-    }
-
-    public void setCompany_id(long company_id) {
-        this.company_id = company_id;
-    }
-
-    public void setCustomer_id(long customer_id) {
-        this.customer_id = customer_id;
-    }
-
-    public void setCompanyStr(String companyStr) {
-        this.companyStr = companyStr;
-    }
-
-    public void setCustomerStr(String customerStr) {
-        this.customerStr = customerStr;
     }
 }

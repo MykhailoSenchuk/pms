@@ -40,8 +40,6 @@ public class Main {
         main.start();
     }
 
-//    test comment
-
     private void start() throws Exception {
 
         String choice = "";
@@ -142,7 +140,7 @@ public class Main {
         String tableName = table(choice);
         String subMenuChoice = "";
         while (!"0".equalsIgnoreCase(subMenuChoice)) {
-            System.out.println(
+            System.out.print(
                     "\n---------Menu for " + tableName + "---------\n" +
                             "1. Create (add 1 new entity).\n" +
                             "2. Read by id.\n" +
@@ -150,7 +148,8 @@ public class Main {
                             "4. Update by id (update 1 entity).\n" +
                             "5. Delete by id.\n" +
                             "6. Delete all.\n" +
-                            "0. Back to main menu.\n");
+                            "0. Back to main menu.\n\n" +
+                            "Please make your choice: ");
             subMenuChoice = br.readLine();
 
             switch (subMenuChoice) {
@@ -188,9 +187,9 @@ public class Main {
                         }
                         case "4": //  adding new project
                         {
-                            System.out.print("Please set company of new project: ");
+                            System.out.print("Please set company of new project. ");
                             Company company = companyController.get(getIdFromConsole());
-                            System.out.print("Please set customer of new project: ");
+                            System.out.print("Please set customer of new project. ");
                             Customer customer = customerController.get(getIdFromConsole());
                             Float cost = getCostOfProject();
                             if (company != null && customer != null) {
@@ -302,10 +301,18 @@ public class Main {
                             Developer developer = developerController.get(id);
                             if (developer != null) {
                                 System.out.println("Developer for update:\n" + developer);
-                                System.out.print("Enter new name of developer:");
+                                System.out.print("Enter new name of developer or press 'Enter' " +
+                                        "if you dont want to change name: ");
                                 String newName = br.readLine();
-                                System.out.print("Please enter new last name of updated developer: ");
+                                if ("".equals(newName)){
+                                    newName = developer.getName();
+                                }
+                                System.out.print("Please enter new last name of updated developer or press \'Enter\' " +
+                                        "if you dont want to change last name: ");
                                 String newLastName = br.readLine();
+                                if ("".equals(newLastName)){
+                                    newLastName = developer.getLastName();
+                                }
                                 System.out.print("Please enter new company id of updated developer: ");
                                 Company company = companyController.get(getIdFromConsole());
                                 System.out.println("Now you need to input all skills of updated developer.");
@@ -468,7 +475,7 @@ public class Main {
         T t = controller.get(id);
         if (t != null) {
             controller.delete(id);
-            System.out.println("Entity from table " + tableName + " with id=" + id + "was successfully deleted:\n");
+            System.out.println("Entity from table " + tableName + " with id=" + id + " was successfully deleted.\n");
         } else {
             System.out.println("Sorry. Bad id.");
         }
@@ -478,7 +485,7 @@ public class Main {
         T t = controller.get(id);
         if (t != null) {
             System.out.println("Entity for update:\n" + t);
-            System.out.print("Enter new name:");
+            System.out.print("Enter new name: ");
             String newName = br.readLine();
             t.setName(newName);
             controller.update(t);
@@ -494,7 +501,7 @@ public class Main {
 
     private <T> void readAllRowsFromTable(AbstractController<T> controller) throws SQLException {
         List<T> entities = controller.getAll();
-        if (entities != null) {
+        if (entities.size() > 0) {
             entities.forEach(System.out::println);
         } else {
             System.out.println("Sorry. There is no entity in table.");
@@ -509,7 +516,7 @@ public class Main {
     private Set<Developer> getDevelopersFromConsole() throws IOException, SQLException {
         System.out.println("Please add developers to new project. Type id's of developer. Press \'Enter\' after each id of developer. Press \'Enter\' twice to end input.");
         Set<Developer> developers = new HashSet<>();
-        Integer developerIdFromConsole = getIdFromConsoleOrDoubleEnter();
+        Integer developerIdFromConsole = getIdFromConsoleOrPressEnterToStopInput();
         while (developerIdFromConsole != -1) {
             Developer developer = developerController.get(developerIdFromConsole);
             if (developer != null) {
@@ -541,7 +548,7 @@ public class Main {
 
     //return -1 Integer to terminate input id double Enter pressed
     //doesn't allow to input not integer or integer < 1
-    private Integer getIdFromConsoleOrDoubleEnter() throws IOException {
+    private Integer getIdFromConsoleOrPressEnterToStopInput() throws IOException {
         while (true) {
             try {
                 System.out.print("Enter id: ");

@@ -26,9 +26,7 @@ public abstract class AbstractController<T> {
 
     public <T extends NamedEntity> boolean isNullThanPrintAndLogErrorMessageFor(T t) {
         if (t == null || t.getName() == null || "".equals(t.getName())) {
-            String message = "Object " + t.getClass().getSimpleName() + " was not provided for updating method";
-            LOG.error(message);
-            System.out.println(message);
+            LOG.error("Object " + t.getClass().getSimpleName() + " was not provided for updating method");
             return true;
         }
         return false;

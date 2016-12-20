@@ -12,8 +12,15 @@ import java.util.List;
 
 public class JdbcSkillDAOImpl implements SkillDAO {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JdbcSkillDAOImpl.class);
+    private static final String GET_BY_ID = String.format("SELECT * FROM pms.skills WHERE %s=?", Skill.ID);
+    private static final String INSERT_ROW = String.format("INSERT INTO pms.skills (%s) VALUES (?)", Skill.NAME);
+    private static final String GET_BY_NAME = String.format("SELECT (id) FROM pms.skills WHERE %s = ?", Skill.NAME);
+    private static final String UPDATE_ROW = String.format("UPDATE pms.skills SET %s = ? WHERE %s = ?", Skill.NAME, Skill.ID);
+    private static final String GET_ALL = "SELECT * FROM pms.skills";
+    private static final String DELETE_BY_ID = String.format("DELETE FROM pms.skills WHERE %s = ?", Skill.ID);
+    private static final String DELETE_ALL = "DELETE FROM pms.skills";
 
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcSkillDAOImpl.class);
     private DataSource dataSource;
 
     @Override
@@ -23,10 +30,10 @@ public class JdbcSkillDAOImpl implements SkillDAO {
         try (Connection connection = dataSource.getConnection()) {
             String sql;
             if (skill.isNew()) {
-                sql = String.format("INSERT INTO pms.skills (%s) VALUES (?)", Skill.NAME);
+                sql = INSERT_ROW;
                 preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             } else {
-                sql = String.format("UPDATE pms.skills SET %s = ? WHERE %s = ?", Skill.NAME, Skill.ID);
+                sql = UPDATE_ROW;
                 preparedStatement = connection.prepareStatement(sql);
                 preparedStatement.setInt(2, skill.getId());
             }
@@ -41,11 +48,11 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                     LOG.error("Something went wrong. Couldn't retrieve generated key from database.");
                 }
             }
-            LOG.info("Success. New skill name = " + skill + '.');
+            LOG.info("Skill was successfully saved.");
             return skill;
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            LOG.error("Exception occurred while saving skill", e);
+            return null;
         }
         finally {
             try{
@@ -60,7 +67,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                     preparedStatement.close();
             }
             catch (SQLException e){
-                LOG.error("Error while closing prepared statement" + e.getMessage(), e);
+                LOG.error("Error while closing prepared statement", e);
             }
         }
     }
@@ -73,8 +80,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     @Override
     public Skill load(int id) {
         try (Connection connection = dataSource.getConnection()) {
-            try( PreparedStatement preparedStatement = connection.prepareStatement(
-                    String.format("SELECT * FROM pms.skills WHERE %s=?", Skill.ID)) ) {
+            try( PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_ID)) {
                 preparedStatement.setInt(1, id);
                 try ( ResultSet resultSet = preparedStatement.executeQuery() ) {
                     Skill skill;
@@ -83,21 +89,20 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                         LOG.info("Skill " + skill + " was successfully found in database.");
                         return skill;
                     } else {
-                        LOG.info("Skill was not found.");
+                        LOG.error("Skill was not found.");
                         return null;
                     }
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while loading skill", e);
             throw new RuntimeException(e);
         }
     }
 
     public Skill getByName(String name){
         try (Connection connection = dataSource.getConnection()) {
-            try( PreparedStatement preparedStatement = connection.prepareStatement(
-                    String.format("SELECT (id) FROM pms.skills WHERE %s = ?", Skill.NAME))){
+            try( PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_NAME)){
                 preparedStatement.setString(1, name);
                 try ( ResultSet resultSet = preparedStatement.executeQuery() ) {
                     if (resultSet.next()) {
@@ -105,14 +110,14 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                         LOG.info("Skill " + skill + " was successfully found in database.");
                         return skill;
                     } else {
-                        LOG.info("Skill was not found.");
+                        LOG.error("Skill was not found.");
                         return null;
                     }
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            LOG.error("Exception occurred getting skill by name", e);
+            return null;
         }
     }
 
@@ -121,16 +126,17 @@ public class JdbcSkillDAOImpl implements SkillDAO {
         List<Skill> skills = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             try( Statement statement = connection.createStatement() ) {
-                try( ResultSet resultSet = statement.executeQuery("SELECT * FROM pms.skills") ) {
+                try( ResultSet resultSet = statement.executeQuery(GET_ALL) ) {
                     while (resultSet.next()) {
                         skills.add(createSkill(resultSet));
                     }
+                    LOG.info("All skills were successfully found.");
                     return skills;
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
+            LOG.error("Exception occurred while finding all skills", e);
+            return null;
         }
     }
 
@@ -138,13 +144,13 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     public void deleteById(int id) {
         try (Connection connection = dataSource.getConnection()) {
             try( PreparedStatement preparedStatement =
-                         connection.prepareStatement(String.format("DELETE FROM pms.skills WHERE %s = ?", Skill.ID))) {
+                         connection.prepareStatement(DELETE_BY_ID)) {
                 preparedStatement.setInt(1, id);
                 preparedStatement.execute();
                 LOG.info("Skill was successfully deleted.");
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while deleting skill by id", e);
         }
     }
 
@@ -152,11 +158,11 @@ public class JdbcSkillDAOImpl implements SkillDAO {
     public void deleteAll() {
         try (Connection connection = dataSource.getConnection()) {
             try( Statement statement = connection.createStatement() ) {
-                statement.execute("DELETE FROM pms.skills");
+                statement.execute(DELETE_ALL);
                 LOG.info("All skills were successfully deleted.");
             }
         } catch (SQLException e) {
-            LOG.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while deleting all skills", e);
         }
     }
 

@@ -2,34 +2,30 @@ package ua.goit.javaee.group2.dao.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ua.goit.javaee.group2.controller.DeveloperController;
 import ua.goit.javaee.group2.dao.CompanyDAO;
 import ua.goit.javaee.group2.dao.CustomerDAO;
 import ua.goit.javaee.group2.dao.DeveloperDAO;
 import ua.goit.javaee.group2.dao.ProjectDAO;
-import ua.goit.javaee.group2.model.Company;
-import ua.goit.javaee.group2.model.Customer;
 import ua.goit.javaee.group2.model.Developer;
 import ua.goit.javaee.group2.model.Project;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class JdbcProjectDAOImpl implements ProjectDAO {
 
-    private static final String GET_ALL = String.format("SELECT * FROM pms.projects " +
-                    "JOIN pms.companies ON (pms.projects.%s = pms.companies.%s) " +
-                    "JOIN pms.customers ON (pms.customers.%s = pms.projects.%s)",
-            Project.COMPANY_ID, Company.ID, Customer.ID, Project.CUSTOMER_ID);
+    private static final String GET_ALL = "SELECT * FROM pms.projects ";
 
     private static final String GET_BY_ID = String.format("SELECT * FROM pms.projects WHERE %s = ?",
             Project.ID);
-
-    private static final String GET_BY_NAME = String.format("SELECT * FROM pms.projects WHERE %s = ?",
-            Project.PROJECT_NAME);
 
     private static final String UPDATE_ROW = String.format(
             "UPDATE pms.projects SET %s = ?, %s = ?, %s =? WHERE %s =?",
@@ -45,11 +41,15 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     private static final String DELETE_ALL = "DELETE FROM pms.projects CASCADE";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectDAO.class);
+    private static final String GET_DEVS_BY_PROJECT_ID = "SELECT developer_id FROM pms.projects_developers WHERE project_id = ?";
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProjectDAO.class);
 
     private CompanyDAO companyDAO;
 
     private CustomerDAO customerDAO;
+
+    private DeveloperDAO developerDAO;
 
     private DataSource dataSource;
 
@@ -70,8 +70,9 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
              PreparedStatement ps = connection.prepareStatement(REMOVE_DEVELOPER_FROM_PROJECT)) {
             ps.setInt(1, project.getId());
             ps.execute();
+            LOG.info("Removing developer from project was successful.");
         } catch (SQLException e) {
-            LOGGER.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while removing developers from project. ", e);
         }
     }
 
@@ -82,10 +83,10 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 preparedStatement.setInt(2, project.getId());
                 preparedStatement.setInt(1, developer.getId());
                 preparedStatement.execute();
-                LOGGER.info("Adding projects successful");
+                LOG.info("Adding developers to project was successful.");
             }
         } catch (SQLException e) {
-            LOGGER.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while adding developers to project. ", e);
         }
     }
 
@@ -99,50 +100,44 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                 preparedStatement.setFloat(4, project.getCost());
 
                 if (preparedStatement.executeUpdate() == 0) {
-                    throw new SQLException("Creating project failed, no rows affected.");
+                    LOG.error("Exception occurred while saving project.");
+                    return null;
                 }
                 try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         project.setId(generatedKeys.getInt(1));
+                        LOG.info("Creating project was successful.");
+                        return project;
                     } else {
-                        throw new SQLException("Creating project failed, no ID obtained.");
+                        LOG.error("Exception occurred while saving project. ");
+                        return null;
                     }
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Can't save project: " + e.getMessage(), e);
+            LOG.error("Exception occurred while saving project.", e);
             return null;
         }
-        return project;
     }
 
     public Project update(Project project) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_ROW)) {
-                if (project.getName() == null) {
-                    System.out.println("There can't be empty name of project");
-                } else {
-                    preparedStatement.setString(1, project.getName());
-                }
-                if (project.getCustomer().getId() == null) {
-                    System.out.println("customerId is: " + project.getCustomer().getId());
-                } else {
-                    preparedStatement.setLong(2, project.getCustomer().getId());
-                }
-                if (project.getCompany().getId() == null) {
-                    System.out.println("companyId is: " + project.getCompany().getId());
-                } else {
-                    preparedStatement.setLong(3, project.getCompany().getId());
-                }
+
+                preparedStatement.setString(1, project.getName());
+                preparedStatement.setInt(2, project.getCustomer().getId());
+                preparedStatement.setInt(3, project.getCompany().getId());
                 preparedStatement.setInt(4, project.getId());
 
                 if (preparedStatement.executeUpdate() == 0) {
-                    throw new SQLException("Updating project failed, no rows affected");
+                    LOG.error("No row in projects was affected");
+                    return null;
                 }
+                LOG.info("Updating was successful.");
                 return project;
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOG.error("SQL Exception occurred: ", e);
             return null;
         }
     }
@@ -152,9 +147,10 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         try (Connection connection = getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(DELETE_ALL);
+                LOG.info("Deleting all projects was successful.");
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOG.error("Exception occurred while deleting all projects.", e);
         }
     }
 
@@ -167,78 +163,64 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
                     preparedStatement.setString(1, project.getName());
                     //break method if the customer is  not saved, provided that no commit will be made
                     if (preparedStatement.executeUpdate() == 0) {
+                        LOG.error("Project was not saved");
                         return;
                     }
+                    LOG.info("Saving all projects was successful.");
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOG.error("Exception occurred while saving all projects.", e);
         }
     }
 
     @Override
     public Project load(int id) {
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_ID)) {
-            preparedStatement.setInt(1, id);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                Project project;
-                if (resultSet.next()) {
-                    project = createProject(resultSet);
-                    LOGGER.info("Project " + project + " successfully founded by Id");
-                    return project;
-                } else {
-                    LOGGER.info("Project was not found.");
-                    return null;
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Exception occurred: " + e);
-            throw new RuntimeException(e);
-        }
-
-        /*try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
                 ps.setInt(1, id);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
+                        LOG.error("Project was not loaded by id.");
                         return null;
                     }
-
-                    Set<Developer> developers;
+                    LOG.info("Loading project by id was successful.");
                     return new Project(
-
                             resultSet.getInt(Project.ID),
                             resultSet.getString(Project.PROJECT_NAME),
                             companyDAO.load(resultSet.getInt(Project.COMPANY_ID)),
                             customerDAO.load(resultSet.getInt(Project.CUSTOMER_ID)),
-                            developers,
+                            getDevelopersByProjectId(id),
                             resultSet.getFloat(Project.COST));
-
-
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOG.error("Exception occurred while loading project.", e);
             return null;
-        }*/
+        }
+    }
 
-
-        /*try (Connection connection = getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement()) {
-                preparedStatement.setInt(1, id);
-                preparedStatement.executeUpdate();
-
+    private Set<Developer> getDevelopersByProjectId(int id) throws SQLException {
+        Set<Developer> developers = new HashSet<>();
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(GET_DEVS_BY_PROJECT_ID)) {
+            ps.setInt(1, id);
+            try (ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    developers.add(developerDAO.load(resultSet.getInt("developer_id")));
+                }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
-        }*/
+            LOG.error("Exception occurred while getting developers by project id.", e);
+            return null;
+        }
+        LOG.info("Getting developers by project id was successful.");
+        return developers;
     }
 
     @Override
     public List<Project> findAll() {
-        List<Project> resultProject = new ArrayList<>();
+        List<Project> projects = new ArrayList<>();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
             System.out.println("Successfully connected to DB...");
@@ -247,30 +229,22 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
                 while (resultSet.next()) {
                     Project project = new Project();
-
-
+                    int projectId = resultSet.getInt(Project.ID);
+                    project.setId(projectId);
+                    project.setName(resultSet.getString(Project.PROJECT_NAME));
                     project.setCompany(companyDAO.load(resultSet.getInt(Project.COMPANY_ID)));
                     project.setCustomer(customerDAO.load(resultSet.getInt(Project.CUSTOMER_ID)));
-                    project.setId(resultSet.getInt(Project.ID));
-                    project.setProject_name(resultSet.getString(Project.PROJECT_NAME));
-                    project.setCompany_id(resultSet.getLong(Project.COMPANY_ID));
-                    project.setCustomer_id(resultSet.getLong(Project.CUSTOMER_ID));
-                    project.setCompanyStr(resultSet.getString(Project.COMPANY_NAME));
-                    project.setCustomerStr(resultSet.getString(Project.CUSTOMER_NAME));
                     project.setCost(resultSet.getFloat(Project.COST));
-
-                    try {
-                        resultProject.add(project);
-                    } catch (NullPointerException e) {
-                        System.out.println("NullPointerException happens at: findAll()");
-                    }
+                    project.setDevelopers(getDevelopersByProjectId(projectId));
+                    projects.add(project);
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Exception occurred while connecting to DB" + " " + e);
-            throw new RuntimeException(e);
+            LOG.error("Exception occurred while finding all projects", e);
+            return null;
         }
-        return resultProject;
+        LOG.info("Finding all projects was successful.");
+        return projects;
     }
 
     @Override
@@ -279,47 +253,37 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM pms.projects WHERE id=?")) {
             preparedStatement.setInt(1, id);
             preparedStatement.execute();
-            LOGGER.info("Project was successfully deleted.");
+            LOG.info("Deleting project by id was successful.");
         } catch (SQLException e) {
-            LOGGER.error("Exception occurred: " + e);
+            LOG.error("Exception occurred while deleting project by id", e);
         }
     }
-
-    private Project createProject(ResultSet resultSet) throws SQLException {
-        Project project = new Project();
-        project.setCompany(companyDAO.load(resultSet.getInt(Project.COMPANY_ID)));
-        project.setCustomer(customerDAO.load(resultSet.getInt(Project.CUSTOMER_ID)));
-        project.setId(resultSet.getInt(Project.ID));
-        project.setProject_name(resultSet.getString(Project.PROJECT_NAME));
-        project.setCost(resultSet.getFloat(Project.COST));
-        return project;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
 
     @Override
     public void addDevToProject(Developer developer, Project project) {
         if (developer.isNew() && project.isNew()) {
-            System.out.println("Developer or project isn't registered in DB");
+            LOG.error("Adding developer to project failed.");
         } else {
             try (Connection connection = getConnection();
                  PreparedStatement preparedStatement = connection
                          .prepareStatement("INSERT INTO pms.projects_developers (project_id, developer_id) VALUES (?,?)")) {
                 preparedStatement.setInt(1, project.getId());
-                preparedStatement.setInt(2, developer.getId());
                 if (project.getId() != null && developer.getId() != null) {
+                    preparedStatement.setInt(1, project.getId());
+                    preparedStatement.setInt(2, developer.getId());
                     preparedStatement.execute();
+                    LOG.info("Adding developer to project was successful.");
                 } else {
-                    System.out.println("One of the inputs is null: " + "projectId - "
-                            + project.getId() + ", " + "developerId - " + developer.getId());
+                    LOG.error("Can\'t add developer to project, wrong parameters.");
                 }
             } catch (SQLException e) {
-                LOGGER.error("Can't establish connection " + e);
+                LOG.error("Exception occurred while adding developers to project", e);
             }
         }
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     public void setCompanyDAO(CompanyDAO companyDAO) {
@@ -328,6 +292,10 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
 
     public void setCustomerDAO(CustomerDAO customerDAO) {
         this.customerDAO = customerDAO;
+    }
+
+    public void setDeveloperDAO(DeveloperDAO developerDAO) {
+        this.developerDAO = developerDAO;
     }
 
     private Connection getConnection() throws SQLException {

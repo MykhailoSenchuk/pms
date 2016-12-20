@@ -38,42 +38,47 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
         }
     }
 
+    private Customer create(Customer customer) {
+        try (Connection connection = getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, customer.getName());
+                if (ps.executeUpdate() == 0) {
+                    LOGGER.error("Creating customer failed.");
+                    return null;
+                }
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        customer.setId(generatedKeys.getInt(1));
+                    } else {
+                        LOGGER.error("Creating customer failed.");
+                        return null;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Exception occurred while creating customer.", e);
+            return null;
+        }
+        LOGGER.info("Customer was successfully created.");
+        return customer;
+    }
+
     private Customer update(Customer customer) {
         try (Connection connection = getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(UPDATE_ROW)) {
                 ps.setString(1, customer.getName());
                 ps.setInt(2, customer.getId());
                 if (ps.executeUpdate() == 0) {
-                    throw new SQLException("Updating customer failed, no rows affected");
+                    LOGGER.error("Updating customer failed.");
+                    return null;
                 }
+                LOGGER.info("Customer was successfully updated.");
                 return customer;
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while updating customer.", e);
             return null;
         }
-    }
-
-    private Customer create(Customer customer) {
-        try (Connection connection = getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement(INSERT_ROW, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, customer.getName());
-                if (ps.executeUpdate() == 0) {
-                    throw new SQLException("Creating customer failed, no rows affected.");
-                }
-                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        customer.setId(generatedKeys.getInt(1));
-                    } else {
-                        throw new SQLException("Creating customer failed, no ID obtained.");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Can't save customer: " + e.getMessage(), e);
-            return null;
-        }
-        return customer;
     }
 
     @Override
@@ -85,12 +90,14 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                     ps.setString(1, customer.getName());
                     //break method if the customer is  not saved, provided that no commit will be made
                     if (ps.executeUpdate() == 0) {
+                        LOGGER.error("Customers weren\'t successfully saved.");
                         return;
                     }
                 }
+                LOGGER.info("Customers were successfully saved.");
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while saving customers.", e);
         }
     }
 
@@ -101,13 +108,15 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                 ps.setInt(1, id);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
+                        LOGGER.info("Customer wasn\'t successfully loaded by id.");
                         return null;
                     }
+                    LOGGER.info("Customer was successfully loaded by id.");
                     return new Customer(resultSet.getInt(Customer.ID), resultSet.getString(Customer.NAME));
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while loading customer by id.", e);
             return null;
         }
     }
@@ -121,11 +130,12 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                     while (resultSet.next()) {
                         customers.add(new Customer(resultSet.getInt(Customer.ID), resultSet.getString(Customer.NAME)));
                     }
+                    LOGGER.info("All customers were successfully found.");
                     return customers;
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while finding all customers.", e);
             return null;
         }
     }
@@ -136,9 +146,10 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
             try (PreparedStatement ps = connection.prepareStatement(DELETE_ROW)) {
                 ps.setLong(1, id);
                 ps.executeUpdate();
+                LOGGER.info("Customer was successfully deleted by id.");
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while deleting customer by id.", e);
         }
     }
 
@@ -147,9 +158,10 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
         try (Connection connection = getConnection()) {
             try (Statement st = connection.createStatement()) {
                 st.executeUpdate(DELETE_ALL);
+                LOGGER.info("All customers were successfully loaded.");
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while deleting all customers.", e);
         }
     }
 
@@ -160,13 +172,14 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                 ps.setString(1, name);
                 try (ResultSet resultSet = ps.executeQuery()) {
                     if (!resultSet.next()) {
+                        LOGGER.info("Couldn\'t load customer by name.");
                         return null;
                     }
                     return new Customer(resultSet.getInt(Customer.ID), resultSet.getString(Customer.NAME));
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("SQL Exception occurred: ", e);
+            LOGGER.error("Exception occurred while loading customer by name.", e);
             return null;
         }
     }

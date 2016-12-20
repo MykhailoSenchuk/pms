@@ -23,7 +23,6 @@ public class SkillController extends AbstractController<Skill> {
 
     @Transactional
     public Skill getByName(String name){
-        if (isNullThanPrintAndLogErrorMessageFor(name)) return null;
         return skillDAO.getByName(name);
     }
 
