@@ -175,6 +175,7 @@ public class JdbcCustomerDAOImpl implements CustomerDAO {
                         LOGGER.info("Couldn\'t load customer by name.");
                         return null;
                     }
+                    LOGGER.info("Customer was successfully loaded by name.");
                     return new Customer(resultSet.getInt(Customer.ID), resultSet.getString(Customer.NAME));
                 }
             }

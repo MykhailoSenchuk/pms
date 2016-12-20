@@ -10,8 +10,11 @@ public class Project extends NamedEntity {
     public static final String COST = "cost";
 
     private Company company;
+
     private Customer customer;
+
     private float cost;
+
     private Set<Developer> developers;
 
     public Project(String name, Company company, Customer customer, Set<Developer> developers) {

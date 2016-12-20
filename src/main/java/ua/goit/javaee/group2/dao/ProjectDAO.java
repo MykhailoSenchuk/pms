@@ -5,6 +5,5 @@ import ua.goit.javaee.group2.model.Project;
 
 public interface ProjectDAO extends AbstractDAO<Project> {
 
-    void addDevToProject(Developer developer, Project project);
-
+   void addDevToProject(Developer developer, Project project);
 }

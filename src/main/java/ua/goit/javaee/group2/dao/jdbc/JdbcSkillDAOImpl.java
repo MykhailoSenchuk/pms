@@ -60,7 +60,7 @@ public class JdbcSkillDAOImpl implements SkillDAO {
                     resultSet.close();
             }
             catch (SQLException e){
-                LOG.error("Error while closing result set" + e.getMessage(), e);
+                LOG.error("Error while closing result set", e);
             }
             try{
                 if( preparedStatement!= null)

@@ -223,10 +223,7 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
         List<Project> projects = new ArrayList<>();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
-            System.out.println("Successfully connected to DB...");
-
             try (ResultSet resultSet = statement.executeQuery(GET_ALL)) {
-
                 while (resultSet.next()) {
                     Project project = new Project();
                     int projectId = resultSet.getInt(Project.ID);
@@ -267,7 +264,6 @@ public class JdbcProjectDAOImpl implements ProjectDAO {
             try (Connection connection = getConnection();
                  PreparedStatement preparedStatement = connection
                          .prepareStatement("INSERT INTO pms.projects_developers (project_id, developer_id) VALUES (?,?)")) {
-                preparedStatement.setInt(1, project.getId());
                 if (project.getId() != null && developer.getId() != null) {
                     preparedStatement.setInt(1, project.getId());
                     preparedStatement.setInt(2, developer.getId());

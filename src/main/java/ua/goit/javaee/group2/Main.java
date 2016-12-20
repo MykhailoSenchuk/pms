@@ -524,7 +524,7 @@ public class Main {
             } else {
                 System.out.println("Sorry, bad id of developer. Couldn't retrieve from database.");
             }
-            developerIdFromConsole = getIdFromConsole();
+            developerIdFromConsole = getIdFromConsoleOrPressEnterToStopInput();
         }
         return developers;
     }
